@@ -23,16 +23,16 @@ namespace Kontur.GameStats.Server
             if (commandLineParser.Parse(args).HelpCalled)
                 return;
 
+            DataBase.DataBaseInitializer.InitializeDataBase ();
             RunServer(commandLineParser.Object);
         }
 
         private static void RunServer(Options options)
         {
-            using (var server = new StatServer())
-            {
-                server.Start(options.Prefix);
+            using(var server = new StatServer ()) {
+                server.Start (options.Prefix);
 
-                Console.ReadKey(true);
+                Console.ReadKey (true);
             }
         }
 
