@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="2c0a169ea5ba4138b7c341e6fa79df14" Name="Diagram1" ZoomLevel="88">
+        <EntityTypeShape EntityType="statisticbaseModel.GameMode" Width="2.25" PointX="10.125" PointY="10.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.Map" Width="1.5" PointX="7.5" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.Match" Width="1.75" PointX="7.875" PointY="8.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.PlayerMatchesPerDay" Width="1.875" PointX="15.625" PointY="4.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.Player" Width="2.5" PointX="13.5" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.PlayerStatsOnGameMode" Width="2.375" PointX="13.375" PointY="11.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.PlayerStatsOnServer" Width="2.375" PointX="10.875" PointY="3.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.ScoreBoard" Width="2.125" PointX="10.75" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.ServerGameModes" Width="1.875" PointX="7.5" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.ServerMatchesPerDay" Width="2.25" PointX="5" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.Server" Width="2" PointX="2.125" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="statisticbaseModel.ServerTopMaps" Width="1.5" PointX="5" PointY="6.625" IsExpanded="true" />
+        <AssociationConnector Association="statisticbaseModel.FK_Matches_GameMode" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_ServerGameModes_GameModes" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_Matches_Maps" ManuallyRouted="true" >
+          <ConnectorPoint PointX="8.25" PointY="7.2879850260416656" />
+          <ConnectorPoint PointX="8.25" PointY="7.4816999674479163" />
+          <ConnectorPoint PointX="7.8297821523598579" PointY="7.4816999674479163" />
+          <ConnectorPoint PointX="7.8297821523598579" PointY="7.875" />
+          <ConnectorPoint PointX="7.625" PointY="7.875" />
+          <ConnectorPoint PointX="7.625" PointY="8.2313042522438646" />
+          <ConnectorPoint PointX="7.875" PointY="8.2313042522438646" />
+        </AssociationConnector>
+        <AssociationConnector Association="statisticbaseModel.FK_ServerTopMaps_ToMaps" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_Matches_Servers" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_ScoreBoards_ToMatches" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_PlayerMatchesPerDay_ToPlayers" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_PlayerStatsOnGameMode_ToPlayers" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_PlayerStatsOnServer_ToPlayers" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_ScoreBoards_ToPlayers" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_PlayerStatsOnServer_ToServers" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_ServerGameModes_Servers" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_ServerMatchesPerDay_Servers" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_ServerTopMaps_ToServers" ManuallyRouted="false" />
+        <AssociationConnector Association="statisticbaseModel.FK_PlayerStatsOnGameMode_ToGameMode" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

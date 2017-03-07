@@ -1,5 +1,6 @@
 ﻿using System;
 using Fclp;
+using System.Linq;
 
 namespace Kontur.GameStats.Server
 {
@@ -7,6 +8,8 @@ namespace Kontur.GameStats.Server
     {
         public static void Main(string[] args)
         {
+            HibernatingRhinos.Profiler.Appender.EntityFramework.EntityFrameworkProfiler.Initialize ();
+            /*
             var commandLineParser = new FluentCommandLineParser<Options>();
 
             commandLineParser
@@ -25,6 +28,15 @@ namespace Kontur.GameStats.Server
 
             DataBase.DataBaseInitializer.InitializeDataBase ();
             RunServer(commandLineParser.Object);
+            */
+
+            var context = new StatisticbaseContext ();
+
+            IQueryable<Server> query = context.Server;
+            var servers = query.ToList ();
+            foreach(var a in servers) {
+                Console.WriteLine (a.ServerId);
+            }
         }
 
         private static void RunServer(Options options)

@@ -86,7 +86,7 @@ namespace Kontur.GameStats.Server
                 }
             }
         }
-
+        
         private async Task HandleContextAsync(HttpListenerContext listenerContext)
         {
             // TODO: implement request handling

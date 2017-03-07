@@ -1,0 +1,965 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Хранилище statisticbaseModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="GameModes">
+          <Key>
+            <PropertyRef Name="GameModeId" />
+          </Key>
+          <Property Name="GameModeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GameMode" Type="varchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Maps">
+          <Key>
+            <PropertyRef Name="MapId" />
+          </Key>
+          <Property Name="MapId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Map" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Matches">
+          <Key>
+            <PropertyRef Name="MatchID" />
+          </Key>
+          <Property Name="MatchID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ServerID" Type="int" Nullable="false" />
+          <Property Name="TimeStamp" Type="datetime" Nullable="false" />
+          <Property Name="GameModeID" Type="int" Nullable="false" />
+          <Property Name="Population" Type="int" Nullable="false" />
+          <Property Name="FragLimit" Type="int" />
+          <Property Name="TimeLimit" Type="int" />
+          <Property Name="TimeElapsed" Type="real" Nullable="false" />
+          <Property Name="MapID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PlayerMatchesPerDay">
+          <Key>
+            <PropertyRef Name="PlayerID" />
+            <PropertyRef Name="DayID" />
+          </Key>
+          <Property Name="PlayerID" Type="int" Nullable="false" />
+          <Property Name="DayID" Type="date" Nullable="false" />
+          <Property Name="PlayCount" Type="int" />
+        </EntityType>
+        <EntityType Name="Players">
+          <Key>
+            <PropertyRef Name="PlayerId" />
+          </Key>
+          <Property Name="PlayerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NickName" Type="nvarchar" MaxLength="100" StoreGeneratedPattern="Computed" />
+          <Property Name="DisplayNickName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="LastMatchPlayed" Type="timestamp" StoreGeneratedPattern="Computed" />
+          <Property Name="TotalMatchesPlayed" Type="int" />
+          <Property Name="TotalMatchesWon" Type="int" />
+          <Property Name="AvScoreBoardPercent" Type="real" />
+          <Property Name="TotalKills" Type="int" />
+          <Property Name="TotalDeaths" Type="int" />
+          <Property Name="MaxMatchesPerDay" Type="int" />
+          <Property Name="KD" Type="int" StoreGeneratedPattern="Computed" />
+        </EntityType>
+        <EntityType Name="PlayerStatsOnGameMode">
+          <Key>
+            <PropertyRef Name="PlayerID" />
+            <PropertyRef Name="GameModeID" />
+          </Key>
+          <Property Name="PlayerID" Type="int" Nullable="false" />
+          <Property Name="GameModeID" Type="int" Nullable="false" />
+          <Property Name="PlayCount" Type="int" />
+          <Property Name="WinCount" Type="int" />
+        </EntityType>
+        <EntityType Name="PlayerStatsOnServer">
+          <Key>
+            <PropertyRef Name="PlayerID" />
+            <PropertyRef Name="ServerID" />
+          </Key>
+          <Property Name="PlayerID" Type="int" Nullable="false" />
+          <Property Name="ServerID" Type="int" Nullable="false" />
+          <Property Name="PlayCount" Type="int" />
+          <Property Name="WinsCount" Type="int" />
+        </EntityType>
+        <EntityType Name="ScoreBoards">
+          <Key>
+            <PropertyRef Name="MatchID" />
+            <PropertyRef Name="PlayerID" />
+          </Key>
+          <Property Name="MatchID" Type="int" Nullable="false" />
+          <Property Name="PlayerID" Type="int" Nullable="false" />
+          <Property Name="Frags" Type="int" />
+          <Property Name="Kills" Type="int" />
+          <Property Name="Deaths" Type="int" />
+          <Property Name="Place" Type="int" />
+        </EntityType>
+        <EntityType Name="ServerGameModes">
+          <Key>
+            <PropertyRef Name="ServerID" />
+            <PropertyRef Name="GameModeID" />
+          </Key>
+          <Property Name="ServerID" Type="int" Nullable="false" />
+          <Property Name="GameModeID" Type="int" Nullable="false" />
+          <Property Name="PlayCount" Type="int" />
+        </EntityType>
+        <EntityType Name="ServerMatchesPerDay">
+          <Key>
+            <PropertyRef Name="ServerID" />
+            <PropertyRef Name="DayID" />
+          </Key>
+          <Property Name="ServerID" Type="int" Nullable="false" />
+          <Property Name="DayID" Type="date" Nullable="false" />
+          <Property Name="MatchesCount" Type="int" />
+          <Property Name="TotalPopulation" Type="int" />
+        </EntityType>
+        <EntityType Name="Servers">
+          <Key>
+            <PropertyRef Name="ServerId" />
+          </Key>
+          <Property Name="ServerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EndPoint" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="ServerName" Type="nvarchar" MaxLength="100" />
+          <Property Name="MatchesCount" Type="int" />
+          <Property Name="MaxPopulation" Type="int" />
+          <Property Name="TotalPopulation" Type="int" />
+          <Property Name="MaxMatchesPerDay" Type="int" />
+          <Property Name="DaysCount" Type="int" />
+          <Property Name="GameModes" Type="varchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="ServerTopMaps">
+          <Key>
+            <PropertyRef Name="MapID" />
+            <PropertyRef Name="ServerID" />
+          </Key>
+          <Property Name="MapID" Type="int" Nullable="false" />
+          <Property Name="ServerID" Type="int" Nullable="false" />
+          <Property Name="PlayCount" Type="int" />
+        </EntityType>
+        <Association Name="FK_Matches_GameMode">
+          <End Role="GameModes" Type="Self.GameModes" Multiplicity="1" />
+          <End Role="Matches" Type="Self.Matches" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameModes">
+              <PropertyRef Name="GameModeId" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="GameModeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Matches_Maps">
+          <End Role="Maps" Type="Self.Maps" Multiplicity="1" />
+          <End Role="Matches" Type="Self.Matches" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Maps">
+              <PropertyRef Name="MapId" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="MapID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Matches_Servers">
+          <End Role="Servers" Type="Self.Servers" Multiplicity="1" />
+          <End Role="Matches" Type="Self.Matches" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerMatchesPerDay_ToPlayers">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="PlayerMatchesPerDay" Type="Self.PlayerMatchesPerDay" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="PlayerId" />
+            </Principal>
+            <Dependent Role="PlayerMatchesPerDay">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerStatsOnGameMode_ToGameMode">
+          <End Role="GameModes" Type="Self.GameModes" Multiplicity="1" />
+          <End Role="PlayerStatsOnGameMode" Type="Self.PlayerStatsOnGameMode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameModes">
+              <PropertyRef Name="GameModeId" />
+            </Principal>
+            <Dependent Role="PlayerStatsOnGameMode">
+              <PropertyRef Name="GameModeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerStatsOnGameMode_ToPlayers">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="PlayerStatsOnGameMode" Type="Self.PlayerStatsOnGameMode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="PlayerId" />
+            </Principal>
+            <Dependent Role="PlayerStatsOnGameMode">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerStatsOnServer_ToPlayers">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="PlayerStatsOnServer" Type="Self.PlayerStatsOnServer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="PlayerId" />
+            </Principal>
+            <Dependent Role="PlayerStatsOnServer">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerStatsOnServer_ToServers">
+          <End Role="Servers" Type="Self.Servers" Multiplicity="1" />
+          <End Role="PlayerStatsOnServer" Type="Self.PlayerStatsOnServer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="PlayerStatsOnServer">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ScoreBoards_ToMatches">
+          <End Role="Matches" Type="Self.Matches" Multiplicity="1" />
+          <End Role="ScoreBoards" Type="Self.ScoreBoards" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Matches">
+              <PropertyRef Name="MatchID" />
+            </Principal>
+            <Dependent Role="ScoreBoards">
+              <PropertyRef Name="MatchID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ScoreBoards_ToPlayers">
+          <End Role="Players" Type="Self.Players" Multiplicity="1" />
+          <End Role="ScoreBoards" Type="Self.ScoreBoards" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="PlayerId" />
+            </Principal>
+            <Dependent Role="ScoreBoards">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerGameModes_GameModes">
+          <End Role="GameModes" Type="Self.GameModes" Multiplicity="1" />
+          <End Role="ServerGameModes" Type="Self.ServerGameModes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameModes">
+              <PropertyRef Name="GameModeId" />
+            </Principal>
+            <Dependent Role="ServerGameModes">
+              <PropertyRef Name="GameModeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerGameModes_Servers">
+          <End Role="Servers" Type="Self.Servers" Multiplicity="1" />
+          <End Role="ServerGameModes" Type="Self.ServerGameModes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="ServerGameModes">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerMatchesPerDay_Servers">
+          <End Role="Servers" Type="Self.Servers" Multiplicity="1" />
+          <End Role="ServerMatchesPerDay" Type="Self.ServerMatchesPerDay" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="ServerMatchesPerDay">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerTopMaps_ToMaps">
+          <End Role="Maps" Type="Self.Maps" Multiplicity="1" />
+          <End Role="ServerTopMaps" Type="Self.ServerTopMaps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Maps">
+              <PropertyRef Name="MapId" />
+            </Principal>
+            <Dependent Role="ServerTopMaps">
+              <PropertyRef Name="MapID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerTopMaps_ToServers">
+          <End Role="Servers" Type="Self.Servers" Multiplicity="1" />
+          <End Role="ServerTopMaps" Type="Self.ServerTopMaps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="ServerTopMaps">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище statisticbaseModelContainer">
+          <EntitySet Name="GameModes" EntityType="Self.GameModes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Maps" EntityType="Self.Maps" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Matches" EntityType="Self.Matches" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PlayerMatchesPerDay" EntityType="Self.PlayerMatchesPerDay" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Players" EntityType="Self.Players" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PlayerStatsOnGameMode" EntityType="Self.PlayerStatsOnGameMode" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PlayerStatsOnServer" EntityType="Self.PlayerStatsOnServer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ScoreBoards" EntityType="Self.ScoreBoards" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ServerGameModes" EntityType="Self.ServerGameModes" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ServerMatchesPerDay" EntityType="Self.ServerMatchesPerDay" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Servers" EntityType="Self.Servers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ServerTopMaps" EntityType="Self.ServerTopMaps" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Matches_GameMode" Association="Self.FK_Matches_GameMode">
+            <End Role="GameModes" EntitySet="GameModes" />
+            <End Role="Matches" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Matches_Maps" Association="Self.FK_Matches_Maps">
+            <End Role="Maps" EntitySet="Maps" />
+            <End Role="Matches" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Matches_Servers" Association="Self.FK_Matches_Servers">
+            <End Role="Servers" EntitySet="Servers" />
+            <End Role="Matches" EntitySet="Matches" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerMatchesPerDay_ToPlayers" Association="Self.FK_PlayerMatchesPerDay_ToPlayers">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="PlayerMatchesPerDay" EntitySet="PlayerMatchesPerDay" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerStatsOnGameMode_ToGameMode" Association="Self.FK_PlayerStatsOnGameMode_ToGameMode">
+            <End Role="GameModes" EntitySet="GameModes" />
+            <End Role="PlayerStatsOnGameMode" EntitySet="PlayerStatsOnGameMode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerStatsOnGameMode_ToPlayers" Association="Self.FK_PlayerStatsOnGameMode_ToPlayers">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="PlayerStatsOnGameMode" EntitySet="PlayerStatsOnGameMode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerStatsOnServer_ToPlayers" Association="Self.FK_PlayerStatsOnServer_ToPlayers">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="PlayerStatsOnServer" EntitySet="PlayerStatsOnServer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerStatsOnServer_ToServers" Association="Self.FK_PlayerStatsOnServer_ToServers">
+            <End Role="Servers" EntitySet="Servers" />
+            <End Role="PlayerStatsOnServer" EntitySet="PlayerStatsOnServer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ScoreBoards_ToMatches" Association="Self.FK_ScoreBoards_ToMatches">
+            <End Role="Matches" EntitySet="Matches" />
+            <End Role="ScoreBoards" EntitySet="ScoreBoards" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ScoreBoards_ToPlayers" Association="Self.FK_ScoreBoards_ToPlayers">
+            <End Role="Players" EntitySet="Players" />
+            <End Role="ScoreBoards" EntitySet="ScoreBoards" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerGameModes_GameModes" Association="Self.FK_ServerGameModes_GameModes">
+            <End Role="GameModes" EntitySet="GameModes" />
+            <End Role="ServerGameModes" EntitySet="ServerGameModes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerGameModes_Servers" Association="Self.FK_ServerGameModes_Servers">
+            <End Role="Servers" EntitySet="Servers" />
+            <End Role="ServerGameModes" EntitySet="ServerGameModes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerMatchesPerDay_Servers" Association="Self.FK_ServerMatchesPerDay_Servers">
+            <End Role="Servers" EntitySet="Servers" />
+            <End Role="ServerMatchesPerDay" EntitySet="ServerMatchesPerDay" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerTopMaps_ToMaps" Association="Self.FK_ServerTopMaps_ToMaps">
+            <End Role="Maps" EntitySet="Maps" />
+            <End Role="ServerTopMaps" EntitySet="ServerTopMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerTopMaps_ToServers" Association="Self.FK_ServerTopMaps_ToServers">
+            <End Role="Servers" EntitySet="Servers" />
+            <End Role="ServerTopMaps" EntitySet="ServerTopMaps" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="statisticbaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="GameMode">
+          <Key>
+            <PropertyRef Name="GameModeId" />
+          </Key>
+          <Property Name="GameModeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GameModeName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Matches" Relationship="Self.FK_Matches_GameMode" FromRole="GameModes" ToRole="Matches" />
+          <NavigationProperty Name="ServerGameModes" Relationship="Self.FK_ServerGameModes_GameModes" FromRole="GameModes" ToRole="ServerGameModes" />
+          <NavigationProperty Name="PlayerStatsOnGameMode" Relationship="statisticbaseModel.FK_PlayerStatsOnGameMode_ToGameMode" FromRole="GameMode" ToRole="PlayerStatsOnGameMode" />
+        </EntityType>
+        <EntityType Name="Map">
+          <Key>
+            <PropertyRef Name="MapId" />
+          </Key>
+          <Property Name="MapId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MapName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Matches" Relationship="Self.FK_Matches_Maps" FromRole="Maps" ToRole="Matches" />
+          <NavigationProperty Name="ServerTopMaps" Relationship="Self.FK_ServerTopMaps_ToMaps" FromRole="Maps" ToRole="ServerTopMaps" />
+        </EntityType>
+        <EntityType Name="Match">
+          <Key>
+            <PropertyRef Name="MatchID" />
+          </Key>
+          <Property Name="MatchID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ServerID" Type="Int32" Nullable="false" />
+          <Property Name="TimeStamp" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="GameModeID" Type="Int32" Nullable="false" />
+          <Property Name="Population" Type="Int32" Nullable="false" />
+          <Property Name="FragLimit" Type="Int32" />
+          <Property Name="TimeLimit" Type="Int32" />
+          <Property Name="TimeElapsed" Type="Single" Nullable="false" />
+          <Property Name="MapID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="GameMode" Relationship="Self.FK_Matches_GameMode" FromRole="Matches" ToRole="GameModes" />
+          <NavigationProperty Name="Map" Relationship="Self.FK_Matches_Maps" FromRole="Matches" ToRole="Maps" />
+          <NavigationProperty Name="Server" Relationship="Self.FK_Matches_Servers" FromRole="Matches" ToRole="Servers" />
+          <NavigationProperty Name="ScoreBoard" Relationship="Self.FK_ScoreBoards_ToMatches" FromRole="Matches" ToRole="ScoreBoards" />
+        </EntityType>
+        <EntityType Name="PlayerMatchesPerDay">
+          <Key>
+            <PropertyRef Name="PlayerID" />
+            <PropertyRef Name="DayID" />
+          </Key>
+          <Property Name="PlayerID" Type="Int32" Nullable="false" />
+          <Property Name="DayID" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="PlayCount" Type="Int32" />
+          <NavigationProperty Name="Player" Relationship="Self.FK_PlayerMatchesPerDay_ToPlayers" FromRole="PlayerMatchesPerDay" ToRole="Players" />
+        </EntityType>
+        <EntityType Name="Player">
+          <Key>
+            <PropertyRef Name="PlayerId" />
+          </Key>
+          <Property Name="PlayerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NickName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="DisplayNickName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="LastMatchPlayed" Type="Binary" MaxLength="8" FixedLength="true" annotation:StoreGeneratedPattern="Computed" />
+          <Property Name="TotalMatchesPlayed" Type="Int32" />
+          <Property Name="TotalMatchesWon" Type="Int32" />
+          <Property Name="AvScoreBoardPercent" Type="Single" />
+          <Property Name="TotalKills" Type="Int32" />
+          <Property Name="TotalDeaths" Type="Int32" />
+          <Property Name="MaxMatchesPerDay" Type="Int32" />
+          <Property Name="KD" Type="Int32" annotation:StoreGeneratedPattern="Computed" />
+          <NavigationProperty Name="PlayerMatchesPerDay" Relationship="Self.FK_PlayerMatchesPerDay_ToPlayers" FromRole="Players" ToRole="PlayerMatchesPerDay" />
+          <NavigationProperty Name="PlayerStatsOnGameMode" Relationship="Self.FK_PlayerStatsOnGameMode_ToPlayers" FromRole="Players" ToRole="PlayerStatsOnGameMode" />
+          <NavigationProperty Name="PlayerStatsOnServer" Relationship="Self.FK_PlayerStatsOnServer_ToPlayers" FromRole="Players" ToRole="PlayerStatsOnServer" />
+          <NavigationProperty Name="ScoreBoards" Relationship="Self.FK_ScoreBoards_ToPlayers" FromRole="Players" ToRole="ScoreBoards" />
+        </EntityType>
+        <EntityType Name="PlayerStatsOnGameMode">
+          <Key>
+            <PropertyRef Name="PlayerID" />
+            <PropertyRef Name="GameModeID" />
+          </Key>
+          <Property Name="PlayerID" Type="Int32" Nullable="false" />
+          <Property Name="GameModeID" Type="Int32" Nullable="false" />
+          <Property Name="PlayCount" Type="Int32" />
+          <Property Name="WinCount" Type="Int32" />
+          <NavigationProperty Name="Player" Relationship="Self.FK_PlayerStatsOnGameMode_ToPlayers" FromRole="PlayerStatsOnGameMode" ToRole="Players" />
+          <NavigationProperty Name="GameMode" Relationship="statisticbaseModel.FK_PlayerStatsOnGameMode_ToGameMode" FromRole="PlayerStatsOnGameMode" ToRole="GameMode" />
+        </EntityType>
+        <EntityType Name="PlayerStatsOnServer">
+          <Key>
+            <PropertyRef Name="PlayerID" />
+            <PropertyRef Name="ServerID" />
+          </Key>
+          <Property Name="PlayerID" Type="Int32" Nullable="false" />
+          <Property Name="ServerID" Type="Int32" Nullable="false" />
+          <Property Name="PlayCount" Type="Int32" />
+          <Property Name="WinsCount" Type="Int32" />
+          <NavigationProperty Name="Player" Relationship="Self.FK_PlayerStatsOnServer_ToPlayers" FromRole="PlayerStatsOnServer" ToRole="Players" />
+          <NavigationProperty Name="Server" Relationship="Self.FK_PlayerStatsOnServer_ToServers" FromRole="PlayerStatsOnServer" ToRole="Servers" />
+        </EntityType>
+        <EntityType Name="ScoreBoard">
+          <Key>
+            <PropertyRef Name="MatchID" />
+            <PropertyRef Name="PlayerID" />
+          </Key>
+          <Property Name="MatchID" Type="Int32" Nullable="false" />
+          <Property Name="PlayerID" Type="Int32" Nullable="false" />
+          <Property Name="Frags" Type="Int32" />
+          <Property Name="Kills" Type="Int32" />
+          <Property Name="Deaths" Type="Int32" />
+          <Property Name="Place" Type="Int32" />
+          <NavigationProperty Name="Match" Relationship="Self.FK_ScoreBoards_ToMatches" FromRole="ScoreBoards" ToRole="Matches" />
+          <NavigationProperty Name="Player" Relationship="Self.FK_ScoreBoards_ToPlayers" FromRole="ScoreBoards" ToRole="Players" />
+        </EntityType>
+        <EntityType Name="ServerGameModes">
+          <Key>
+            <PropertyRef Name="ServerID" />
+            <PropertyRef Name="GameModeID" />
+          </Key>
+          <Property Name="ServerID" Type="Int32" Nullable="false" />
+          <Property Name="GameModeID" Type="Int32" Nullable="false" />
+          <Property Name="PlayCount" Type="Int32" />
+          <NavigationProperty Name="GameMode" Relationship="Self.FK_ServerGameModes_GameModes" FromRole="ServerGameModes" ToRole="GameModes" />
+          <NavigationProperty Name="Server" Relationship="Self.FK_ServerGameModes_Servers" FromRole="ServerGameModes" ToRole="Servers" />
+        </EntityType>
+        <EntityType Name="ServerMatchesPerDay">
+          <Key>
+            <PropertyRef Name="ServerID" />
+            <PropertyRef Name="DayID" />
+          </Key>
+          <Property Name="ServerID" Type="Int32" Nullable="false" />
+          <Property Name="DayID" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="MatchesCount" Type="Int32" />
+          <Property Name="TotalPopulation" Type="Int32" />
+          <NavigationProperty Name="Server" Relationship="Self.FK_ServerMatchesPerDay_Servers" FromRole="ServerMatchesPerDay" ToRole="Servers" />
+        </EntityType>
+        <EntityType Name="Server">
+          <Key>
+            <PropertyRef Name="ServerId" />
+          </Key>
+          <Property Name="ServerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EndPoint" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ServerName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="MatchesCount" Type="Int32" />
+          <Property Name="MaxPopulation" Type="Int32" />
+          <Property Name="TotalPopulation" Type="Int32" />
+          <Property Name="MaxMatchesPerDay" Type="Int32" />
+          <Property Name="DaysCount" Type="Int32" />
+          <Property Name="GameModes" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Matches" Relationship="Self.FK_Matches_Servers" FromRole="Servers" ToRole="Matches" />
+          <NavigationProperty Name="PlayerStatsOnServer" Relationship="Self.FK_PlayerStatsOnServer_ToServers" FromRole="Servers" ToRole="PlayerStatsOnServer" />
+          <NavigationProperty Name="ServerGameModes" Relationship="Self.FK_ServerGameModes_Servers" FromRole="Servers" ToRole="ServerGameModes" />
+          <NavigationProperty Name="ServerMatchesPerDay" Relationship="Self.FK_ServerMatchesPerDay_Servers" FromRole="Servers" ToRole="ServerMatchesPerDay" />
+          <NavigationProperty Name="ServerTopMaps" Relationship="Self.FK_ServerTopMaps_ToServers" FromRole="Servers" ToRole="ServerTopMaps" />
+        </EntityType>
+        <EntityType Name="ServerTopMaps">
+          <Key>
+            <PropertyRef Name="MapID" />
+            <PropertyRef Name="ServerID" />
+          </Key>
+          <Property Name="MapID" Type="Int32" Nullable="false" />
+          <Property Name="ServerID" Type="Int32" Nullable="false" />
+          <Property Name="PlayCount" Type="Int32" />
+          <NavigationProperty Name="Map" Relationship="Self.FK_ServerTopMaps_ToMaps" FromRole="ServerTopMaps" ToRole="Maps" />
+          <NavigationProperty Name="Server" Relationship="Self.FK_ServerTopMaps_ToServers" FromRole="ServerTopMaps" ToRole="Servers" />
+        </EntityType>
+        <Association Name="FK_Matches_GameMode">
+          <End Role="GameModes" Type="statisticbaseModel.GameMode" Multiplicity="1" />
+          <End Role="Matches" Type="statisticbaseModel.Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameModes">
+              <PropertyRef Name="GameModeId" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="GameModeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerGameModes_GameModes">
+          <End Role="GameModes" Type="statisticbaseModel.GameMode" Multiplicity="1" />
+          <End Role="ServerGameModes" Type="Self.ServerGameModes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameModes">
+              <PropertyRef Name="GameModeId" />
+            </Principal>
+            <Dependent Role="ServerGameModes">
+              <PropertyRef Name="GameModeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Matches_Maps">
+          <End Role="Maps" Type="statisticbaseModel.Map" Multiplicity="1" />
+          <End Role="Matches" Type="statisticbaseModel.Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Maps">
+              <PropertyRef Name="MapId" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="MapID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerTopMaps_ToMaps">
+          <End Role="Maps" Type="statisticbaseModel.Map" Multiplicity="1" />
+          <End Role="ServerTopMaps" Type="Self.ServerTopMaps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Maps">
+              <PropertyRef Name="MapId" />
+            </Principal>
+            <Dependent Role="ServerTopMaps">
+              <PropertyRef Name="MapID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Matches_Servers">
+          <End Role="Servers" Type="statisticbaseModel.Server" Multiplicity="1" />
+          <End Role="Matches" Type="statisticbaseModel.Match" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="Matches">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ScoreBoards_ToMatches">
+          <End Role="Matches" Type="statisticbaseModel.Match" Multiplicity="1" />
+          <End Role="ScoreBoards" Type="statisticbaseModel.ScoreBoard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Matches">
+              <PropertyRef Name="MatchID" />
+            </Principal>
+            <Dependent Role="ScoreBoards">
+              <PropertyRef Name="MatchID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerMatchesPerDay_ToPlayers">
+          <End Role="Players" Type="statisticbaseModel.Player" Multiplicity="1" />
+          <End Role="PlayerMatchesPerDay" Type="Self.PlayerMatchesPerDay" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="PlayerId" />
+            </Principal>
+            <Dependent Role="PlayerMatchesPerDay">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerStatsOnGameMode_ToPlayers">
+          <End Role="Players" Type="statisticbaseModel.Player" Multiplicity="1" />
+          <End Role="PlayerStatsOnGameMode" Type="Self.PlayerStatsOnGameMode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="PlayerId" />
+            </Principal>
+            <Dependent Role="PlayerStatsOnGameMode">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerStatsOnServer_ToPlayers">
+          <End Role="Players" Type="statisticbaseModel.Player" Multiplicity="1" />
+          <End Role="PlayerStatsOnServer" Type="Self.PlayerStatsOnServer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="PlayerId" />
+            </Principal>
+            <Dependent Role="PlayerStatsOnServer">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ScoreBoards_ToPlayers">
+          <End Role="Players" Type="statisticbaseModel.Player" Multiplicity="1" />
+          <End Role="ScoreBoards" Type="statisticbaseModel.ScoreBoard" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Players">
+              <PropertyRef Name="PlayerId" />
+            </Principal>
+            <Dependent Role="ScoreBoards">
+              <PropertyRef Name="PlayerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_PlayerStatsOnServer_ToServers">
+          <End Role="Servers" Type="statisticbaseModel.Server" Multiplicity="1" />
+          <End Role="PlayerStatsOnServer" Type="Self.PlayerStatsOnServer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="PlayerStatsOnServer">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerGameModes_Servers">
+          <End Role="Servers" Type="statisticbaseModel.Server" Multiplicity="1" />
+          <End Role="ServerGameModes" Type="Self.ServerGameModes" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="ServerGameModes">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerMatchesPerDay_Servers">
+          <End Role="Servers" Type="statisticbaseModel.Server" Multiplicity="1" />
+          <End Role="ServerMatchesPerDay" Type="Self.ServerMatchesPerDay" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="ServerMatchesPerDay">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServerTopMaps_ToServers">
+          <End Role="Servers" Type="statisticbaseModel.Server" Multiplicity="1" />
+          <End Role="ServerTopMaps" Type="Self.ServerTopMaps" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Servers">
+              <PropertyRef Name="ServerId" />
+            </Principal>
+            <Dependent Role="ServerTopMaps">
+              <PropertyRef Name="ServerID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="StatisticbaseContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="GameMode" EntityType="statisticbaseModel.GameMode" />
+          <EntitySet Name="Map" EntityType="statisticbaseModel.Map" />
+          <EntitySet Name="Match" EntityType="statisticbaseModel.Match" />
+          <EntitySet Name="PlayerMatchesPerDay" EntityType="Self.PlayerMatchesPerDay" />
+          <EntitySet Name="Player" EntityType="statisticbaseModel.Player" />
+          <EntitySet Name="PlayerStatsOnGameMode" EntityType="Self.PlayerStatsOnGameMode" />
+          <EntitySet Name="PlayerStatsOnServer" EntityType="Self.PlayerStatsOnServer" />
+          <EntitySet Name="ScoreBoard" EntityType="statisticbaseModel.ScoreBoard" />
+          <EntitySet Name="ServerGameModes" EntityType="Self.ServerGameModes" />
+          <EntitySet Name="ServerMatchesPerDay" EntityType="Self.ServerMatchesPerDay" />
+          <EntitySet Name="Server" EntityType="statisticbaseModel.Server" />
+          <EntitySet Name="ServerTopMaps" EntityType="Self.ServerTopMaps" />
+          <AssociationSet Name="FK_Matches_GameMode" Association="Self.FK_Matches_GameMode">
+            <End Role="GameModes" EntitySet="GameMode" />
+            <End Role="Matches" EntitySet="Match" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerGameModes_GameModes" Association="Self.FK_ServerGameModes_GameModes">
+            <End Role="GameModes" EntitySet="GameMode" />
+            <End Role="ServerGameModes" EntitySet="ServerGameModes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Matches_Maps" Association="Self.FK_Matches_Maps">
+            <End Role="Maps" EntitySet="Map" />
+            <End Role="Matches" EntitySet="Match" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerTopMaps_ToMaps" Association="Self.FK_ServerTopMaps_ToMaps">
+            <End Role="Maps" EntitySet="Map" />
+            <End Role="ServerTopMaps" EntitySet="ServerTopMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Matches_Servers" Association="Self.FK_Matches_Servers">
+            <End Role="Servers" EntitySet="Server" />
+            <End Role="Matches" EntitySet="Match" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ScoreBoards_ToMatches" Association="Self.FK_ScoreBoards_ToMatches">
+            <End Role="Matches" EntitySet="Match" />
+            <End Role="ScoreBoards" EntitySet="ScoreBoard" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerMatchesPerDay_ToPlayers" Association="Self.FK_PlayerMatchesPerDay_ToPlayers">
+            <End Role="Players" EntitySet="Player" />
+            <End Role="PlayerMatchesPerDay" EntitySet="PlayerMatchesPerDay" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerStatsOnGameMode_ToPlayers" Association="Self.FK_PlayerStatsOnGameMode_ToPlayers">
+            <End Role="Players" EntitySet="Player" />
+            <End Role="PlayerStatsOnGameMode" EntitySet="PlayerStatsOnGameMode" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerStatsOnServer_ToPlayers" Association="Self.FK_PlayerStatsOnServer_ToPlayers">
+            <End Role="Players" EntitySet="Player" />
+            <End Role="PlayerStatsOnServer" EntitySet="PlayerStatsOnServer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ScoreBoards_ToPlayers" Association="Self.FK_ScoreBoards_ToPlayers">
+            <End Role="Players" EntitySet="Player" />
+            <End Role="ScoreBoards" EntitySet="ScoreBoard" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerStatsOnServer_ToServers" Association="Self.FK_PlayerStatsOnServer_ToServers">
+            <End Role="Servers" EntitySet="Server" />
+            <End Role="PlayerStatsOnServer" EntitySet="PlayerStatsOnServer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerGameModes_Servers" Association="Self.FK_ServerGameModes_Servers">
+            <End Role="Servers" EntitySet="Server" />
+            <End Role="ServerGameModes" EntitySet="ServerGameModes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerMatchesPerDay_Servers" Association="Self.FK_ServerMatchesPerDay_Servers">
+            <End Role="Servers" EntitySet="Server" />
+            <End Role="ServerMatchesPerDay" EntitySet="ServerMatchesPerDay" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServerTopMaps_ToServers" Association="Self.FK_ServerTopMaps_ToServers">
+            <End Role="Servers" EntitySet="Server" />
+            <End Role="ServerTopMaps" EntitySet="ServerTopMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK_PlayerStatsOnGameMode_ToGameMode" Association="statisticbaseModel.FK_PlayerStatsOnGameMode_ToGameMode">
+            <End Role="GameMode" EntitySet="GameMode" />
+            <End Role="PlayerStatsOnGameMode" EntitySet="PlayerStatsOnGameMode" />
+          </AssociationSet>
+        </EntityContainer>
+        <Association Name="FK_PlayerStatsOnGameMode_ToGameMode">
+          <End Type="statisticbaseModel.GameMode" Role="GameMode" Multiplicity="1" />
+          <End Type="statisticbaseModel.PlayerStatsOnGameMode" Role="PlayerStatsOnGameMode" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="GameMode">
+              <PropertyRef Name="GameModeId" />
+            </Principal>
+            <Dependent Role="PlayerStatsOnGameMode">
+              <PropertyRef Name="GameModeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище statisticbaseModelContainer" CdmEntityContainer="StatisticbaseContext">
+          <EntitySetMapping Name="GameMode">
+            <EntityTypeMapping TypeName="statisticbaseModel.GameMode">
+              <MappingFragment StoreEntitySet="GameModes">
+                <ScalarProperty Name="GameModeId" ColumnName="GameModeId" />
+                <ScalarProperty Name="GameModeName" ColumnName="GameMode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Map">
+            <EntityTypeMapping TypeName="statisticbaseModel.Map">
+              <MappingFragment StoreEntitySet="Maps">
+                <ScalarProperty Name="MapId" ColumnName="MapId" />
+                <ScalarProperty Name="MapName" ColumnName="Map" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Match">
+            <EntityTypeMapping TypeName="statisticbaseModel.Match">
+              <MappingFragment StoreEntitySet="Matches">
+                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
+                <ScalarProperty Name="ServerID" ColumnName="ServerID" />
+                <ScalarProperty Name="TimeStamp" ColumnName="TimeStamp" />
+                <ScalarProperty Name="GameModeID" ColumnName="GameModeID" />
+                <ScalarProperty Name="Population" ColumnName="Population" />
+                <ScalarProperty Name="FragLimit" ColumnName="FragLimit" />
+                <ScalarProperty Name="TimeLimit" ColumnName="TimeLimit" />
+                <ScalarProperty Name="TimeElapsed" ColumnName="TimeElapsed" />
+                <ScalarProperty Name="MapID" ColumnName="MapID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PlayerMatchesPerDay">
+            <EntityTypeMapping TypeName="statisticbaseModel.PlayerMatchesPerDay">
+              <MappingFragment StoreEntitySet="PlayerMatchesPerDay">
+                <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
+                <ScalarProperty Name="DayID" ColumnName="DayID" />
+                <ScalarProperty Name="PlayCount" ColumnName="PlayCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Player">
+            <EntityTypeMapping TypeName="statisticbaseModel.Player">
+              <MappingFragment StoreEntitySet="Players">
+                <ScalarProperty Name="PlayerId" ColumnName="PlayerId" />
+                <ScalarProperty Name="NickName" ColumnName="NickName" />
+                <ScalarProperty Name="DisplayNickName" ColumnName="DisplayNickName" />
+                <ScalarProperty Name="LastMatchPlayed" ColumnName="LastMatchPlayed" />
+                <ScalarProperty Name="TotalMatchesPlayed" ColumnName="TotalMatchesPlayed" />
+                <ScalarProperty Name="TotalMatchesWon" ColumnName="TotalMatchesWon" />
+                <ScalarProperty Name="AvScoreBoardPercent" ColumnName="AvScoreBoardPercent" />
+                <ScalarProperty Name="TotalKills" ColumnName="TotalKills" />
+                <ScalarProperty Name="TotalDeaths" ColumnName="TotalDeaths" />
+                <ScalarProperty Name="MaxMatchesPerDay" ColumnName="MaxMatchesPerDay" />
+                <ScalarProperty Name="KD" ColumnName="KD" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PlayerStatsOnGameMode">
+            <EntityTypeMapping TypeName="statisticbaseModel.PlayerStatsOnGameMode">
+              <MappingFragment StoreEntitySet="PlayerStatsOnGameMode">
+                <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
+                <ScalarProperty Name="GameModeID" ColumnName="GameModeID" />
+                <ScalarProperty Name="PlayCount" ColumnName="PlayCount" />
+                <ScalarProperty Name="WinCount" ColumnName="WinCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PlayerStatsOnServer">
+            <EntityTypeMapping TypeName="statisticbaseModel.PlayerStatsOnServer">
+              <MappingFragment StoreEntitySet="PlayerStatsOnServer">
+                <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
+                <ScalarProperty Name="ServerID" ColumnName="ServerID" />
+                <ScalarProperty Name="PlayCount" ColumnName="PlayCount" />
+                <ScalarProperty Name="WinsCount" ColumnName="WinsCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ScoreBoard">
+            <EntityTypeMapping TypeName="statisticbaseModel.ScoreBoard">
+              <MappingFragment StoreEntitySet="ScoreBoards">
+                <ScalarProperty Name="MatchID" ColumnName="MatchID" />
+                <ScalarProperty Name="PlayerID" ColumnName="PlayerID" />
+                <ScalarProperty Name="Frags" ColumnName="Frags" />
+                <ScalarProperty Name="Kills" ColumnName="Kills" />
+                <ScalarProperty Name="Deaths" ColumnName="Deaths" />
+                <ScalarProperty Name="Place" ColumnName="Place" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServerGameModes">
+            <EntityTypeMapping TypeName="statisticbaseModel.ServerGameModes">
+              <MappingFragment StoreEntitySet="ServerGameModes">
+                <ScalarProperty Name="ServerID" ColumnName="ServerID" />
+                <ScalarProperty Name="GameModeID" ColumnName="GameModeID" />
+                <ScalarProperty Name="PlayCount" ColumnName="PlayCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServerMatchesPerDay">
+            <EntityTypeMapping TypeName="statisticbaseModel.ServerMatchesPerDay">
+              <MappingFragment StoreEntitySet="ServerMatchesPerDay">
+                <ScalarProperty Name="ServerID" ColumnName="ServerID" />
+                <ScalarProperty Name="DayID" ColumnName="DayID" />
+                <ScalarProperty Name="MatchesCount" ColumnName="MatchesCount" />
+                <ScalarProperty Name="TotalPopulation" ColumnName="TotalPopulation" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Server">
+            <EntityTypeMapping TypeName="statisticbaseModel.Server">
+              <MappingFragment StoreEntitySet="Servers">
+                <ScalarProperty Name="ServerId" ColumnName="ServerId" />
+                <ScalarProperty Name="EndPoint" ColumnName="EndPoint" />
+                <ScalarProperty Name="ServerName" ColumnName="ServerName" />
+                <ScalarProperty Name="MatchesCount" ColumnName="MatchesCount" />
+                <ScalarProperty Name="MaxPopulation" ColumnName="MaxPopulation" />
+                <ScalarProperty Name="TotalPopulation" ColumnName="TotalPopulation" />
+                <ScalarProperty Name="MaxMatchesPerDay" ColumnName="MaxMatchesPerDay" />
+                <ScalarProperty Name="DaysCount" ColumnName="DaysCount" />
+                <ScalarProperty Name="GameModes" ColumnName="GameModes" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ServerTopMaps">
+            <EntityTypeMapping TypeName="statisticbaseModel.ServerTopMaps">
+              <MappingFragment StoreEntitySet="ServerTopMaps">
+                <ScalarProperty Name="MapID" ColumnName="MapID" />
+                <ScalarProperty Name="ServerID" ColumnName="ServerID" />
+                <ScalarProperty Name="PlayCount" ColumnName="PlayCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
