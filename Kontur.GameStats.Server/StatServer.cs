@@ -4,6 +4,9 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Kontur.GameStats.Server.ApiMethods;
+using Newtonsoft.Json;
+
 namespace Kontur.GameStats.Server
 {
     internal class StatServer : IDisposable
@@ -86,14 +89,15 @@ namespace Kontur.GameStats.Server
                 }
             }
         }
-        
-        private async Task HandleContextAsync(HttpListenerContext listenerContext)
-        {
-            // TODO: implement request handling
 
-            listenerContext.Response.StatusCode = (int)HttpStatusCode.OK;
-            using (var writer = new StreamWriter(listenerContext.Response.OutputStream))
-                writer.WriteLine("Hello, world!");
+        private async Task HandleContextAsync(HttpListenerContext listenerContext) {
+            var url = listenerContext.Request.RawUrl.Substring (1).Split ('/');
+            var request = listenerContext.Request;
+            var response = listenerContext.Response;
+
+            Router.Route (url, request, response);
+    
+            response.Close ();
         }
 
         private readonly HttpListener listener;

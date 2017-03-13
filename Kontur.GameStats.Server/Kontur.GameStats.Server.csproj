@@ -9,26 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Kontur.GameStats.Server</RootNamespace>
     <AssemblyName>Kontur.GameStats.Server</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,20 +33,13 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    <Reference Include="FluentCommandLineParser, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentCommandLineParser.1.4.2\lib\net35\FluentCommandLineParser.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    <Reference Include="LiteDB, Version=3.0.1.0, Culture=neutral, PublicKeyToken=4ee40123013c9f27, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiteDB.3.0.1\lib\net35\LiteDB.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="FluentCommandLineParser, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentCommandLineParser.1.4.3\lib\net35\FluentCommandLineParser.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="HibernatingRhinos.Profiler.Appender">
-      <HintPath>D:\Загрузки\EntityFramework.Profiler-v4.0-Build-4038\Appender\net46\HibernatingRhinos.Profiler.Appender.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -74,19 +49,8 @@
       <HintPath>..\packages\NLog.4.4.3\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="nunit.framework, Version=3.6.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.6.1\lib\net45\nunit.framework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Diagnostics.DiagnosticSource">
-      <HintPath>D:\Загрузки\EntityFramework.Profiler-v4.0-Build-4038\Appender\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -95,147 +59,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataBase.cs" />
-    <Compile Include="DataBaseInitializer.cs" />
-    <Compile Include="GameMode.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Map.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Match.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Player.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="PlayerMatchesPerDay.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="PlayerStatsOnGameMode.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="PlayerStatsOnServer.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="ScoreBoard.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Server.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ServerGameModes.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ServerMatchesPerDay.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="ServerTopMaps.cs">
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="statisticbaseDataSet.cs">
-      <DependentUpon>statisticbaseDataSet.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="statisticbaseDataSet.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>statisticbaseDataSet.xsd</DependentUpon>
-    </Compile>
-    <Compile Include="StatisticsBaseModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>StatisticsBaseModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="StatisticsBaseModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>StatisticsBaseModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="StatisticsBaseModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>StatisticsBaseModel.edmx</DependentUpon>
-    </Compile>
+    <Compile Include="ApiMethods\GetMethods.cs" />
+    <Compile Include="ApiMethods\Router.cs" />
+    <Compile Include="ApiMethods\PutMethods.cs" />
+    <Compile Include="DataBase\apientities.cs" />
+    <Compile Include="DataBase\DataBaseException.cs" />
+    <Compile Include="DataBase\db.cs" />
+    <Compile Include="DataBase\entities.cs" />
     <Compile Include="StatServer.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <None Include="statisticbaseDataSet.xsc">
-      <DependentUpon>statisticbaseDataSet.xsd</DependentUpon>
-    </None>
-    <None Include="statisticbaseDataSet.xsd">
-      <Generator>MSDataSetGenerator</Generator>
-      <LastGenOutput>statisticbaseDataSet.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="statisticbaseDataSet.xss">
-      <DependentUpon>statisticbaseDataSet.xsd</DependentUpon>
-    </None>
-    <EntityDeploy Include="StatisticsBaseModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>StatisticsBaseModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="StatisticsBaseModel.edmx.diagram">
-      <DependentUpon>StatisticsBaseModel.edmx</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 и x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="statisticbase.mdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="statisticbase_log.ldf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <DependentUpon>statisticbase.mdf</DependentUpon>
-    </Content>
-    <Content Include="StatisticsBaseModel.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>StatisticsBaseModel.edmx</DependentUpon>
-      <LastGenOutput>StatisticsBaseModel.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="StatisticsBaseModel.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>StatisticsBaseModel.edmx</DependentUpon>
-      <LastGenOutput>StatisticsBaseModel.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

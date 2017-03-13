@@ -1,6 +1,8 @@
 ﻿using System;
 using Fclp;
-using System.Linq;
+
+using Kontur.GameStats.Server.DataBase;
+using System.Diagnostics;
 
 namespace Kontur.GameStats.Server
 {
@@ -8,14 +10,27 @@ namespace Kontur.GameStats.Server
     {
         public static void Main(string[] args)
         {
-            HibernatingRhinos.Profiler.Appender.EntityFramework.EntityFrameworkProfiler.Initialize ();
-            /*
+            db.InitialazeDB ();
+            var FirstMatchPlayed = DateTime.Parse ("2017-01-15T21:51:04.0000000Z");
+            var LastMatchTime = db.LastMatchTime;
+            Console.WriteLine (LastMatchTime.Date);
+            Console.WriteLine (FirstMatchPlayed.Date);
+            Console.WriteLine(db.GetServerStatistics ("kappa7806"));
+            var a = new Stopwatch ();
+            Console.WriteLine(db.BestPlayers (50));
+            Console.WriteLine (a.ElapsedMilliseconds);
+            a.Restart ();
+            db.GetServersInfo ();
+            Console.WriteLine (a.ElapsedMilliseconds);
+            a.Restart ();
+            Console.WriteLine (db.PopularServers(50));
+            Console.WriteLine (a.ElapsedMilliseconds);
             var commandLineParser = new FluentCommandLineParser<Options>();
 
             commandLineParser
                 .Setup(options => options.Prefix)
                 .As("prefix")
-                .SetDefault("http://+:8080/")
+                .SetDefault("http://+:25566/")
                 .WithDescription("HTTP prefix to listen on");
 
             commandLineParser
@@ -26,25 +41,16 @@ namespace Kontur.GameStats.Server
             if (commandLineParser.Parse(args).HelpCalled)
                 return;
 
-            DataBase.DataBaseInitializer.InitializeDataBase ();
             RunServer(commandLineParser.Object);
-            */
-
-            var context = new StatisticbaseContext ();
-
-            IQueryable<Server> query = context.Server;
-            var servers = query.ToList ();
-            foreach(var a in servers) {
-                Console.WriteLine (a.ServerId);
-            }
         }
 
         private static void RunServer(Options options)
         {
-            using(var server = new StatServer ()) {
-                server.Start (options.Prefix);
+            using (var server = new StatServer())
+            {
+                server.Start(options.Prefix);
 
-                Console.ReadKey (true);
+                Console.ReadKey(true);
             }
         }
 
