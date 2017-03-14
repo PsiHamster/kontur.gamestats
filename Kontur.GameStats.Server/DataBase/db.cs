@@ -10,19 +10,28 @@ using Newtonsoft.Json;
 using NLog;
 
 namespace Kontur.GameStats.Server.DataBase {
-    public static class db {
-        private static string dbName;
-        public static DateTime LastMatchTime = new DateTime (0).Date;
-        private static NLog.Logger logger = LogManager.GetCurrentClassLogger ();
+
+    /// <summary>
+    /// Класс для обращения с базой данных.
+    /// На вход принимает данные в json, возвращает тоже json
+    /// Кидает RequestException при не правильных входных данных
+    /// Ошибки базы данных также вызывают свои исключения.
+    /// </summary>
+    public class DataBase {
+        private string dbName;
+        public DateTime LastMatchTime = new DateTime (0).Date;
+        private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
 
         #region Initializer
 
         /// <summary>
-        /// Метод определяющий с какой базой данных будет работать приложение.
+        /// Конструктор, возвращающий базу данных работающих с данным файлом.
         /// </summary>
         /// <param name="name">Имя файла БД</param>
         /// <param name="deletePrev">Удалить ли старый файл, или открыть его</param>
-        public static void InitialazeDB(string name, bool deletePrev) {
+        public DataBase(string name, bool deletePrev) {
+            // TODO journal=true, с новым релизом LiteDB
+            // (С включенным журналированием есть баг, связанный с мультипоточностью. Автор сказал, что пофиксил.)
             logger.Info (string.Format("Initializing DB {0}", name));
             dbName = "Filename=" + Directory.GetCurrentDirectory () + @"\" + name +
                 ";Journal=false;Timeout=0:10:00";
@@ -38,13 +47,12 @@ namespace Kontur.GameStats.Server.DataBase {
                 }
             }
         }
+
         /// <summary>
         /// Метод открывающий базу данных с стандартным именем
         /// statisticsBase.sql
         /// </summary>
-        public static void InitialazeDB() {
-            InitialazeDB ("statisticsBase.db", false);
-        }
+        public DataBase() : this ("statisticsBase.db", false) { }
 
         #endregion
 
@@ -52,7 +60,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region ServerInfo
 
-        private static ServerInfo DeserializeServerInfo(string serverInfo) {
+        private ServerInfo DeserializeServerInfo(string serverInfo) {
             try {
                 return JsonConvert.DeserializeObject<ServerInfo> (
                                     serverInfo,
@@ -71,7 +79,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Добавить информацию о сервере в БД. В случае неверных данных кидает exception
         /// </summary>
         /// <param name="stringInfo">Информация о сервере в JSON</param>
-        public static void PutInfo(string endPoint, string stringInfo) {
+        public void PutInfo(string endPoint, string stringInfo) {
             var info = DeserializeServerInfo (stringInfo);
 
             using(var db = new LiteDatabase (dbName)) {
@@ -97,7 +105,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region MatchInfo
 
-        private static Match DeserializeMatchInfo(string matchInfo) {
+        private Match DeserializeMatchInfo(string matchInfo) {
             try {
                 return JsonConvert.DeserializeObject<Match> (
                                     matchInfo,
@@ -117,7 +125,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Увеличить значение в словаре по ключу
         /// на 1/создать с значением 1, если не существует
         /// </summary>
-        private static void IncDictionary<T>(Dictionary<T,int> dict, T key) {
+        private void IncDictionary<T>(Dictionary<T,int> dict, T key) {
             if (dict.ContainsKey(key)) {
                 dict[key] += 1;
             } else {
@@ -128,7 +136,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Обновить статистику игрока
         /// </summary>
-        private static void UpdatePlayer(Player player, string endPoint, Match match, DateTime time, ScoreBoard score, int place, int totalPlayers) {
+        private void UpdatePlayer(Player player, string endPoint, Match match, DateTime time, ScoreBoard score, int place, int totalPlayers) {
             // playersBelowCurrent / (totalPlayers - 1) * 100%​.
             double currentPer;
             if(totalPlayers > 1)
@@ -159,7 +167,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Записать информацию в бд о всех игроках, участвовавших в матче.
         /// </summary>
-        private static void UpdatePlayersInDB(LiteCollection<Player> playersCol, string endpoint, Match match, DateTime time) {
+        private void UpdatePlayersInDB(LiteCollection<Player> playersCol, string endpoint, Match match, DateTime time) {
             for(int i = 0; i < match.ScoreBoard.Length; i++) {
                 var score = match.ScoreBoard[i];
                 var player = playersCol.FindOne (x => x.Name == score.Name.ToLower ());
@@ -181,7 +189,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Обновить информацию о сервере без добавления в бд
         /// </summary>
-        private static void UpdateServer(Server server, Match match, DateTime endTime) {
+        private void UpdateServer(Server server, Match match, DateTime endTime) {
             if(server.TotalMatches == 0 || server.FirstMatchPlayed > endTime) {
                 server.FirstMatchPlayed = endTime;
             }
@@ -201,7 +209,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Добавить информацию о матче в БД. В случае неверных данных кидает exception
         /// </summary>
         /// <param name="matchInfo">Информация о матче в JSON</param>
-        public static void PutMatch(string endPoint, string timeStamp, string matchInfo) {
+        public void PutMatch(string endPoint, string timeStamp, string matchInfo) {
             using(var db = new LiteDatabase (dbName)) {
                 var endTime = DateTime.Parse (timeStamp);
                 if(endTime.Date > LastMatchTime) {
@@ -240,7 +248,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region ServerMethods
 
-        public static string GetServerInfo(string endPoint) {
+        public string GetServerInfo(string endPoint) {
             Server server;
             using(var db = new LiteDatabase (dbName)) {
                 var col = db.GetCollection<Server> ("servers");
@@ -252,7 +260,7 @@ namespace Kontur.GameStats.Server.DataBase {
             return JsonConvert.SerializeObject (new { name = server.Name, gameModes = server.GameModes });
         }
 
-        public static string GetServersInfo() {
+        public string GetServersInfo() {
             string s;
             using(var db = new LiteDatabase (dbName)) {
                 var col = db.GetCollection<Server> ("servers");
@@ -269,7 +277,7 @@ namespace Kontur.GameStats.Server.DataBase {
             return s;
         }
 
-        public static string GetServerStatistics(string endpoint) {
+        public string GetServerStatistics(string endpoint) {
             Server server;
             using(var db = new LiteDatabase (dbName)) {
                 var col = db.GetCollection<Server> ("servers");
@@ -291,7 +299,7 @@ namespace Kontur.GameStats.Server.DataBase {
             return s;
         }
 
-        public static string PopularServers(int count) {
+        public string GetPopularServers(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);
             using(var db = new LiteDatabase (dbName)) {
@@ -315,7 +323,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region MathesMethods
 
-        public static string GetMatchInfo(string endPoint, string timeStamp) {
+        public string GetMatchInfo(string endPoint, string timeStamp) {
             Match match;
             using(var db = new LiteDatabase (dbName)) {
                 var col = db.GetCollection<Match> ("matches");
@@ -335,7 +343,7 @@ namespace Kontur.GameStats.Server.DataBase {
             return s;
         }
 
-        public static string GetRecentMatches(int count) {
+        public string GetRecentMatches(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);
             using(var db = new LiteDatabase (dbName)) {
@@ -359,7 +367,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region PlayersMethods
 
-        public static string GetPlayerStats(string playerName) {
+        public string GetPlayerStats(string playerName) {
             string name = playerName.ToLower ();
             Player player;
             using(var db = new LiteDatabase (dbName)) {
@@ -385,7 +393,7 @@ namespace Kontur.GameStats.Server.DataBase {
             return s;
         }
 
-        public static string BestPlayers(int count) {
+        public string GetBestPlayers(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);
             using(var db = new LiteDatabase (dbName)) {

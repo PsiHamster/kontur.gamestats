@@ -16,26 +16,26 @@ namespace Kontur.GameStats.Tests.DBtests {
         [TestMethod]
         public void PutServerInfo() {
             
-            db.InitialazeDB ("testdb.db", true);
+            DataBase.InitialazeDB ("testdb.db", true);
             var inputData = new ServerInfo {
                 name = "MyServer001",
                 gameModes = new string[] { "DM" } };
             
-            db.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
-            Assert.AreEqual (JsonConvert.SerializeObject (inputData), db.GetServerInfo ("server1"));
+            DataBase.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
+            Assert.AreEqual (JsonConvert.SerializeObject (inputData), DataBase.GetServerInfo ("server1"));
 
             var inputData2 = new ServerInfo {
                 name = "MyServer002",
                 gameModes = new string[] { "DM" }
             };
 
-            db.PutInfo ("server1", JsonConvert.SerializeObject(inputData2));
-            Assert.AreEqual (JsonConvert.SerializeObject (inputData2), db.GetServerInfo ("server1"));
+            DataBase.PutInfo ("server1", JsonConvert.SerializeObject(inputData2));
+            Assert.AreEqual (JsonConvert.SerializeObject (inputData2), DataBase.GetServerInfo ("server1"));
         }
 
         [TestMethod]
         public void GetServersInfo() {
-            db.InitialazeDB ("testdb.db", true);
+            DataBase.InitialazeDB ("testdb.db", true);
             var inputData = new ServerInfo {
                 name = "MyServer001",
                 gameModes = new string[] { "DM" }
@@ -49,11 +49,11 @@ namespace Kontur.GameStats.Tests.DBtests {
                 gameModes = new string[] { "DM", "HSDM" }
             };
 
-            db.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
-            db.PutInfo ("server2", JsonConvert.SerializeObject(inputData2));
-            db.PutInfo ("server3", JsonConvert.SerializeObject(inputData3));
+            DataBase.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
+            DataBase.PutInfo ("server2", JsonConvert.SerializeObject(inputData2));
+            DataBase.PutInfo ("server3", JsonConvert.SerializeObject(inputData3));
 
-            var s = db.GetServersInfo ();
+            var s = DataBase.GetServersInfo ();
             
             Assert.AreEqual (
                 JsonConvert.SerializeObject(

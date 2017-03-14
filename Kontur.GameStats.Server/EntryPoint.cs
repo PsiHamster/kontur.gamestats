@@ -10,20 +10,20 @@ namespace Kontur.GameStats.Server
     {
         public static void Main(string[] args)
         {
-            db.InitialazeDB ();
+            DataBase.DataBase.InitialazeDB ();
             var FirstMatchPlayed = DateTime.Parse ("2017-01-15T21:51:04.0000000Z");
-            var LastMatchTime = db.LastMatchTime;
+            var LastMatchTime = DataBase.DataBase.LastMatchTime;
             Console.WriteLine (LastMatchTime.Date);
             Console.WriteLine (FirstMatchPlayed.Date);
-            Console.WriteLine(db.GetServerStatistics ("kappa7806"));
+            Console.WriteLine (DataBase.DataBase.GetServerStatistics ("kappa7806"));
             var a = new Stopwatch ();
-            Console.WriteLine(db.BestPlayers (50));
+            Console.WriteLine (DataBase.DataBase.GetBestPlayers (50));
             Console.WriteLine (a.ElapsedMilliseconds);
             a.Restart ();
-            db.GetServersInfo ();
+            DataBase.DataBase.GetServersInfo ();
             Console.WriteLine (a.ElapsedMilliseconds);
             a.Restart ();
-            Console.WriteLine (db.PopularServers(50));
+            Console.WriteLine (DataBase.DataBase.GetPopularServers(50));
             Console.WriteLine (a.ElapsedMilliseconds);
             var commandLineParser = new FluentCommandLineParser<Options>();
 

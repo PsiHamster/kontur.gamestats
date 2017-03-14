@@ -14,9 +14,9 @@ namespace Kontur.GameStats.Tests.DBtests {
     public class matchPutTests {
         [TestMethod]
         public void PutSingleMatch() {
-            db.InitialazeDB ("testdb.db", true);
+            DataBase.InitialazeDB ("testdb.db", true);
             var inputData = new ServerInfo { name = "MyServer001", gameModes = new string[] { "DM" } };
-            db.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
+            DataBase.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
 
             string matchData = JsonConvert.SerializeObject (
                 new {
@@ -31,9 +31,9 @@ namespace Kontur.GameStats.Tests.DBtests {
                     }
                 }
                 );
-            db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
+            DataBase.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
 
-            Assert.AreEqual (matchData, db.GetMatchInfo ("server1", "2017-01-22T15:17:00Z"));
+            Assert.AreEqual (matchData, DataBase.GetMatchInfo ("server1", "2017-01-22T15:17:00Z"));
             Assert.AreEqual (
                 JsonConvert.SerializeObject (new {
                     totalMatchesPlayed = 1,
@@ -47,7 +47,7 @@ namespace Kontur.GameStats.Tests.DBtests {
                     lastMatchPlayed = "2017-01-22T15:17:00Z",
                     killToDeathRatio = 5.0
                 }),
-                db.GetPlayerStats("Player1")
+                DataBase.GetPlayerStats("Player1")
             );
         }
     }

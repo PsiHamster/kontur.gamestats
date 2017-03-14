@@ -10,92 +10,38 @@ using NLog;
 using Kontur.GameStats.Server.DataBase;
 
 namespace Kontur.GameStats.Server.ApiMethods {
-    public static class GetMethods {
-        private static Logger logger = LogManager.GetCurrentClassLogger ();
+    public partial class Router {
 
-        public static string GetServersInfo(HttpListenerRequest request, HttpListenerResponse response) {
-            try {
-                var info = db.GetServersInfo ();
-                return info;
-            } catch(RequestException e) {
-                logger.Debug (e);
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                response.StatusDescription = e.Message;
-                return null;
-            } catch(Exception e) {
-                logger.Error (e);
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                response.StatusDescription = "Error";
-                return null;
-            }
+        private string GetServersInfo() {
+            return dataBase.GetServersInfo ();
         }
 
-        public static string GetMatchInfo(string endpoint, string timeStamp, HttpListenerRequest request, HttpListenerResponse response) {
-            try {
-                var info = db.GetMatchInfo (endpoint, timeStamp);
-                return info;
-            } catch(RequestException e) {
-                logger.Debug (e);
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                response.StatusDescription = e.Message;
-                return null;
-            } catch(Exception e) {
-                logger.Error (e);
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                response.StatusDescription = "Error";
-                return null;
-            }
+        private string GetMatchInfo(string endpoint, string timeStamp) {
+            return dataBase.GetMatchInfo (endpoint, timeStamp);
         }
 
-        public static string GetServerStats(string endpoint, HttpListenerRequest request, HttpListenerResponse response) {
-            try {
-                var info = db.GetServerStatistics (endpoint);
-                return info;
-            } catch(RequestException e) {
-                logger.Debug (e);
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                response.StatusDescription = e.Message;
-                return null;
-            } catch(Exception e) {
-                logger.Error (e);
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                response.StatusDescription = "Error";
-                return null;
-            }
+        private string GetServerStats(string endpoint) {
+            return dataBase.GetServerStatistics (endpoint);
         }
 
-        public static string GetServerInfo(string endPoint, HttpListenerRequest request, HttpListenerResponse response) {
-            try {
-                var info = db.GetServerInfo (endPoint);
-                return info;
-            } catch(RequestException e) {
-                logger.Debug (e);
-                response.StatusCode = (int)HttpStatusCode.BadRequest;
-                response.StatusDescription = e.Message;
-                return null;
-            } catch(Exception e) {
-                logger.Error (e);
-                response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                response.StatusDescription = "Error";
-                return null;
-            }
+        private string GetServerInfo(string endPoint) {
+            return dataBase.GetServerInfo (endPoint);
         }
 
-        public static string GetPlayerStats(string playerName, HttpListenerRequest request, HttpListenerResponse response) {
-            try {
-                var info = db.GetPlayerStats(playerName);
-                return info;
-            } catch(RequestException e) {
-                logger.Debug (e);
-                response.StatusCode = 400;
-                response.StatusDescription = e.Message;
-                return null;
-            } catch(Exception e) {
-                logger.Error (e);
-                response.StatusCode = 400;
-                response.StatusDescription = "Error";
-                return null;
-            }
+        private string GetPlayerStats(string playerName) {
+            return dataBase.GetPlayerStats (playerName);
+        }
+
+        private string GetRecentMatches(int count) {
+            return dataBase.GetRecentMatches (count);
+        }
+
+        private string GetBestPlayers(int count) {
+            return dataBase.GetBestPlayers (count);
+        }
+
+        private string GetPopularServers(int count) {
+            return dataBase.GetPopularServers (count);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Net;
 using System.Threading;
@@ -11,9 +12,22 @@ namespace Kontur.GameStats.Server
 {
     internal class StatServer : IDisposable
     {
-        public StatServer()
+        private Router router;
+        private DataBase.DataBase database;
+
+        public StatServer(string databaseName, bool deletePrev)
         {
+            database = new DataBase.DataBase (databaseName, deletePrev);
+            router = new Router (database);
+
             listener = new HttpListener();
+        }
+
+        public StatServer() {
+            database = new DataBase.DataBase ();
+            router = new Router (database);
+
+            listener = new HttpListener ();
         }
         
         public void Start(string prefix)
@@ -91,11 +105,11 @@ namespace Kontur.GameStats.Server
         }
 
         private async Task HandleContextAsync(HttpListenerContext listenerContext) {
-            var url = listenerContext.Request.RawUrl.Substring (1).Split ('/');
+            var url = listenerContext.Request.RawUrl.Substring (1).Split ('/').Where(x => x!="").ToArray();
             var request = listenerContext.Request;
             var response = listenerContext.Response;
 
-            Router.Route (url, request, response);
+            router.Route (url, request, response);
     
             response.Close ();
         }
