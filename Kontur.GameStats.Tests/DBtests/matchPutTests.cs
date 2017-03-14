@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Kontur.GameStats.Server.DataBase;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Kontur.GameStats.Server.ApiMethods.PutMethods;
 
 namespace Kontur.GameStats.Tests.DBtests {
     [TestClass]

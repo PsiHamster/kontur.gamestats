@@ -45,6 +45,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public int TotalKills { get; set; } = 0;
         public int TotalDeaths { get; set; } = 0;
+        [BsonIndex]
         public double KD { get; set; } = 0.0;
 
         public DateTime FirstMatchPlayed { get; set; }

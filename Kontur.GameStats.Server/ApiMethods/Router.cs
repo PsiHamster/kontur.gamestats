@@ -18,9 +18,9 @@ namespace Kontur.GameStats.Server.ApiMethods {
             dataBase = db;
         }
 
-        public void Route(string[] url, HttpListenerRequest request, HttpListenerResponse response) {
+        public void Route(string[] uri, HttpListenerRequest request, HttpListenerResponse response) {
             try {
-                ParseUrl (url, request, response);
+                ParseUri (uri, request, response);
             } catch(DataBase.RequestException e) {
                 logger.Debug (e);
                 response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -78,56 +78,56 @@ namespace Kontur.GameStats.Server.ApiMethods {
         #region MethodsParser
 
         /// <summary>
-        /// Парс 1-й переменной в url[] и отправка на обработку следующим функциям
+        /// Парс 1-й переменной в uri[] и отправка на обработку следующим функциям
         /// </summary>
-        private void ParseUrl(string[] url, HttpListenerRequest request, HttpListenerResponse response) {
-            if(url.Length == 0) {
+        private void ParseUri(string[] uri, HttpListenerRequest request, HttpListenerResponse response) {
+            if(uri.Length == 0) {
                 throw new MethodNotFoundException ();
             }
-            switch(url[0]) {
+            switch(uri[0]) {
                 case "servers":
-                    ServersMethods (url, request, response);
+                    ServersMethods (uri, request, response);
                     break;
                 case "players":
-                    PlayersMethods (url, request, response);
+                    PlayersMethods (uri, request, response);
                     break;
                 case "reports":
-                    ReportsMethods (url, request, response);
+                    ReportsMethods (uri, request, response);
                     break;
                 default:
                     throw new MethodNotFoundException ();
             }
         }
 
-        private void ServersMethods (string[] url, HttpListenerRequest request, HttpListenerResponse response) {
-            if(url.Length < 2) {
+        private void ServersMethods (string[] uri, HttpListenerRequest request, HttpListenerResponse response) {
+            if(uri.Length < 2) {
                 throw new MethodNotFoundException ();
             }
 
             string text = null;
 
-            if(url[1] == "info") {
+            if(uri[1] == "info") {
                 text = GetServersInfo ();
-            } else if(url.Length > 2) {
-                switch(url[2]) {
+            } else if(uri.Length > 2) {
+                switch(uri[2]) {
                     case "info":
                         if(request.HttpMethod == "PUT") {
                             var info = GetDataFromRequest (request);
-                            PutServerInfo (url[1], info);
+                            PutServerInfo (uri[1], info);
                         } else {
-                            text = GetServerInfo (url[1]);
+                            text = GetServerInfo (uri[1]);
                         }
                         break;
                     case "stats":
-                        text = GetServerStats (url[1]);
+                        text = GetServerStats (uri[1]);
                         break;
                     case "matches":
-                        if(url.Length > 3)
+                        if(uri.Length > 3)
                             if(request.HttpMethod == "PUT") {
                                 var info = GetDataFromRequest (request);
-                                PutMatchInfo (url[1], url[3], info);
+                                PutMatchInfo (uri[1], uri[3], info);
                             } else {
-                                text = GetMatchInfo (url[1], url[3]);
+                                text = GetMatchInfo (uri[1], uri[3]);
                             }
                         else
                             throw new MethodNotFoundException ();
@@ -144,14 +144,14 @@ namespace Kontur.GameStats.Server.ApiMethods {
             }
         }
 
-        private void PlayersMethods(string[] url, HttpListenerRequest request, HttpListenerResponse response) {
-            if(url.Length != 3) {
+        private void PlayersMethods(string[] uri, HttpListenerRequest request, HttpListenerResponse response) {
+            if(uri.Length != 3) {
                 throw new MethodNotFoundException ();
             }
             string text = null;
-            switch(url[2]) {
+            switch(uri[2]) {
                 case "stats":
-                    text = GetPlayerStats (url[1]);
+                    text = GetPlayerStats (uri[1]);
                     break;
                 default:
                     throw new MethodNotFoundException ();
@@ -161,17 +161,17 @@ namespace Kontur.GameStats.Server.ApiMethods {
             }
         }
 
-        private void ReportsMethods(string[] url, HttpListenerRequest request, HttpListenerResponse response) {
+        private void ReportsMethods(string[] uri, HttpListenerRequest request, HttpListenerResponse response) {
             int count;
-            if(url.Length == 3) {
-                count = int.Parse (url[2]);
-            } else if (url.Length == 2) {
+            if(uri.Length == 3) {
+                count = int.Parse (uri[2]);
+            } else if (uri.Length == 2) {
                 count = 5;
             } else {
                 throw new MethodNotFoundException ();
             }
             string text = null;
-            switch(url[1]) {
+            switch(uri[1]) {
                 case "stats":
                     text = GetRecentMatches (count);
                     break;

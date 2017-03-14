@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using Fclp;
 
 using Kontur.GameStats.Server.DataBase;
@@ -10,21 +11,21 @@ namespace Kontur.GameStats.Server
     {
         public static void Main(string[] args)
         {
-            DataBase.DataBase.InitialazeDB ();
+            var db = new DataBase.DataBase ();/*
             var FirstMatchPlayed = DateTime.Parse ("2017-01-15T21:51:04.0000000Z");
-            var LastMatchTime = DataBase.DataBase.LastMatchTime;
+            var LastMatchTime = db.LastMatchTime;
             Console.WriteLine (LastMatchTime.Date);
             Console.WriteLine (FirstMatchPlayed.Date);
-            Console.WriteLine (DataBase.DataBase.GetServerStatistics ("kappa7806"));
+            Console.WriteLine (db.GetServerStatistics ("kappa7806"));
             var a = new Stopwatch ();
-            Console.WriteLine (DataBase.DataBase.GetBestPlayers (50));
+            Console.WriteLine (db.GetBestPlayers (50));
             Console.WriteLine (a.ElapsedMilliseconds);
             a.Restart ();
-            DataBase.DataBase.GetServersInfo ();
+            db.GetServersInfo ();
             Console.WriteLine (a.ElapsedMilliseconds);
             a.Restart ();
-            Console.WriteLine (DataBase.DataBase.GetPopularServers(50));
-            Console.WriteLine (a.ElapsedMilliseconds);
+            Console.WriteLine (db.GetPopularServers(50));
+            Console.WriteLine (a.ElapsedMilliseconds);*/
             var commandLineParser = new FluentCommandLineParser<Options>();
 
             commandLineParser

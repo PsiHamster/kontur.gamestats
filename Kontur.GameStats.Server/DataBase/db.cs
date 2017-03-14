@@ -30,11 +30,9 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <param name="name">Имя файла БД</param>
         /// <param name="deletePrev">Удалить ли старый файл, или открыть его</param>
         public DataBase(string name, bool deletePrev) {
-            // TODO journal=true, с новым релизом LiteDB
-            // (С включенным журналированием есть баг, связанный с мультипоточностью. Автор сказал, что пофиксил.)
             logger.Info (string.Format("Initializing DB {0}", name));
             dbName = "Filename=" + Directory.GetCurrentDirectory () + @"\" + name +
-                ";Journal=false;Timeout=0:10:00";
+                ";Journal=false;Timeout=0:01:00;Cache Size=500000";
             if(deletePrev && File.Exists (name)) {
                 File.Delete (name);
             } else {
@@ -401,9 +399,9 @@ namespace Kontur.GameStats.Server.DataBase {
                 var results = col.Find (
                     Query.And (
                         Query.And (
-                            Query.Not ("TotalDeaths", 0),
+                            Query.All ("KD", Query.Descending),
                             Query.GTE ("TotalMatches", 10)),
-                        Query.All ("KD", Query.Descending))
+                        Query.Not ("TotalDeaths", 0))
                     ).Select
                     (
                         player => new {

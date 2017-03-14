@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Kontur.GameStats.Server.ApiMethods;
-using Newtonsoft.Json;
+using NLog;
 
 namespace Kontur.GameStats.Server
 {
@@ -14,6 +14,8 @@ namespace Kontur.GameStats.Server
     {
         private Router router;
         private DataBase.DataBase database;
+        private string prefix;
+        private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
 
         public StatServer(string databaseName, bool deletePrev)
         {
@@ -34,8 +36,8 @@ namespace Kontur.GameStats.Server
         {
             lock (listener)
             {
-                if (!isRunning)
-                {
+                if (!isRunning) {
+                    this.prefix = prefix;
                     listener.Prefixes.Clear();
                     listener.Prefixes.Add(prefix);
                     listener.Start();
@@ -88,8 +90,9 @@ namespace Kontur.GameStats.Server
                 {
                     if (listener.IsListening)
                     {
-                        var context = listener.GetContext();
-                        Task.Run(() => HandleContextAsync(context));
+                        ThreadPool.QueueUserWorkItem (Process, listener.GetContext());
+                        //var context = listener.GetContext ();
+                        //Task.Run(() => HandleContextAsync(context));
                     }
                     else Thread.Sleep(0);
                 }
@@ -97,21 +100,23 @@ namespace Kontur.GameStats.Server
                 {
                     return;
                 }
-                catch (Exception error)
+                catch (Exception e)
                 {
-                    // TODO: log errors
+                    logger.Error (e);
                 }
             }
         }
-
-        private async Task HandleContextAsync(HttpListenerContext listenerContext) {
-            var url = listenerContext.Request.RawUrl.Substring (1).Split ('/').Where(x => x!="").ToArray();
+        private void Process(object o) {
+            var listenerContext = o as HttpListenerContext;
+            var uri = listenerContext.Request.Url.LocalPath.Split ('/').Skip (prefix.Count (x => x == '/') - 2).ToArray ();
             var request = listenerContext.Request;
             var response = listenerContext.Response;
 
-            router.Route (url, request, response);
-    
-            response.Close ();
+            try {
+                router.Route (uri, request, response);
+            } catch (Exception e) {
+                logger.Error (e);
+            }
         }
 
         private readonly HttpListener listener;
