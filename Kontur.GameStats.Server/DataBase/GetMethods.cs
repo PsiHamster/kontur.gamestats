@@ -53,7 +53,7 @@ namespace Kontur.GameStats.Server.DataBase {
             var s = JsonConvert.SerializeObject (new {
                 totalMatchesPlayed = server.TotalMatches,
                 maximumMatchesPerDay = server.MaxPlaysPerDay,
-                averageMatchesPerDay = server.TotalMatches / (double)(LastMatchTime.Date.Subtract (server.FirstMatchPlayed.Date).TotalDays + 1),
+                averageMatchesPerDay = server.TotalMatches / (double)(LastMatchTime.ToUniversalTime ().Date.Subtract (server.FirstMatchPlayed.ToUniversalTime ().Date).TotalDays + 1),
                 maximumPopulation = server.MaxPopulation,
                 averagePopulation = server.TotalPopulation / (double)server.TotalMatches,
                 top5GameModes = server.GameModesPlays.OrderByDescending (x => x.Value).Take (5).Select (x => x.Key),
@@ -73,7 +73,7 @@ namespace Kontur.GameStats.Server.DataBase {
                          new {
                              endpoint = server.EndPoint,
                              name = server.Name,
-                             averageMatchesPerDay = server.TotalMatches / ((LastMatchTime.Subtract (server.FirstMatchPlayed)).TotalDays + 1)
+                             averageMatchesPerDay = server.TotalMatches / ((LastMatchTime.ToUniversalTime ().Date.Subtract (server.FirstMatchPlayed.ToUniversalTime().Date)).TotalDays + 1)
                          })
                     .OrderByDescending (
                         x => x.averageMatchesPerDay)
@@ -149,7 +149,7 @@ namespace Kontur.GameStats.Server.DataBase {
                 favouriteGameMode = player.GameModes.Aggregate ((a, b) => a.Value > b.Value ? a : b).Key,
                 averageScoreBoardPercernt = player.AverageScoreBoardPercent,
                 maximumMatchesPerDay = player.MaximumMatchesPerDay,
-                averageMatchesPerDay = player.TotalMatches / (double)(LastMatchTime.Subtract (player.FirstMatchPlayed.Date).TotalDays + 1),
+                averageMatchesPerDay = player.TotalMatches / (double)(LastMatchTime.ToUniversalTime ().Date.Subtract (player.FirstMatchPlayed.ToUniversalTime ().Date).TotalDays + 1),
                 lastMatchPlayed = player.LastMatchPlayed.ToUniversalTime (),
                 killToDeathRatio = player.TotalKills / (double)player.TotalDeaths
             });

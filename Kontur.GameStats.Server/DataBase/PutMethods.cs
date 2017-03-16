@@ -105,7 +105,7 @@ namespace Kontur.GameStats.Server.DataBase {
             if(player.TotalDeaths != 0)
                 player.KD = player.TotalKills / (double)player.TotalDeaths;
 
-            IncDictionary (player.Days, time.Date);
+            IncDictionary (player.Days, time.ToUniversalTime().Date);
             IncDictionary (player.GameModes, match.GameMode);
             IncDictionary (player.ServerPlays, endPoint);
 
@@ -151,7 +151,7 @@ namespace Kontur.GameStats.Server.DataBase {
             IncDictionary (server.MapsPlays, match.Map);
             IncDictionary (server.DaysPlays, endTime.Date);
 
-            server.MaxPlaysPerDay = Math.Max (server.MaxPlaysPerDay, server.DaysPlays[endTime.Date]);
+            server.MaxPlaysPerDay = Math.Max (server.MaxPlaysPerDay, server.DaysPlays[endTime.ToUniversalTime ().Date]);
             server.MaxPopulation = Math.Max (server.MaxPopulation, match.ScoreBoard.Length);
             server.TotalPopulation += match.ScoreBoard.Length;
             server.TotalMatches += 1;
@@ -165,8 +165,8 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <param name="matchInfo">Информация о матче в JSON</param>
         public void PutMatch(string endPoint, string timeStamp, string matchInfo) {
             var endTime = DateTime.Parse (timeStamp);
-            if(endTime.Date > LastMatchTime) {
-                LastMatchTime = endTime.Date;
+            if(endTime > LastMatchTime) {
+                LastMatchTime = endTime;
             }
 
             Match match = DeserializeMatchInfo (matchInfo);

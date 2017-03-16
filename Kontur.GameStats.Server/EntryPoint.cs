@@ -13,6 +13,7 @@ namespace Kontur.GameStats.Server
 
         public static void Main(string[] args)
         {
+            Console.ReadKey ();
             var db = new DataBase.DataBase ();
             /*
             var FirstMatchPlayed = DateTime.Parse ("2017-01-15T21:51:04.0000000Z");
