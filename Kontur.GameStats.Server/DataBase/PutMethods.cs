@@ -105,11 +105,11 @@ namespace Kontur.GameStats.Server.DataBase {
             if(player.TotalDeaths != 0)
                 player.KD = player.TotalKills / (double)player.TotalDeaths;
 
-            IncDictionary (player.Days, time.ToUniversalTime().Date);
+            IncDictionary (player.Days, time.ToUniversalTime ().Date);
             IncDictionary (player.GameModes, match.GameMode);
             IncDictionary (player.ServerPlays, endPoint);
 
-            player.MaximumMatchesPerDay = Math.Max (player.MaximumMatchesPerDay, player.Days[time.Date]);
+            player.MaximumMatchesPerDay = Math.Max (player.MaximumMatchesPerDay, player.Days[time.ToUniversalTime ().Date]);
 
             if(place == 1) {
                 player.TotalMatchesWon += 1;
@@ -149,7 +149,7 @@ namespace Kontur.GameStats.Server.DataBase {
             }
             IncDictionary (server.GameModesPlays, match.GameMode);
             IncDictionary (server.MapsPlays, match.Map);
-            IncDictionary (server.DaysPlays, endTime.Date);
+            IncDictionary (server.DaysPlays, endTime.ToUniversalTime ().Date);
 
             server.MaxPlaysPerDay = Math.Max (server.MaxPlaysPerDay, server.DaysPlays[endTime.ToUniversalTime ().Date]);
             server.MaxPopulation = Math.Max (server.MaxPopulation, match.ScoreBoard.Length);
