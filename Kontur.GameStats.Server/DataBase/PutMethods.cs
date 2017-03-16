@@ -119,9 +119,9 @@ namespace Kontur.GameStats.Server.DataBase {
         }
 
         /// <summary>
-        /// Записать информацию в бд о всех игроках, участвовавших в матче.
+        /// Вернуть обновленную информацию о всех игроках.
         /// </summary>
-        private void UpdatePlayersInDB(LiteCollection<Player> playersCol, string endpoint, Match match, DateTime time) {
+        private IEnumerable<Player> UpdatePlayers(LiteCollection<Player> playersCol, string endpoint, Match match, DateTime time) {
             for(int i = 0; i < match.ScoreBoard.Length; i++) {
                 var score = match.ScoreBoard[i];
                 var player = playersCol.FindOne (x => x.Name == score.Name.ToLower ());
@@ -132,10 +132,10 @@ namespace Kontur.GameStats.Server.DataBase {
                         FirstMatchPlayed = time
                     };
                     UpdatePlayer (player, endpoint, match, time, score, i + 1, match.ScoreBoard.Length);
-                    playersCol.Insert (player);
+                    yield return player;
                 } else {
                     UpdatePlayer (player, endpoint, match, time, score, i + 1, match.ScoreBoard.Length);
-                    playersCol.Update (player);
+                    yield return player;
                 }
             }
         }
@@ -186,7 +186,9 @@ namespace Kontur.GameStats.Server.DataBase {
 
                 using(var trans = db.BeginTrans ()) {
                     matchesCol.Insert (match);
-                    UpdatePlayersInDB (playersCol, endPoint, match, endTime);
+                    foreach (var player in UpdatePlayers (playersCol, endPoint, match, endTime)) {
+                        playersCol.Upsert (player);
+                    }
                     UpdateServer (server, match, endTime);
                     serversCol.Update (server);
                     trans.Commit ();

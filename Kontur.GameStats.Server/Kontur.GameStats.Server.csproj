@@ -67,6 +67,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -79,10 +80,13 @@
     <Compile Include="ApiMethods\GetMethods.cs" />
     <Compile Include="ApiMethods\Router.cs" />
     <Compile Include="ApiMethods\PutMethods.cs" />
-    <Compile Include="DataBase\apientities.cs" />
+    <Compile Include="DataBase\ApiEntities.cs" />
     <Compile Include="DataBase\DataBaseException.cs" />
     <Compile Include="DataBase\db.cs" />
     <Compile Include="DataBase\entities.cs" />
+    <Compile Include="DataBase\GetMethods.cs" />
+    <Compile Include="DataBase\PutMethods.cs" />
+    <Compile Include="DataBase\BestPlayers.cs" />
     <Compile Include="StatServer.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

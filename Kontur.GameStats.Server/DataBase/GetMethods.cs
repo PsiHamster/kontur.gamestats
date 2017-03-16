@@ -159,8 +159,8 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public string GetBestPlayers(int count) {
             string s;
-            count = Math.Min (Math.Max (count, 0), bestPlayers.Count);
-            var results = bestPlayers.Take (count); 
+            count = Math.Min(Math.Min (Math.Max (count, 0), bestPlayers.Count), 50);
+            var results = bestPlayers.Take (count).Select(player => new { name = player.Name, killToDeathRatio = player.KD }); 
             s = JsonConvert.SerializeObject (results);
             return s;
         }

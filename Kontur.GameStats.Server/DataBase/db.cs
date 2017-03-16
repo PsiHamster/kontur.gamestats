@@ -23,8 +23,6 @@ namespace Kontur.GameStats.Server.DataBase {
         private string statsDBConn = "Filename=" + Directory.GetCurrentDirectory () + "\\" + statsFileName +
                 ";Journal=false;Timeout=0:10:00;Cache Size=500000";
 
-        
-
         public DateTime LastMatchTime = new DateTime (0).Date;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
 
