@@ -17,9 +17,9 @@ namespace Kontur.GameStats.Server
         private string prefix;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
 
-        public StatServer(string databaseName, bool deletePrev)
+        public StatServer(bool deletePrev)
         {
-            database = new DataBase.DataBase (databaseName, deletePrev);
+            database = new DataBase.DataBase (deletePrev);
             router = new Router (database);
 
             listener = new HttpListener();
@@ -92,7 +92,7 @@ namespace Kontur.GameStats.Server
                     {
                         ThreadPool.QueueUserWorkItem (Process, listener.GetContext());
                         //var context = listener.GetContext ();
-                        //Task.Run(() => HandleContextAsync(context));
+                        //Task.Run(() => Process(context));
                     }
                     else Thread.Sleep(0);
                 }

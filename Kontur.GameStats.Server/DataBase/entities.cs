@@ -40,6 +40,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public string Name { get; set; }
         public string RawName { get; set; }
 
+        [BsonIndex]
         public int TotalMatches { get; set; } = 0;
         public int TotalMatchesWon { get; set; } = 0;
 
