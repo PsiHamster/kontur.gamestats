@@ -21,8 +21,8 @@ namespace Kontur.GameStats.Tests.DBtests {
         }
 
         public static string GetMatch() {
-            object[] players = new object[randomizer.Next (1, 50)];
-            int startPlayerID = randomizer.Next (0, 10);
+            object[] players = new object[randomizer.Next (1, 100)];
+            int startPlayerID = randomizer.Next (0, 100);
             for (int i = 0; i < players.Length; i++) {
                 players[i] = GetScore (startPlayerID + i);
             }

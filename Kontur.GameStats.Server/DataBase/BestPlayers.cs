@@ -56,7 +56,8 @@ namespace Kontur.GameStats.Server.DataBase {
                     bestPlayers.Add (r);
                 }
             }
-            minKD = bestPlayers.Last ().KD;
+            if (bestPlayers.Count > 0)
+                minKD = bestPlayers.Last ().KD;
         }
 
         private void UpdateBestPlayers(Player player) {

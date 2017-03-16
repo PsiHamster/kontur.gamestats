@@ -17,14 +17,6 @@ namespace Kontur.GameStats.Server
         private string prefix;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
 
-        public StatServer(bool deletePrev)
-        {
-            database = new DataBase.DataBase (deletePrev);
-            router = new Router (database);
-
-            listener = new HttpListener();
-        }
-
         public StatServer() {
             database = new DataBase.DataBase ();
             router = new Router (database);

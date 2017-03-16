@@ -18,7 +18,7 @@ namespace Kontur.GameStats.Server.DataBase {
     /// Ошибки базы данных также вызывают свои исключения.
     /// </summary>
     public partial class DataBase {
-        private static string statsFileName = "statsbase.db";
+        public static string statsFileName = "statsbase.db";
         
         private string statsDBConn = "Filename=" + Directory.GetCurrentDirectory () + "\\" + statsFileName +
                 ";Journal=false;Timeout=0:10:00;Cache Size=500000";
@@ -46,12 +46,15 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Конструктор, возвращающий базу данных работающих с бд.
         /// </summary>
         /// <param name="deletePrev">Удалить ли старый файл, или открыть его</param>
-        public DataBase(bool deletePrev) {
+        /// <param name="name">Имя файла базы данных</param>
+        public DataBase(string name, bool deletePrev) {
+            statsDBConn = "Filename=" + Directory.GetCurrentDirectory () + "\\" + name +
+                ";Journal=false;Timeout=0:10:00;Cache Size=500000";
             logger.Info (string.Format("Initializing statsDB"));
-            if(deletePrev && File.Exists (statsFileName)) {
-                File.Delete (statsFileName);
+            if(deletePrev && File.Exists (Directory.GetCurrentDirectory () + "\\" + name)) {
+                File.Delete (Directory.GetCurrentDirectory () + "\\" + name);
             }
-            if (!deletePrev && File.Exists (statsFileName)) {
+            if (!deletePrev && File.Exists (Directory.GetCurrentDirectory () + "\\" + name)) {
                 LoadLastMatchTime ();
             }
             StartListenUpdatedPlayers ();
@@ -61,9 +64,8 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Метод открывающий базу данных без удаления
         /// </summary>
-        public DataBase() : this (false) { }
-
+        public DataBase() : this (statsFileName, false) { }
         #endregion
-        
+
     }
 }

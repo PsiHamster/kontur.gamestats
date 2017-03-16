@@ -11,11 +11,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Kontur.GameStats.Tests.DBtests {
     [TestClass]
     public class matchPutTests {
-        [TestMethod]
+        [TestMethod()]
         public void PutSingleMatch() {
-            DataBase.InitialazeDB ("testdb.db", true);
+            var db = new DataBase ("testdb.db", true);
             var inputData = new ServerInfo { name = "MyServer001", gameModes = new string[] { "DM" } };
-            DataBase.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
+            
+            db.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
 
             string matchData = JsonConvert.SerializeObject (
                 new {
@@ -30,9 +31,9 @@ namespace Kontur.GameStats.Tests.DBtests {
                     }
                 }
                 );
-            DataBase.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
+            db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
 
-            Assert.AreEqual (matchData, DataBase.GetMatchInfo ("server1", "2017-01-22T15:17:00Z"));
+            Assert.AreEqual (matchData, db.GetMatchInfo ("server1", "2017-01-22T15:17:00Z"));
             Assert.AreEqual (
                 JsonConvert.SerializeObject (new {
                     totalMatchesPlayed = 1,
@@ -46,8 +47,29 @@ namespace Kontur.GameStats.Tests.DBtests {
                     lastMatchPlayed = "2017-01-22T15:17:00Z",
                     killToDeathRatio = 5.0
                 }),
-                DataBase.GetPlayerStats("Player1")
+                db.GetPlayerStats("Player1")
             );
+        }
+
+        [TestMethod]
+        public void GetRecentMatches() {
+            var db = new DataBase ("testdb.db", true);
+            var inputData = new ServerInfo { name = "MyServer001", gameModes = new string[] { "DM" } };
+            db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));
+
+            string matchData1 = MatchGenerator.GetMatch ();
+            string matchData2 = MatchGenerator.GetMatch ();
+            string matchData3 = MatchGenerator.GetMatch ();
+            db.PutMatch ("server1", "2017-01-22T15:14:00Z", matchData3);
+            db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData1);
+            db.PutMatch ("server1", "2017-01-22T15:16:00Z", matchData2);
+
+            var recentMatches = db.GetRecentMatches (5);
+            var excepted = "[" + matchData1 + "," + matchData2 + "," + matchData3 + "]";
+            Assert.AreEqual (
+                excepted,
+                recentMatches
+                );
         }
     }
 }

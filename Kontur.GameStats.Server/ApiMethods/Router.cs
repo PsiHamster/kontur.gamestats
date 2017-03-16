@@ -181,6 +181,9 @@ namespace Kontur.GameStats.Server.ApiMethods {
                 case "popular-servers":
                     text = GetPopularServers (count);
                     break;
+                case "recent-matches":
+                    text = GetRecentMatches (count);
+                    break;
                 default:
                     throw new MethodNotFoundException ();
             }
