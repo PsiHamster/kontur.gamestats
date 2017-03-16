@@ -45,6 +45,20 @@ namespace Kontur.GameStats.Server.ApiMethods {
         #region StreamWork
 
         /// <summary>
+        /// Считывает переданные запросом данные
+        /// </summary>
+        public string GetDataFromRequest(HttpListenerRequest request) {
+            string data;
+            using(var inputStream = request.InputStream) {
+                var encoding = request.ContentEncoding;
+                using(var reader = new StreamReader (inputStream, encoding)) {
+                    data = reader.ReadToEnd ();
+                }
+            }
+            return data;
+        }
+
+        /// <summary>
         /// Пишет полученные данные клиенту.
         /// </summary>
         private void WriteResponse(HttpListenerResponse response, string text) {
@@ -57,20 +71,6 @@ namespace Kontur.GameStats.Server.ApiMethods {
             Stream output = response.OutputStream;
             output.Write (bytesText, 0, bytesText.Length);
             output.Close ();
-        }
-
-        /// <summary>
-        /// Считывает переданные запросом данные
-        /// </summary>
-        public string GetDataFromRequest(HttpListenerRequest request) {
-            string data;
-            using(var inputStream = request.InputStream) {
-                var encoding = request.ContentEncoding;
-                using(var reader = new StreamReader (inputStream, encoding)) {
-                    data = reader.ReadToEnd ();
-                }
-            }
-            return data;
         }
 
         #endregion

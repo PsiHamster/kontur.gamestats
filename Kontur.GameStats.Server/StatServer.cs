@@ -96,12 +96,11 @@ namespace Kontur.GameStats.Server
                     }
                     else Thread.Sleep(0);
                 }
-                catch (ThreadAbortException)
-                {
+                catch (ThreadAbortException e) {
+                    logger.Error (e);
                     return;
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     logger.Error (e);
                 }
             }

@@ -44,6 +44,7 @@ namespace Kontur.GameStats.Server.DataBase {
                     }
                 }
             }
+            logger.Info (string.Format ("Success", name));
         }
 
         /// <summary>

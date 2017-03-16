@@ -4,14 +4,17 @@ using Fclp;
 
 using Kontur.GameStats.Server.DataBase;
 using System.Diagnostics;
+using NLog;
 
 namespace Kontur.GameStats.Server
 {
-    public class EntryPoint
-    {
+    public class EntryPoint {
+        private static Logger logger = LogManager.GetCurrentClassLogger ();
+
         public static void Main(string[] args)
         {
-            var db = new DataBase.DataBase ();/*
+            var db = new DataBase.DataBase ();
+            /*
             var FirstMatchPlayed = DateTime.Parse ("2017-01-15T21:51:04.0000000Z");
             var LastMatchTime = db.LastMatchTime;
             Console.WriteLine (LastMatchTime.Date);
@@ -26,6 +29,7 @@ namespace Kontur.GameStats.Server
             a.Restart ();
             Console.WriteLine (db.GetPopularServers(50));
             Console.WriteLine (a.ElapsedMilliseconds);*/
+            logger.Info (string.Format ("Parsing Command Line"));
             var commandLineParser = new FluentCommandLineParser<Options>();
 
             commandLineParser
@@ -47,8 +51,9 @@ namespace Kontur.GameStats.Server
 
         private static void RunServer(Options options)
         {
-            using (var server = new StatServer())
-            {
+            using (var server = new StatServer()) {
+
+                logger.Info (string.Format ("Starting Server on {0}", options.Prefix));
                 server.Start(options.Prefix);
 
                 Console.ReadKey(true);
