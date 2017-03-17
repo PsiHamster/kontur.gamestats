@@ -81,7 +81,9 @@ namespace Kontur.GameStats.Server.DataBase {
 
     [Serializable]
     public class Match {
+        [JsonProperty (IsReference = false)]
         public string EndPoint { get; set; }
+        [JsonProperty (IsReference = false)]
         public DateTime TimeStamp { get; set; }
 
         [JsonProperty ("map")]

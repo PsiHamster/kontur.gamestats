@@ -15,7 +15,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public string GetServerInfo(string endPoint) {
             Server server;
-            using(var db = new LiteDatabase (statsDBConn)) {
+            using(var db = new LiteDatabase (dbConn)) {
                 var col = db.GetCollection<Server> ("servers");
                 server = col.FindOne (x => x.EndPoint == endPoint);
             }
@@ -27,7 +27,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public string GetServersInfo() {
             string s;
-            using(var db = new LiteDatabase (statsDBConn)) {
+            using(var db = new LiteDatabase (dbConn)) {
                 var col = db.GetCollection<Server> ("servers");
 
                 s = JsonConvert.SerializeObject (col.FindAll ()
@@ -44,7 +44,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public string GetServerStatistics(string endpoint) {
             Server server;
-            using(var db = new LiteDatabase (statsDBConn)) {
+            using(var db = new LiteDatabase (dbConn)) {
                 var col = db.GetCollection<Server> ("servers");
                 server = col.FindOne (x => x.EndPoint == endpoint);
             }
@@ -67,7 +67,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public string GetPopularServers(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);
-            using(var db = new LiteDatabase (statsDBConn)) {
+            using(var db = new LiteDatabase (dbConn)) {
                 var col = db.GetCollection<Server> ("servers");
                 var ans = col.FindAll ()
                     .Select (server =>
@@ -89,21 +89,8 @@ namespace Kontur.GameStats.Server.DataBase {
         #region MathesMethods
 
         public string GetMatchInfo(string endPoint, string timeStamp) {
-            string s;
-
-            try {
-                using(var file = new FileStream (
-                        string.Format ("servers/{0}/{1}.json",
-                            endPoint, timeStamp.Replace (":", "D")),
-                        System.IO.FileMode.Open, System.IO.FileAccess.Read)) {
-                    var bytes = new byte[file.Length];
-                    file.Read (bytes, 0, (int)file.Length);
-                    s = Encoding.Unicode.GetString (bytes);
-                }
-            } catch (FileNotFoundException e) {
-                throw new RequestException ("Match not found");
-            }
-
+            var match = matches.GetMatch (endPoint, timeStamp);
+            var s = JsonConvert.SerializeObject (match);
             return s;
         }
 

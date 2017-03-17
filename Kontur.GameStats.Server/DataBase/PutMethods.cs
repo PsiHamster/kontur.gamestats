@@ -36,7 +36,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public void PutInfo(string endPoint, string stringInfo) {
             var info = DeserializeServerInfo (stringInfo);
 
-            using(var db = new LiteDatabase (statsDBConn)) {
+            using(var db = new LiteDatabase (dbConn)) {
                 var col = db.GetCollection<Server> ("servers");
                 Server server;
 
@@ -192,41 +192,23 @@ namespace Kontur.GameStats.Server.DataBase {
             match.EndPoint = endPoint;
             match.TimeStamp = endTime;
 
-            recentMatches.newMatches.Enqueue (match) ;
-
             Server server;
 
-            using(var db = new LiteDatabase (statsDBConn)) {
+            using(var db = new LiteDatabase (dbConn)) {
                 var serversCol = db.GetCollection<Server> ("servers");
-
                 server = serversCol.FindOne (x => x.EndPoint == endPoint);
-
                 if(server == null) {
                     throw new RequestException ("Server not found");
                 }
-
                 UpdateServer (server, match, endTime);
                 serversCol.Update (server);
             }
 
+            matches.PutMatch (endPoint, timeStamp, match);
+            recentMatches.newMatches.Enqueue (match);
+
             foreach(var player in UpdatePlayers (endPoint, match, endTime)) {
                 players.AddPlayer (player);
-            }
-            
-            using(var file = new FileStream (
-                    string.Format ("servers/{0}/{1}.json",
-                        endPoint, timeStamp.Replace (":", "D")),
-                    System.IO.FileMode.Create, FileAccess.Write)) {
-                var s = JsonConvert.SerializeObject (new MatchResults () {
-                    map = match.Map,
-                    gameMode = match.GameMode,
-                    fragLimit = match.FragLimit,
-                    timeLimit = match.TimeLimit,
-                    timeElapsed = match.TimeElapsed,
-                    scoreboard = match.ScoreBoard
-                });
-                var bytes = Encoding.Unicode.GetBytes (s);
-                file.Write (bytes, 0, bytes.Length);
             }
         }
     }

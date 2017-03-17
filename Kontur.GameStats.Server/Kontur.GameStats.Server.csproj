@@ -86,6 +86,7 @@
     <Compile Include="DataBase\db.cs" />
     <Compile Include="DataBase\entities.cs" />
     <Compile Include="DataBase\GetMethods.cs" />
+    <Compile Include="DataBase\MatchesBase.cs" />
     <Compile Include="DataBase\PlayersBase.cs" />
     <Compile Include="DataBase\PutMethods.cs" />
     <Compile Include="DataBase\BestPlayers.cs" />

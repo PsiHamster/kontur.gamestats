@@ -19,17 +19,15 @@ namespace Kontur.GameStats.Server.DataBase {
     /// Ошибки базы данных также вызывают свои исключения.
     /// </summary>
     public partial class DataBase {
-        public static string statsFileName = "statsbase.db";
-        
-        private string statsDBConn = "Filename=" + Directory.GetCurrentDirectory () + "\\" + statsFileName +
-                ";Journal=false;Timeout=0:10:00;Cache Size=500000";
-
         public DateTime LastMatchTime = new DateTime (0).Date;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
 
         private BestPlayers bestPlayers;
         private RecentMatches recentMatches;
+
         private PlayersBase players;
+        private MatchesBase matches;
+        private string dbConn = "Filename=database.db;Journal=false;Timeout=0:10:00;Cache Size=500000";
 
         #region Initializer
 
@@ -49,21 +47,21 @@ namespace Kontur.GameStats.Server.DataBase {
         /// </summary>
         /// <param name="deletePrev">Удалить ли старый файл, или открыть его</param>
         /// <param name="name">Имя файла базы данных</param>
-        public DataBase(string name, bool deletePrev) {
-            statsDBConn = "Filename=" + Directory.GetCurrentDirectory () + "\\" + name +
-                ";Journal=false;Timeout=0:10:00;Cache Size=500000";
+        public DataBase(bool deletePrev) {
             logger.Info (string.Format("Initializing statsDB"));
             if(deletePrev)
-                DeleteFiles (name);
+                DeleteFiles ();
 
-            Directory.CreateDirectory ("servers");
-            using(var db = new LiteDatabase (statsDBConn)) {
+            using(var db = new LiteDatabase (dbConn)) {
                 var serversCol = db.GetCollection<Server> ("servers");
                 serversCol.LongCount ();
             }
+
+            matches = new MatchesBase ();
             players = new PlayersBase ();
             bestPlayers = new BestPlayers ();
             recentMatches = new RecentMatches ();
+
             if (!deletePrev && File.Exists ("recentMatches.dat")) {
                 LoadLastMatchTime ();
             }
@@ -74,14 +72,14 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Метод открывающий базу данных без удаления
         /// </summary>
-        public DataBase() : this (statsFileName, false) { }
+        public DataBase() : this (false) { }
         #endregion
 
         #region deleter
 
-        private void DeleteFiles(string name) {
-            if (File.Exists (name)) {
-                File.Delete (name);
+        private void DeleteFiles() {
+            if (File.Exists ("database.db")) {
+                File.Delete ("database.db");
             }
             if (File.Exists ("bestPlayers.dat")) {
                 File.Delete ("bestPlayers.dat");
@@ -89,8 +87,8 @@ namespace Kontur.GameStats.Server.DataBase {
             if (File.Exists ("recentMatches.dat")) {
                 File.Delete ("recentMatches.dat");
             }
-            if (Directory.Exists("servers")) {
-                Directory.Delete ("servers", true);
+            if (Directory.Exists("matches")) {
+                Directory.Delete ("matches", true);
             }
             if(Directory.Exists ("players")) {
                 Directory.Delete ("players", true);
