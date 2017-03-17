@@ -88,7 +88,7 @@ namespace Kontur.GameStats.Server.DataBase {
                 Directory.Delete ("servers", true);
             }
             if(Directory.Exists ("players")) {
-                Directory.Delete ("servers", true);
+                Directory.Delete ("players", true);
             }
         }
 

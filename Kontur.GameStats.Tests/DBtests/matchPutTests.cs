@@ -48,7 +48,7 @@ namespace Kontur.GameStats.Tests.DBtests {
                     lastMatchPlayed = "2017-01-22T15:17:00Z",
                     killToDeathRatio = 5.0
                 }),
-                db.GetPlayerStats("Player1")
+                db.GetPlayerStats("player1")
             );
         }
 

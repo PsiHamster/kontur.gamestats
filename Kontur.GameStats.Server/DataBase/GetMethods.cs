@@ -117,7 +117,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public string GetPlayerStats(string playerName) {
             string name = playerName.ToLower ();
-            var player = players.GetPlayer (playerName);
+            var player = players.GetPlayer (name);
 
             if(player == null) {
                 throw new RequestException ("Player not found");
