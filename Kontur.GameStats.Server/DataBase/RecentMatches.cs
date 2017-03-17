@@ -81,15 +81,17 @@ namespace Kontur.GameStats.Server.DataBase {
         #region Add
 
         private void Add(Match match) {
-            var newList = new SynchronizedCollection<Match> ();
-            for (int i = 0; i < newList.Count; i++) {
-                if(match.TimeStamp > newList[i].TimeStamp) {
-                    newList.Insert (i, match);
+            if(recentMatches.Count > 50) {
+                recentMatches.RemoveAt (50);
+            }
+            for (int i = 0; i < recentMatches.Count; i++) {
+                if(match.TimeStamp > recentMatches[i].TimeStamp) {
+                    recentMatches.Insert (i, match);
                     return;
                 }
             }
-            if(newList.Count < 50) {
-                newList.Add(match);
+            if(recentMatches.Count < 50) {
+                recentMatches.Add(match);
             }
         }
 
@@ -100,7 +102,18 @@ namespace Kontur.GameStats.Server.DataBase {
         public string Take(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), Math.Min(50, recentMatches.Count));
-            var results = recentMatches.Take (count);
+            var results = recentMatches.Take (count).Select( match => new RecentMatchInfo () {
+                server = match.EndPoint,
+                timestamp = match.TimeStamp,
+                matchResult = new MatchResults {
+                    map = match.Map,
+                    gameMode = match.GameMode,
+                    fragLimit = match.FragLimit,
+                    timeLimit = match.TimeLimit,
+                    timeElapsed = match.TimeElapsed,
+                    scoreboard = match.ScoreBoard
+                }
+            });
             s = JsonConvert.SerializeObject (results);
             return s;
         }

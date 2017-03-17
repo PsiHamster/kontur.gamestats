@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 using LiteDB;
+using System.IO;
 
 namespace Kontur.GameStats.Server.DataBase {
     public partial class DataBase {
-
+        
         #region ServerInfo
 
         private ServerInfo DeserializeServerInfo(string serverInfo) {
@@ -44,6 +45,8 @@ namespace Kontur.GameStats.Server.DataBase {
 
                     col.Update (server);
                 } else {
+                    Directory.CreateDirectory (string.Format ("servers/{0}", endPoint));
+
                     server = new Server {
                         EndPoint = endPoint,
                         Name = info.name,
@@ -170,7 +173,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// </summary>
         /// <param name="matchInfo">Информация о матче в JSON</param>
         public void PutMatch(string endPoint, string timeStamp, string matchInfo) {
-            var endTime = DateTime.Parse (timeStamp);
+            var endTime = DateTime.Parse (timeStamp).ToUniversalTime ();
             if(endTime > LastMatchTime) {
                 LastMatchTime = endTime;
             }
@@ -184,7 +187,6 @@ namespace Kontur.GameStats.Server.DataBase {
             using(var db = new LiteDatabase (statsDBConn)) {
                 var playersCol = db.GetCollection<Player> ("players");
                 var serversCol = db.GetCollection<Server> ("servers");
-                var matchesCol = db.GetCollection<Match> ("matches");
 
                 Server server = serversCol.FindOne (x => x.EndPoint == endPoint);
 
@@ -194,11 +196,27 @@ namespace Kontur.GameStats.Server.DataBase {
 
                 //TODO speed up
                 using(var trans = db.BeginTrans ()) {
-                    matchesCol.Insert (match);
                     playersCol.Upsert (UpdatePlayers (playersCol, endPoint, match, endTime));
                     UpdateServer (server, match, endTime);
                     serversCol.Update (server);
                     trans.Commit ();
+                }
+
+                using(var file = new FileStream (
+                        string.Format ("servers/{0}/{1}.json",
+                            endPoint, timeStamp.Replace(":","D")),
+                        System.IO.FileMode.Create, FileAccess.Write))
+                {
+                    var s = JsonConvert.SerializeObject (new MatchResults () {
+                        map = match.Map,
+                        gameMode = match.GameMode,
+                        fragLimit = match.FragLimit,
+                        timeLimit = match.TimeLimit,
+                        timeElapsed = match.TimeElapsed,
+                        scoreboard = match.ScoreBoard
+                    });
+                    var bytes = Encoding.Unicode.GetBytes (s);
+                    file.Write (bytes, 0, bytes.Length);
                 }
             }
         }

@@ -68,7 +68,27 @@ namespace Kontur.GameStats.Tests.DBtests {
             Thread.Sleep (6000); // Последние матчи обновляются каждые 5 секунд
 
             var recentMatches = db.GetRecentMatches (5);
-            var excepted = "[" + matchData1 + "," + matchData2 + "," + matchData3 + "]";
+
+            var mas = new object[3];
+
+            mas[0] = new {
+                server = "server1",
+                timestamp = "2017-01-22T15:17:00Z",
+                matchResult = JsonConvert.DeserializeObject(matchData1)
+            };
+            mas[1] = new {
+                server = "server1",
+                timestamp = "2017-01-22T15:16:00Z",
+                matchResult = JsonConvert.DeserializeObject (matchData2)
+            };
+            mas[2] = new {
+                server = "server1",
+                timestamp = "2017-01-22T15:14:00Z",
+                matchResult = JsonConvert.DeserializeObject (matchData3)
+            };
+
+            var excepted = JsonConvert.SerializeObject (mas);
+
             Assert.AreEqual (
                 excepted,
                 recentMatches

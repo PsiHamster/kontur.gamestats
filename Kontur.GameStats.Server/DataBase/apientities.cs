@@ -16,6 +16,21 @@ namespace Kontur.GameStats.Server.DataBase {
         public ServerInfo info;
     }
 
+    public class MatchResults {
+        public string map;
+        public string gameMode;
+        public int fragLimit;
+        public int timeLimit;
+        public double timeElapsed;
+        public ScoreBoard[] scoreboard;
+    }
+
+    public class RecentMatchInfo {
+        public string server;
+        public DateTime timestamp;
+        public MatchResults matchResult;
+    }
+
     [Serializable]
     public class BestPlayer {
         [JsonProperty(PropertyName = "name")]

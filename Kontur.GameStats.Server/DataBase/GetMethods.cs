@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 using LiteDB;
+using System.IO;
 
 namespace Kontur.GameStats.Server.DataBase {
     public partial class DataBase {
@@ -88,22 +89,21 @@ namespace Kontur.GameStats.Server.DataBase {
         #region MathesMethods
 
         public string GetMatchInfo(string endPoint, string timeStamp) {
-            Match match;
-            using(var db = new LiteDatabase (statsDBConn)) {
-                var col = db.GetCollection<Match> ("matches");
-                match = col.FindOne (Query.And (Query.EQ ("TimeStamp", DateTime.Parse (timeStamp)), Query.EQ ("EndPoint", endPoint)));
-            }
-            if(match == null) {
+            string s;
+
+            try {
+                using(var file = new FileStream (
+                        string.Format ("servers/{0}/{1}.json",
+                            endPoint, timeStamp.Replace (":", "D")),
+                        System.IO.FileMode.Open, System.IO.FileAccess.Read)) {
+                    var bytes = new byte[file.Length];
+                    file.Read (bytes, 0, (int)file.Length);
+                    s = Encoding.Unicode.GetString (bytes);
+                }
+            } catch (FileNotFoundException e) {
                 throw new RequestException ("Match not found");
             }
-            var s = JsonConvert.SerializeObject (new {
-                map = match.Map,
-                gameMode = match.GameMode,
-                fragLimit = match.FragLimit,
-                timeLimit = match.TimeLimit,
-                timeElapsed = match.TimeElapsed,
-                scoreboard = match.ScoreBoard
-            });
+
             return s;
         }
 
