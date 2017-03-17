@@ -135,11 +135,10 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Вернуть обновленную информацию о всех игроках.
         /// </summary>
-        private IEnumerable<Player> UpdatePlayers(LiteCollection<Player> playersCol, string endpoint,
-                Match match, DateTime time) {
+        private IEnumerable<Player> UpdatePlayers(string endpoint, Match match, DateTime time) {
             for(int i = 0; i < match.ScoreBoard.Length; i++) {
                 var score = match.ScoreBoard[i];
-                var player = playersCol.FindOne (x => x.Name == score.Name.ToLower ());
+                var player = players.GetPlayer(score.Name.ToLower ());
                 if(player == null) {
                     player = new Player {
                         Name = score.Name.ToLower (),
@@ -196,7 +195,6 @@ namespace Kontur.GameStats.Server.DataBase {
             recentMatches.newMatches.Enqueue (match) ;
 
             using(var db = new LiteDatabase (statsDBConn)) {
-                var playersCol = db.GetCollection<Player> ("players");
                 var serversCol = db.GetCollection<Server> ("servers");
 
                 Server server = serversCol.FindOne (x => x.EndPoint == endPoint);
@@ -205,9 +203,11 @@ namespace Kontur.GameStats.Server.DataBase {
                     throw new RequestException ("Server not found");
                 }
 
-                //TODO speed up
+                foreach(var player in UpdatePlayers (endPoint, match, endTime)) {
+                    players.AddPlayer (player);
+                }
+
                 using(var trans = db.BeginTrans ()) {
-                    playersCol.Upsert (UpdatePlayers (playersCol, endPoint, match, endTime));
                     UpdateServer (server, match, endTime);
                     serversCol.Update (server);
                     trans.Commit ();

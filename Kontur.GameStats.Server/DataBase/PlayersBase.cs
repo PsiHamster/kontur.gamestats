@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Kontur.GameStats.Server.DataBase {
     class PlayersBase {
@@ -15,17 +16,44 @@ namespace Kontur.GameStats.Server.DataBase {
             Directory.CreateDirectory ("players");
         }
 
+        /// <summary>
+        /// Добавляет игрока в базу данных.
+        /// </summary>
         public void AddPlayer(Player player) {
-            string name = player.Name;
+            string name = HttpUtility.UrlEncode(player.Name);
             string md5 = ComputeMD5Checksum (name);
-            string filePath = string.Format ("players\\{0}\\{1}\\{2}\\{3}.dat", md5[0], md5[1], md5[2], name);
+
+            string directoryPath = string.Format("players\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
+            Directory.CreateDirectory (directoryPath);
+            string filePath = string.Format ("{0}\\{1}.dat", directoryPath, name);
+
             using(var file = new FileStream (filePath, System.IO.FileMode.Create, FileAccess.Write)) {
                 formatter.Serialize (file, player);
             }
         }
 
-        public Player GetPlayer() {
+        /// <summary>
+        /// Возвращает игрока из базы данных.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Player GetPlayer(string playerName) {
+            string name = HttpUtility.UrlEncode (playerName);
+            string md5 = ComputeMD5Checksum (name);
+            Player player;
 
+            string directoryPath = string.Format ("players\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
+            Directory.CreateDirectory (directoryPath);
+            string filePath = string.Format ("{0}\\{1}.dat", directoryPath, name);
+
+            try {
+                using(var file = new FileStream (filePath, System.IO.FileMode.Open, FileAccess.Read)) {
+                    player = (Player)formatter.Deserialize (file);
+                }
+            } catch (FileNotFoundException e) {
+                return null;
+            }
+            return player;
         }
 
         private static string ComputeMD5Checksum(string name) {

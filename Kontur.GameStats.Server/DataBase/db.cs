@@ -26,8 +26,10 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public DateTime LastMatchTime = new DateTime (0).Date;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
+
         private BestPlayers bestPlayers;
         private RecentMatches recentMatches;
+        private PlayersBase players;
 
         #region Initializer
 
@@ -54,6 +56,7 @@ namespace Kontur.GameStats.Server.DataBase {
             if(deletePrev)
                 DeleteFiles (name);
 
+            players = new PlayersBase ();
             bestPlayers = new BestPlayers ();
             recentMatches = new RecentMatches ();
             if (!deletePrev && File.Exists ("recentMatches.dat")) {

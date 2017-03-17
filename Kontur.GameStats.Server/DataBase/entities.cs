@@ -37,11 +37,11 @@ namespace Kontur.GameStats.Server.DataBase {
     [Serializable]
     public class Player {
         /// <summary>
-        /// URL-encoded имя игрока с символами в нижнем регистре
+        /// Имя игрока с символами в нижнем регистре
         /// </summary>
         public string Name { get; set; }
         /// <summary>
-        /// URL-encoded имя игрока в том виде, в котором оно пришло последний раз
+        /// Имя игрока в том виде, в котором оно пришло последний раз
         /// </summary>
         public string RawName { get; set; }
 

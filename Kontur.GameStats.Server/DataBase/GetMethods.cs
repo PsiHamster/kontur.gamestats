@@ -117,11 +117,8 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public string GetPlayerStats(string playerName) {
             string name = playerName.ToLower ();
-            Player player;
-            using(var db = new LiteDatabase (statsDBConn)) {
-                var col = db.GetCollection<Player> ("players");
-                player = col.FindOne (x => x.Name == name);
-            }
+            var player = players.GetPlayer (playerName);
+
             if(player == null) {
                 throw new RequestException ("Player not found");
             }
