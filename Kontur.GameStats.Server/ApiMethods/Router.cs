@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using Kontur.GameStats.Server.DataBase;
 using NLog;
+using System.Web;
 
 namespace Kontur.GameStats.Server.ApiMethods {
     public partial class Router {
@@ -151,7 +152,8 @@ namespace Kontur.GameStats.Server.ApiMethods {
             string text = null;
             switch(uri[2]) {
                 case "stats":
-                    text = GetPlayerStats (uri[1]);
+                    string playerName = HttpUtility.UrlDecode (uri[1]);
+                    text = GetPlayerStats (playerName);
                     break;
                 default:
                     throw new MethodNotFoundException ();

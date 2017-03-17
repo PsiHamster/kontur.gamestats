@@ -29,8 +29,7 @@ namespace Kontur.GameStats.Server.ApiMethods {
             return dataBase.GetServerInfo (endPoint);
         }
 
-        private string GetPlayerStats(string URLencodedPlayerName) {
-            string playerName = HttpUtility.UrlDecode (URLencodedPlayerName);
+        private string GetPlayerStats(string playerName) {
             return dataBase.GetPlayerStats (playerName);
         }
 
