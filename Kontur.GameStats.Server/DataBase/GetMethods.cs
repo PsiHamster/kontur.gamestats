@@ -54,7 +54,8 @@ namespace Kontur.GameStats.Server.DataBase {
             var s = JsonConvert.SerializeObject (new {
                 totalMatchesPlayed = server.TotalMatches,
                 maximumMatchesPerDay = server.MaxPlaysPerDay,
-                averageMatchesPerDay = server.TotalMatches / (double)(LastMatchTime.ToUniversalTime ().Date.Subtract (server.FirstMatchPlayed.ToUniversalTime ().Date).TotalDays + 1),
+                averageMatchesPerDay = server.TotalMatches / (double)(LastMatchTime.ToUniversalTime ()
+                    .Date.Subtract (server.FirstMatchPlayed.ToUniversalTime ().Date).TotalDays + 1),
                 maximumPopulation = server.MaxPopulation,
                 averagePopulation = server.TotalPopulation / (double)server.TotalMatches,
                 top5GameModes = server.GameModesPlays.OrderByDescending (x => x.Value).Take (5).Select (x => x.Key),
@@ -74,7 +75,9 @@ namespace Kontur.GameStats.Server.DataBase {
                          new {
                              endpoint = server.EndPoint,
                              name = server.Name,
-                             averageMatchesPerDay = server.TotalMatches / ((LastMatchTime.ToUniversalTime ().Date.Subtract (server.FirstMatchPlayed.ToUniversalTime ().Date)).TotalDays + 1)
+                             averageMatchesPerDay = server.TotalMatches /
+                             ((LastMatchTime.ToUniversalTime ().Date.Subtract
+                             (server.FirstMatchPlayed.ToUniversalTime ().Date)).TotalDays + 1)
                          })
                     .OrderByDescending (
                         x => x.averageMatchesPerDay)
@@ -89,9 +92,7 @@ namespace Kontur.GameStats.Server.DataBase {
         #region MathesMethods
 
         public string GetMatchInfo(string endPoint, string timeStamp) {
-            var match = matches.GetMatch (endPoint, timeStamp);
-            var s = JsonConvert.SerializeObject (match);
-            return s;
+            return matches.GetMatch (endPoint, timeStamp);
         }
 
         public string GetRecentMatches(int count) {

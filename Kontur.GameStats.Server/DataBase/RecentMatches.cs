@@ -18,8 +18,8 @@ namespace Kontur.GameStats.Server.DataBase {
     /// Все новые матчи складывать в newMatches
     /// </summary>
     class RecentMatches {
-        private SynchronizedCollection<RecentMatchInfo> recentMatches;
-        public ConcurrentQueue<Match> newMatches= new ConcurrentQueue<Match> ();
+        private SynchronizedCollection<MatchInfo> recentMatches;
+        public ConcurrentQueue<MatchInfo> newMatches= new ConcurrentQueue<MatchInfo> ();
 
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
         private BinaryFormatter formatter = new BinaryFormatter ();
@@ -45,20 +45,9 @@ namespace Kontur.GameStats.Server.DataBase {
             while(true) {
                 try {
                     while(!newMatches.IsEmpty) {
-                        Match match;
+                        MatchInfo match;
                         if(newMatches.TryDequeue (out match)) {
-                            Add (new RecentMatchInfo () {
-                                server = match.EndPoint,
-                                timestamp = match.TimeStamp,
-                                matchResult = new MatchResults {
-                                    map = match.Map,
-                                    gameMode = match.GameMode,
-                                    fragLimit = match.FragLimit,
-                                    timeLimit = match.TimeLimit,
-                                    timeElapsed = match.TimeElapsed,
-                                    scoreboard = match.ScoreBoard
-                                }
-                            });
+                            Add (match);
                         }
                     }
                     SaveRecentMatches ();
@@ -74,10 +63,10 @@ namespace Kontur.GameStats.Server.DataBase {
         #region File
 
         private void LoadRecentMatches() {
-            recentMatches = new SynchronizedCollection<RecentMatchInfo> (50);
+            recentMatches = new SynchronizedCollection<MatchInfo> (50);
             try {
                 using(var file = new FileStream ("recentMatches.dat", System.IO.FileMode.Open, FileAccess.Read)) {
-                    var array = (RecentMatchInfo[])formatter.Deserialize (file);
+                    var array = (MatchInfo[])formatter.Deserialize (file);
                     foreach (var e in array) {
                         recentMatches.Add (e);
                     }
@@ -105,12 +94,12 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region Add
 
-        private void Add(RecentMatchInfo match) {
+        private void Add(MatchInfo match) {
             if(recentMatches.Count > 50) {
                 recentMatches.RemoveAt (50);
             }
             for (int i = 0; i < recentMatches.Count; i++) {
-                if(match.timestamp > recentMatches[i].timestamp) {
+                if(match.Timestamp > recentMatches[i].Timestamp) {
                     recentMatches.Insert (i, match);
                     return;
                 }

@@ -135,44 +135,42 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Вернуть обновленную информацию о всех игроках.
         /// </summary>
-        private IEnumerable<Player> UpdatePlayers(string endpoint, Match match, DateTime time) {
-            for(int i = 0; i < match.ScoreBoard.Length; i++) {
-                var score = match.ScoreBoard[i];
+        private IEnumerable<Player> UpdatePlayers(MatchInfo match) {
+            for(int i = 0; i < match.MatchResult.ScoreBoard.Length; i++) {
+                var score = match.MatchResult.ScoreBoard[i];
                 var player = players.GetPlayer(score.Name.ToLower ());
                 if(player == null) {
                     player = new Player {
                         Name = score.Name.ToLower (),
                         RawName = score.Name,
-                        FirstMatchPlayed = time
+                        FirstMatchPlayed = match.Timestamp
                     };
-                    UpdatePlayer (player, endpoint, match, time, score, i + 1, match.ScoreBoard.Length);
-                    yield return player;
-                } else {
-                    UpdatePlayer (player, endpoint, match, time, score, i + 1, match.ScoreBoard.Length);
-                    yield return player;
                 }
+                UpdatePlayer (player, match.Server, match.MatchResult, match.Timestamp,
+                    score, i + 1, match.MatchResult.ScoreBoard.Length);
+                yield return player;
             }
         }
 
         /// <summary>
         /// Обновить информацию о сервере без добавления в бд
         /// </summary>
-        private void UpdateServer(Server server, Match match, DateTime endTime) {
-            if(server.TotalMatches == 0 || server.FirstMatchPlayed > endTime) {
-                server.FirstMatchPlayed = endTime;
+        private void UpdateServer(Server server, MatchInfo match) {
+            if(server.TotalMatches == 0 || server.FirstMatchPlayed > match.Timestamp) {
+                server.FirstMatchPlayed = match.Timestamp;
             }
-            IncDictionary (server.GameModesPlays, match.GameMode);
-            IncDictionary (server.MapsPlays, match.Map);
-            IncDictionary (server.DaysPlays, endTime.ToUniversalTime ().Date);
+            IncDictionary (server.GameModesPlays, match.MatchResult.GameMode);
+            IncDictionary (server.MapsPlays, match.MatchResult.Map);
+            IncDictionary (server.DaysPlays, match.Timestamp.Date);
 
             server.MaxPlaysPerDay = Math.Max (
                 server.MaxPlaysPerDay,
-                server.DaysPlays[endTime.ToUniversalTime ().Date]
+                server.DaysPlays[match.Timestamp.Date]
                 );
             server.MaxPopulation = Math.Max (
                 server.MaxPopulation,
-                match.ScoreBoard.Length);
-            server.TotalPopulation += match.ScoreBoard.Length;
+                match.MatchResult.ScoreBoard.Length);
+            server.TotalPopulation += match.MatchResult.ScoreBoard.Length;
             server.TotalMatches += 1;
         }
 
@@ -181,33 +179,34 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Добавить информацию о матче в БД. В случае неверных данных кидает exception
         /// </summary>
-        /// <param name="matchInfo">Информация о матче в JSON</param>
-        public void PutMatch(string endPoint, string timeStamp, string matchInfo) {
+        /// <param name="matchResult">Информация о матче в JSON</param>
+        public void PutMatch(string endPoint, string timeStamp, string matchResult) {
             var endTime = DateTime.Parse (timeStamp).ToUniversalTime ();
             if(endTime > LastMatchTime) {
                 LastMatchTime = endTime;
             }
 
-            Match match = DeserializeMatchInfo (matchInfo);
-            match.EndPoint = endPoint;
-            match.TimeStamp = endTime;
-
-            Server server;
+            var matchInfo = new MatchInfo () {
+                Server = endPoint,
+                Timestamp = endTime,
+                MatchResult = DeserializeMatchInfo (matchResult)
+            };
 
             using(var db = new LiteDatabase (dbConn)) {
                 var serversCol = db.GetCollection<Server> ("servers");
-                server = serversCol.FindOne (x => x.EndPoint == endPoint);
+
+                var server = serversCol.FindOne (x => x.EndPoint == endPoint);
                 if(server == null) {
                     throw new RequestException ("Server not found");
                 }
-                UpdateServer (server, match, endTime);
+                UpdateServer (server, matchInfo);
                 serversCol.Update (server);
             }
 
-            matches.PutMatch (endPoint, timeStamp, match);
-            recentMatches.newMatches.Enqueue (match);
+            matches.PutMatch (endPoint, timeStamp, matchResult);
+            recentMatches.newMatches.Enqueue (matchInfo);
 
-            foreach(var player in UpdatePlayers (endPoint, match, endTime)) {
+            foreach(var player in UpdatePlayers (matchInfo)) {
                 players.AddPlayer (player);
             }
         }

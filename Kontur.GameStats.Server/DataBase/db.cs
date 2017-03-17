@@ -34,9 +34,9 @@ namespace Kontur.GameStats.Server.DataBase {
         #region LoadDefaults
 
         private void LoadLastMatchTime() {
-            RecentMatchInfo[] a;
-            if((a = JsonConvert.DeserializeObject<RecentMatchInfo[]> (recentMatches.Take (1))).Length > 0){
-                LastMatchTime =  a[0].timestamp;
+            MatchInfo[] a;
+            if((a = JsonConvert.DeserializeObject<MatchInfo[]> (recentMatches.Take (1))).Length > 0){
+                LastMatchTime =  a[0].Timestamp;
             };
         }
 

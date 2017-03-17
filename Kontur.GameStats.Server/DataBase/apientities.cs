@@ -17,23 +17,6 @@ namespace Kontur.GameStats.Server.DataBase {
     }
 
     [Serializable]
-    public class MatchResults {
-        public string map;
-        public string gameMode;
-        public int fragLimit;
-        public int timeLimit;
-        public double timeElapsed;
-        public ScoreBoard[] scoreboard;
-    }
-
-    [Serializable]
-    public class RecentMatchInfo {
-        public string server;
-        public DateTime timestamp;
-        public MatchResults matchResult;
-    }
-
-    [Serializable]
     public class BestPlayer {
         [JsonProperty(PropertyName = "name")]
         public string RawName;

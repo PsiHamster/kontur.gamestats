@@ -81,11 +81,6 @@ namespace Kontur.GameStats.Server.DataBase {
 
     [Serializable]
     public class Match {
-        [JsonProperty (IsReference = false)]
-        public string EndPoint { get; set; }
-        [JsonProperty (IsReference = false)]
-        public DateTime TimeStamp { get; set; }
-
         [JsonProperty ("map")]
         public string Map { get; set; }
         [JsonProperty ("gameMode")]
@@ -100,6 +95,16 @@ namespace Kontur.GameStats.Server.DataBase {
         public ScoreBoard[] ScoreBoard { get; set; }
     }
 
+    [Serializable]
+    public class MatchInfo {
+        [JsonProperty ("server")]
+        public string Server { get; set; }
+        [JsonProperty ("timestamp")]
+        public DateTime Timestamp { get; set; }
+        [JsonProperty ("matchResult")]
+        public Match MatchResult { get; set; }
+    }
+    
     #endregion
 
 }
