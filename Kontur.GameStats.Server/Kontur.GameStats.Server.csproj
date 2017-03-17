@@ -87,6 +87,7 @@
     <Compile Include="DataBase\GetMethods.cs" />
     <Compile Include="DataBase\PutMethods.cs" />
     <Compile Include="DataBase\BestPlayers.cs" />
+    <Compile Include="DataBase\RecentMatches.cs" />
     <Compile Include="StatServer.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

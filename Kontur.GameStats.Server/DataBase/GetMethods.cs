@@ -108,23 +108,7 @@ namespace Kontur.GameStats.Server.DataBase {
         }
 
         public string GetRecentMatches(int count) {
-            string s;
-            count = Math.Min (Math.Max (count, 0), 50);
-            using(var db = new LiteDatabase (statsDBConn)) {
-                var col = db.GetCollection<Match> ("matches");
-                var results = col.Find (Query.All ("TimeStamp", Query.Descending), limit: count)
-                    .Select (
-                        match => new {
-                            map = match.Map,
-                            gameMode = match.GameMode,
-                            fragLimit = match.FragLimit,
-                            timeLimit = match.TimeLimit,
-                            timeElapsed = match.TimeElapsed,
-                            scoreboard = match.ScoreBoard
-                        });
-                s = JsonConvert.SerializeObject (results);
-            }
-            return s;
+            return recentMatches.Take (count);
         }
 
         #endregion

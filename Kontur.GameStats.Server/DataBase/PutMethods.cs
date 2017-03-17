@@ -179,6 +179,8 @@ namespace Kontur.GameStats.Server.DataBase {
             match.EndPoint = endPoint;
             match.TimeStamp = endTime;
 
+            recentMatches.newMatches.Enqueue (match) ;
+
             using(var db = new LiteDatabase (statsDBConn)) {
                 var playersCol = db.GetCollection<Player> ("players");
                 var serversCol = db.GetCollection<Server> ("servers");

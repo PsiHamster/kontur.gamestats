@@ -73,6 +73,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public int Deaths { get; set; }
     }
 
+    [Serializable]
     public class Match {
         public ObjectId MatchID { get; set; }
         [BsonIndex]

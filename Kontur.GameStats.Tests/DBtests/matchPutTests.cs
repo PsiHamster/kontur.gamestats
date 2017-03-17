@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Kontur.GameStats.Server.DataBase;
 using Newtonsoft.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading;
 
 namespace Kontur.GameStats.Tests.DBtests {
     [TestClass]
@@ -63,6 +64,8 @@ namespace Kontur.GameStats.Tests.DBtests {
             db.PutMatch ("server1", "2017-01-22T15:14:00Z", matchData3);
             db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData1);
             db.PutMatch ("server1", "2017-01-22T15:16:00Z", matchData2);
+
+            Thread.Sleep (6000); // Последние матчи обновляются каждые 5 секунд
 
             var recentMatches = db.GetRecentMatches (5);
             var excepted = "[" + matchData1 + "," + matchData2 + "," + matchData3 + "]";

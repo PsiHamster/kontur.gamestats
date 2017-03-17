@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 
-using LiteDB;
 using System.Collections.Concurrent;
 using NLog;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -14,7 +13,7 @@ using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.DataBase {
     public class BestPlayers {
-        public SynchronizedCollection<BestPlayer> bestPlayers;
+        private SynchronizedCollection<BestPlayer> bestPlayers;
         public ConcurrentQueue<BestPlayer> toUpdatePlayers = new ConcurrentQueue<BestPlayer> ();
         public double minKD = -1;
 
@@ -25,11 +24,12 @@ namespace Kontur.GameStats.Server.DataBase {
             LoadBestPlayers ();
             StartListenUpdatedPlayers ();
         }
-        
+
+        #region Thread
+
         private Thread listenerThread;
 
         private void StartListenUpdatedPlayers() {
-            LoadBestPlayers ();
             listenerThread = new Thread (ListenUpdatedPlayers) {
                 IsBackground = true,
                 Priority = ThreadPriority.Normal
@@ -53,6 +53,10 @@ namespace Kontur.GameStats.Server.DataBase {
             }
         }
 
+        #endregion
+
+        #region FileLogic
+
         private void LoadBestPlayers() {
             try {
                 using(var file = new FileStream ("bestPlayers.dat", System.IO.FileMode.Open, FileAccess.Read)) {
@@ -72,6 +76,10 @@ namespace Kontur.GameStats.Server.DataBase {
                 logger.Error (e);
             }
         }
+
+        #endregion
+
+        #region Updater
 
         private void UpdateBestPlayers(BestPlayer player) {
             var newList = new SynchronizedCollection<BestPlayer> ();
@@ -104,12 +112,18 @@ namespace Kontur.GameStats.Server.DataBase {
             }
         }
 
-        internal string Take(int count) {
+        #endregion
+
+        #region Take
+
+        public string Take(int count) {
             string s;
             count = Math.Min (Math.Min (Math.Max (count, 0), bestPlayers.Count), 50);
             var results = bestPlayers.Take (count);
             s = JsonConvert.SerializeObject (results);
             return s;
         }
+
+        #endregion
     }
 }

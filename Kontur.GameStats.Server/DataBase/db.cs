@@ -27,19 +27,17 @@ namespace Kontur.GameStats.Server.DataBase {
         public DateTime LastMatchTime = new DateTime (0).Date;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
         private BestPlayers bestPlayers;
+        private RecentMatches recentMatches;
 
         #region Initializer
 
         #region LoadDefaults
 
         private void LoadLastMatchTime() {
-            using(var db = new LiteDatabase (statsDBConn)) {
-                var col = db.GetCollection<Match> ("matches");
-                if(col.LongCount () > 0) {
-                    var max = col.FindOne (Query.All ("TimeStamp", Query.Descending)).TimeStamp;
-                    LastMatchTime = max;
-                }
-            }
+            Match[] a;
+            if((a = JsonConvert.DeserializeObject<Match[]> (recentMatches.Take (1))).Length > 0){
+                LastMatchTime =  DateTime.Parse(a[0].EndPoint);
+            };
         }
 
         #endregion
@@ -53,22 +51,22 @@ namespace Kontur.GameStats.Server.DataBase {
             statsDBConn = "Filename=" + Directory.GetCurrentDirectory () + "\\" + name +
                 ";Journal=false;Timeout=0:10:00;Cache Size=500000";
             logger.Info (string.Format("Initializing statsDB"));
-            if(deletePrev && File.Exists (Directory.GetCurrentDirectory () + "\\" + name)) {
-                File.Delete (Directory.GetCurrentDirectory () + "\\" + name);
+            if(deletePrev && File.Exists (name)) {
+                File.Delete (name);
             }
-            if (!deletePrev && File.Exists (Directory.GetCurrentDirectory () + "\\" + name)) {
+            if(deletePrev && File.Exists ("bestPlayers.dat")) {
+                File.Delete ("bestPlayers.dat");
+            }
+            if(deletePrev && File.Exists ("recentMatches.dat")) {
+                File.Delete ("recentMatches.dat");
+            }
+            if (!deletePrev && File.Exists (name)) {
                 LoadLastMatchTime ();
             }
             bestPlayers = new BestPlayers ();
-            
+            recentMatches = new RecentMatches ();
+
             logger.Info (string.Format ("Success"));
-            Console.WriteLine ("Shrinking");
-            var a = new Stopwatch ();
-            using(var db = new LiteDatabase(statsDBConn)) {
-                db.Shrink ();
-            }
-            Console.WriteLine ("End  time {0}", a.ElapsedMilliseconds);
-            Console.ReadKey ();
         }
 
         /// <summary>
