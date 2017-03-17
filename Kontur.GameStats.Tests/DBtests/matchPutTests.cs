@@ -14,7 +14,7 @@ namespace Kontur.GameStats.Tests.DBtests {
     public class matchPutTests {
         [TestMethod]
         public void PutSingleMatch() {
-            var db = new DataBase ("testdb.db", true);
+            var db = new DataBase (true);
             var inputData = new ServerInfo { name = "MyServer001", gameModes = new string[] { "DM" } };
             
             db.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
@@ -54,16 +54,16 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void GetRecentMatches() {
-            var db = new DataBase ("testdb.db", true);
+            var db = new DataBase (true);
             var inputData = new ServerInfo { name = "MyServer001", gameModes = new string[] { "DM" } };
             db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));
 
             string matchData1 = MatchGenerator.GetMatch ();
             string matchData2 = MatchGenerator.GetMatch ();
             string matchData3 = MatchGenerator.GetMatch ();
-            db.PutMatch ("server1", "2017-01-22T15:14:00Z", matchData3);
-            db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData1);
-            db.PutMatch ("server1", "2017-01-22T15:16:00Z", matchData2);
+            db.PutMatch ("server1", "2017-01-23T15:14:00Z", matchData3);
+            db.PutMatch ("server1", "2017-01-23T15:17:00Z", matchData1);
+            db.PutMatch ("server1", "2017-01-23T15:16:00Z", matchData2);
 
             Thread.Sleep (6000); // Последние матчи обновляются каждые 5 секунд
 
@@ -73,17 +73,17 @@ namespace Kontur.GameStats.Tests.DBtests {
 
             mas[0] = new {
                 server = "server1",
-                timestamp = "2017-01-22T15:17:00Z",
+                timestamp = "2017-01-23T15:17:00Z",
                 matchResult = JsonConvert.DeserializeObject(matchData1)
             };
             mas[1] = new {
                 server = "server1",
-                timestamp = "2017-01-22T15:16:00Z",
+                timestamp = "2017-01-23T15:16:00Z",
                 matchResult = JsonConvert.DeserializeObject (matchData2)
             };
             mas[2] = new {
                 server = "server1",
-                timestamp = "2017-01-22T15:14:00Z",
+                timestamp = "2017-01-23T15:14:00Z",
                 matchResult = JsonConvert.DeserializeObject (matchData3)
             };
 
@@ -97,7 +97,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void GetPopularServers() {
-            var db = new DataBase ("testdb.db", true);
+            var db = new DataBase (true);
             var inputData = new ServerInfo { name = "MyServer001", gameModes = new string[] { "DM" } };
             var inputData2 = new ServerInfo { name = "MyServer002", gameModes = new string[] { "DM" } };
             db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));

@@ -46,8 +46,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
                     col.Update (server);
                 } else {
-                    Directory.CreateDirectory (string.Format ("servers/{0}", endPoint));
-
+                    matches.AddServer (endPoint);
                     server = new Server {
                         EndPoint = endPoint,
                         Name = info.name,

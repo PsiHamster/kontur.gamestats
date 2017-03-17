@@ -20,7 +20,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public void PutMatch (string endPoint, string timeStamp, string matchInfo) {
             try {
                 using(var file = new FileStream (
-                    string.Format ("servers/{0}/{1}.json",
+                    string.Format ("matches/{0}/{1}.json",
                         endPoint, timeStamp.Replace (":", "D")),
                     System.IO.FileMode.CreateNew, FileAccess.Write)) {
                     var bytes = Encoding.Unicode.GetBytes (matchInfo);
@@ -38,7 +38,7 @@ namespace Kontur.GameStats.Server.DataBase {
             string matchInfo;
             try {
                 using(var file = new FileStream (
-                        string.Format ("servers/{0}/{1}.json",
+                        string.Format ("matches/{0}/{1}.json",
                             endPoint, timeStamp.Replace (":", "D")),
                         System.IO.FileMode.Open, FileAccess.Read)) {
                     byte[] bytes = new byte[(int)file.Length];
@@ -49,6 +49,10 @@ namespace Kontur.GameStats.Server.DataBase {
                 throw (new RequestException ("Match wasn't found"));
             }
             return matchInfo;
+        }
+
+        public void AddServer(string endPoint) {
+            Directory.CreateDirectory (string.Format ("matches/{0}", endPoint));
         }
     }
 }

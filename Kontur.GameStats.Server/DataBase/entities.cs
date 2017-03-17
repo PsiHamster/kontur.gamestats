@@ -30,6 +30,16 @@ namespace Kontur.GameStats.Server.DataBase {
         public Dictionary<DateTime, int> DaysPlays { get; set; } = new Dictionary<DateTime, int> ();
     }
 
+    public class ServerInfo {
+        public string name;
+        public string[] gameModes;
+    }
+
+    public class ServerInfoEndpoint {
+        public string endpoint;
+        public ServerInfo info;
+    }
+
     #endregion
 
     #region Player
@@ -61,6 +71,15 @@ namespace Kontur.GameStats.Server.DataBase {
         public Dictionary<string, int> ServerPlays { get; set; } = new Dictionary<string, int> ();
         public Dictionary<DateTime, int> Days { get; set; } = new Dictionary<DateTime, int> ();
         public Dictionary<string, int> GameModes { get; set; } = new Dictionary<string, int> ();
+    }
+
+    [Serializable]
+    public class BestPlayer {
+        [JsonProperty (PropertyName = "name")]
+        public string RawName;
+        [JsonProperty (IsReference = false)]
+        public string Name;
+        public double killToDeathRatio;
     }
 
     #endregion
