@@ -56,6 +56,11 @@ namespace Kontur.GameStats.Server.DataBase {
             if(deletePrev)
                 DeleteFiles (name);
 
+            Directory.CreateDirectory ("servers");
+            using(var db = new LiteDatabase (statsDBConn)) {
+                var serversCol = db.GetCollection<Server> ("servers");
+                serversCol.LongCount ();
+            }
             players = new PlayersBase ();
             bestPlayers = new BestPlayers ();
             recentMatches = new RecentMatches ();
