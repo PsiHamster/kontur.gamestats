@@ -10,6 +10,7 @@ using LiteDB;
 using System.Collections.Concurrent;
 using NLog;
 using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.DataBase {
     public class BestPlayers {
@@ -101,6 +102,14 @@ namespace Kontur.GameStats.Server.DataBase {
                 minKD = newList.Last ().killToDeathRatio;
                 bestPlayers = newList;
             }
+        }
+
+        internal string Take(int count) {
+            string s;
+            count = Math.Min (Math.Min (Math.Max (count, 0), bestPlayers.Count), 50);
+            var results = bestPlayers.Take (count);
+            s = JsonConvert.SerializeObject (results);
+            return s;
         }
     }
 }

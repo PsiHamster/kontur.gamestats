@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,9 @@ namespace Kontur.GameStats.Server.DataBase {
 
     [Serializable]
     public class BestPlayer {
+        [JsonProperty(PropertyName = "name")]
         public string RawName;
+        [JsonProperty (IsReference = false)]
         public string Name;
         public double killToDeathRatio;
     }
