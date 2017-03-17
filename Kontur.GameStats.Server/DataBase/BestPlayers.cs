@@ -58,17 +58,26 @@ namespace Kontur.GameStats.Server.DataBase {
         #region FileLogic
 
         private void LoadBestPlayers() {
+            bestPlayers = new SynchronizedCollection<BestPlayer> (50);
             try {
+                if(bestPlayers.Count == 0)
+                    return;
                 using(var file = new FileStream ("bestPlayers.dat", System.IO.FileMode.Open, FileAccess.Read)) {
-                    bestPlayers = (SynchronizedCollection<BestPlayer>)formatter.Deserialize (file);
+                    var array = (BestPlayer[])formatter.Deserialize (file);
+                    foreach(var e in array) {
+                        bestPlayers.Add (e);
+                    }
                 }
             } catch (FileNotFoundException e) {
-                bestPlayers = new SynchronizedCollection<BestPlayer> (50);
+            } catch (Exception e) {
+                logger.Error (e);
             }
         }
 
         private void SaveBestPlayers() {
             try {
+                if(bestPlayers.Count == 0)
+                    return;
                 using(var file = new FileStream ("bestPlayers.dat", System.IO.FileMode.Create, FileAccess.Write)) {
                     formatter.Serialize (file, bestPlayers.ToArray());
                 }

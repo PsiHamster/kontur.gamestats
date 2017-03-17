@@ -16,6 +16,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public ServerInfo info;
     }
 
+    [Serializable]
     public class MatchResults {
         public string map;
         public string gameMode;
@@ -25,6 +26,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public ScoreBoard[] scoreboard;
     }
 
+    [Serializable]
     public class RecentMatchInfo {
         public string server;
         public DateTime timestamp;

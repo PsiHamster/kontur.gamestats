@@ -34,9 +34,9 @@ namespace Kontur.GameStats.Server.DataBase {
         #region LoadDefaults
 
         private void LoadLastMatchTime() {
-            Match[] a;
-            if((a = JsonConvert.DeserializeObject<Match[]> (recentMatches.Take (1))).Length > 0){
-                LastMatchTime =  DateTime.Parse(a[0].EndPoint);
+            RecentMatchInfo[] a;
+            if((a = JsonConvert.DeserializeObject<RecentMatchInfo[]> (recentMatches.Take (1))).Length > 0){
+                LastMatchTime =  a[0].timestamp;
             };
         }
 
@@ -53,11 +53,12 @@ namespace Kontur.GameStats.Server.DataBase {
             logger.Info (string.Format("Initializing statsDB"));
             if(deletePrev)
                 DeleteFiles (name);
+
+            bestPlayers = new BestPlayers ();
+            recentMatches = new RecentMatches ();
             if (!deletePrev && File.Exists ("recentMatches.dat")) {
                 LoadLastMatchTime ();
             }
-            bestPlayers = new BestPlayers ();
-            recentMatches = new RecentMatches ();
 
             logger.Info (string.Format ("Success"));
         }

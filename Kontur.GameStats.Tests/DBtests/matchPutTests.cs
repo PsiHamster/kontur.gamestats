@@ -128,5 +128,10 @@ namespace Kontur.GameStats.Tests.DBtests {
                 popularServers
             );
         }
+
+        [TestMethod]
+        public void GetBestPlayers() {
+
+        }
     }
 }

@@ -12,8 +12,13 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.DataBase {
+    /// <summary>
+    /// Класс реализующий хранение последних 50 матчей
+    /// При вызове конструктора создает поток, проверяющий матчи
+    /// Все новые матчи складывать в newMatches
+    /// </summary>
     class RecentMatches {
-        private SynchronizedCollection<Match> recentMatches;
+        private SynchronizedCollection<RecentMatchInfo> recentMatches;
         public ConcurrentQueue<Match> newMatches= new ConcurrentQueue<Match> ();
 
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
@@ -40,9 +45,21 @@ namespace Kontur.GameStats.Server.DataBase {
             while(true) {
                 try {
                     while(!newMatches.IsEmpty) {
-                        Match p;
-                        if(newMatches.TryDequeue (out p))
-                            Add (p);
+                        Match match;
+                        if(newMatches.TryDequeue (out match)) {
+                            Add (new RecentMatchInfo () {
+                                server = match.EndPoint,
+                                timestamp = match.TimeStamp,
+                                matchResult = new MatchResults {
+                                    map = match.Map,
+                                    gameMode = match.GameMode,
+                                    fragLimit = match.FragLimit,
+                                    timeLimit = match.TimeLimit,
+                                    timeElapsed = match.TimeElapsed,
+                                    scoreboard = match.ScoreBoard
+                                }
+                            });
+                        }
                     }
                     SaveRecentMatches ();
                     Thread.Sleep (5 * 1000); // Sleep 5 seconds
@@ -57,18 +74,25 @@ namespace Kontur.GameStats.Server.DataBase {
         #region File
 
         private void LoadRecentMatches() {
-            recentMatches = new SynchronizedCollection<Match> (50);
+            recentMatches = new SynchronizedCollection<RecentMatchInfo> (50);
             try {
                 using(var file = new FileStream ("recentMatches.dat", System.IO.FileMode.Open, FileAccess.Read)) {
-                    recentMatches = (SynchronizedCollection<Match>)formatter.Deserialize (file);
+                    var array = (RecentMatchInfo[])formatter.Deserialize (file);
+                    foreach (var e in array) {
+                        recentMatches.Add (e);
+                    }
                 }
             } catch(FileNotFoundException e) {
 
+            } catch(Exception e) {
+                logger.Error (e);
             }
         }
 
         private void SaveRecentMatches() {
             try {
+                if(recentMatches.Count == 0)
+                    return;
                 using(var file = new FileStream ("recentMatches.dat", System.IO.FileMode.Create, FileAccess.Write)) {
                     formatter.Serialize (file, recentMatches.ToArray ());
                 }
@@ -81,12 +105,12 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region Add
 
-        private void Add(Match match) {
+        private void Add(RecentMatchInfo match) {
             if(recentMatches.Count > 50) {
                 recentMatches.RemoveAt (50);
             }
             for (int i = 0; i < recentMatches.Count; i++) {
-                if(match.TimeStamp > recentMatches[i].TimeStamp) {
+                if(match.timestamp > recentMatches[i].timestamp) {
                     recentMatches.Insert (i, match);
                     return;
                 }
@@ -103,18 +127,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public string Take(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), Math.Min(50, recentMatches.Count));
-            var results = recentMatches.Take (count).Select( match => new RecentMatchInfo () {
-                server = match.EndPoint,
-                timestamp = match.TimeStamp,
-                matchResult = new MatchResults {
-                    map = match.Map,
-                    gameMode = match.GameMode,
-                    fragLimit = match.FragLimit,
-                    timeLimit = match.TimeLimit,
-                    timeElapsed = match.TimeElapsed,
-                    scoreboard = match.ScoreBoard
-                }
-            });
+            var results = recentMatches.Take (count);
             s = JsonConvert.SerializeObject (results);
             return s;
         }

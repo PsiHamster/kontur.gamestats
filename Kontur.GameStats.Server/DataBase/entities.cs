@@ -62,6 +62,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
     #region Match
 
+    [Serializable]
     public class ScoreBoard {
         [JsonProperty ("name")]
         public string Name { get; set; }
