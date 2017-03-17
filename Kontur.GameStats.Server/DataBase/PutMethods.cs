@@ -184,11 +184,10 @@ namespace Kontur.GameStats.Server.DataBase {
                     throw new RequestException ("Server not found");
                 }
 
+                //TODO speed up
                 using(var trans = db.BeginTrans ()) {
                     matchesCol.Insert (match);
-                    foreach (var player in UpdatePlayers (playersCol, endPoint, match, endTime)) {
-                        playersCol.Upsert (player);
-                    }
+                    playersCol.Upsert (UpdatePlayers (playersCol, endPoint, match, endTime));
                     UpdateServer (server, match, endTime);
                     serversCol.Update (server);
                     trans.Commit ();
