@@ -59,6 +59,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
             matches = new MatchesBase ();
             players = new PlayersBase ();
+
             bestPlayers = new BestPlayers ();
             recentMatches = new RecentMatches ();
 
