@@ -84,6 +84,9 @@ namespace Kontur.GameStats.Server.DataBase {
             if (Directory.Exists("servers")) {
                 Directory.Delete ("servers", true);
             }
+            if(Directory.Exists ("players")) {
+                Directory.Delete ("servers", true);
+            }
         }
 
         #endregion

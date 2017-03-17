@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 using Newtonsoft.Json;
 using LiteDB;
@@ -91,7 +92,8 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Обновить статистику игрока и добавить его в очередь на добавление к лучшим.
         /// </summary>
-        private void UpdatePlayer(Player player, string endPoint, Match match, DateTime time, ScoreBoard score, int place, int totalPlayers) {
+        private void UpdatePlayer( Player player, string endPoint, Match match, DateTime time,
+                ScoreBoard score, int place, int totalPlayers) {
             // playersBelowCurrent / (totalPlayers - 1) * 100%​.
             double currentPer;
             if(totalPlayers > 1)
@@ -112,7 +114,10 @@ namespace Kontur.GameStats.Server.DataBase {
             IncDictionary (player.GameModes, match.GameMode);
             IncDictionary (player.ServerPlays, endPoint);
 
-            player.MaximumMatchesPerDay = Math.Max (player.MaximumMatchesPerDay, player.Days[time.ToUniversalTime ().Date]);
+            player.MaximumMatchesPerDay = Math.Max (
+                player.MaximumMatchesPerDay,
+                player.Days[time.ToUniversalTime ().Date]
+                );
 
             if(place == 1) {
                 player.TotalMatchesWon += 1;
@@ -130,7 +135,8 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <summary>
         /// Вернуть обновленную информацию о всех игроках.
         /// </summary>
-        private IEnumerable<Player> UpdatePlayers(LiteCollection<Player> playersCol, string endpoint, Match match, DateTime time) {
+        private IEnumerable<Player> UpdatePlayers(LiteCollection<Player> playersCol, string endpoint,
+                Match match, DateTime time) {
             for(int i = 0; i < match.ScoreBoard.Length; i++) {
                 var score = match.ScoreBoard[i];
                 var player = playersCol.FindOne (x => x.Name == score.Name.ToLower ());
@@ -160,8 +166,13 @@ namespace Kontur.GameStats.Server.DataBase {
             IncDictionary (server.MapsPlays, match.Map);
             IncDictionary (server.DaysPlays, endTime.ToUniversalTime ().Date);
 
-            server.MaxPlaysPerDay = Math.Max (server.MaxPlaysPerDay, server.DaysPlays[endTime.ToUniversalTime ().Date]);
-            server.MaxPopulation = Math.Max (server.MaxPopulation, match.ScoreBoard.Length);
+            server.MaxPlaysPerDay = Math.Max (
+                server.MaxPlaysPerDay,
+                server.DaysPlays[endTime.ToUniversalTime ().Date]
+                );
+            server.MaxPopulation = Math.Max (
+                server.MaxPopulation,
+                match.ScoreBoard.Length);
             server.TotalPopulation += match.ScoreBoard.Length;
             server.TotalMatches += 1;
         }

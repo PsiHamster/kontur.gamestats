@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 using NLog;
 using Kontur.GameStats.Server.DataBase;
+using System.Web;
 
 namespace Kontur.GameStats.Server.ApiMethods {
     public partial class Router {
@@ -28,7 +29,8 @@ namespace Kontur.GameStats.Server.ApiMethods {
             return dataBase.GetServerInfo (endPoint);
         }
 
-        private string GetPlayerStats(string playerName) {
+        private string GetPlayerStats(string URLencodedPlayerName) {
+            string playerName = HttpUtility.UrlDecode (URLencodedPlayerName);
             return dataBase.GetPlayerStats (playerName);
         }
 

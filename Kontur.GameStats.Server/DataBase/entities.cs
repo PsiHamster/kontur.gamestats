@@ -34,10 +34,15 @@ namespace Kontur.GameStats.Server.DataBase {
 
     #region Player
 
+    [Serializable]
     public class Player {
-        public ObjectId PlayerID { get; set; }
-        [BsonIndex (true)]
+        /// <summary>
+        /// URL-encoded имя игрока с символами в нижнем регистре
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// URL-encoded имя игрока в том виде, в котором оно пришло последний раз
+        /// </summary>
         public string RawName { get; set; }
 
         public int TotalMatches { get; set; } = 0;
@@ -76,10 +81,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
     [Serializable]
     public class Match {
-        public ObjectId MatchID { get; set; }
-        [BsonIndex]
         public string EndPoint { get; set; }
-        [BsonIndex]
         public DateTime TimeStamp { get; set; }
 
         [JsonProperty ("map")]
