@@ -86,7 +86,7 @@ namespace Kontur.GameStats.Server.DataBase {
         }
 
         /// <summary>
-        /// Обновить статистику игрока
+        /// Обновить статистику игрока и добавить его в очередь на добавление к лучшим.
         /// </summary>
         private void UpdatePlayer(Player player, string endPoint, Match match, DateTime time, ScoreBoard score, int place, int totalPlayers) {
             // playersBelowCurrent / (totalPlayers - 1) * 100%​.
@@ -115,7 +115,13 @@ namespace Kontur.GameStats.Server.DataBase {
                 player.TotalMatchesWon += 1;
             }
 
-            toUpdatePlayers.Enqueue (player);
+            if (player.KD > bestPlayers.minKD && player.TotalMatches >= 10 && player.TotalDeaths > 0)
+                bestPlayers.toUpdatePlayers.Enqueue (
+                    new BestPlayer () {
+                        RawName = player.RawName,
+                        Name = player.Name,
+                        killToDeathRatio = player.KD
+                    });
         }
 
         /// <summary>

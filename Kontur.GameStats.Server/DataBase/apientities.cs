@@ -14,4 +14,11 @@ namespace Kontur.GameStats.Server.DataBase {
         public string endpoint;
         public ServerInfo info;
     }
+
+    [Serializable]
+    public class BestPlayer {
+        public string RawName;
+        public string Name;
+        public double killToDeathRatio;
+    }
 }

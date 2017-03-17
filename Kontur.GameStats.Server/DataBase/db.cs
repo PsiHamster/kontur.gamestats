@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using LiteDB;
 using Newtonsoft.Json;
 using NLog;
+using System.Diagnostics;
 
 namespace Kontur.GameStats.Server.DataBase {
 
@@ -25,6 +26,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public DateTime LastMatchTime = new DateTime (0).Date;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
+        private BestPlayers bestPlayers;
 
         #region Initializer
 
@@ -57,8 +59,16 @@ namespace Kontur.GameStats.Server.DataBase {
             if (!deletePrev && File.Exists (Directory.GetCurrentDirectory () + "\\" + name)) {
                 LoadLastMatchTime ();
             }
-            StartListenUpdatedPlayers ();
+            bestPlayers = new BestPlayers ();
+            
             logger.Info (string.Format ("Success"));
+            Console.WriteLine ("Shrinking");
+            var a = new Stopwatch ();
+            using(var db = new LiteDatabase(statsDBConn)) {
+                db.Shrink ();
+            }
+            Console.WriteLine ("End  time {0}", a.ElapsedMilliseconds);
+            Console.ReadKey ();
         }
 
         /// <summary>
