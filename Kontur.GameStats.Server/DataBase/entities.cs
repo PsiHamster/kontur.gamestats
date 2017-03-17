@@ -36,8 +36,14 @@ namespace Kontur.GameStats.Server.DataBase {
 
     public class Player {
         public ObjectId PlayerID { get; set; }
+        /// <summary>
+        /// Имя игрока с символами в нижнем регистре
+        /// </summary>
         [BsonIndex (true)]
         public string Name { get; set; }
+        /// <summary>
+        /// Имя игрока в том виде, в котором оно пришло последний раз
+        /// </summary>
         public string RawName { get; set; }
 
         public int TotalMatches { get; set; } = 0;

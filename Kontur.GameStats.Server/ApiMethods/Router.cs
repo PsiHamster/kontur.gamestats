@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 using Kontur.GameStats.Server.DataBase;
 using NLog;
@@ -151,7 +152,8 @@ namespace Kontur.GameStats.Server.ApiMethods {
             string text = null;
             switch(uri[2]) {
                 case "stats":
-                    text = GetPlayerStats (uri[1]);
+                    var playerName = HttpUtility.UrlDecode (uri[1]);
+                    text = GetPlayerStats (playerName);
                     break;
                 default:
                     throw new MethodNotFoundException ();

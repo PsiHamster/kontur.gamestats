@@ -133,7 +133,9 @@ namespace Kontur.GameStats.Server.DataBase {
                 favouriteGameMode = player.GameModes.Aggregate ((a, b) => a.Value > b.Value ? a : b).Key,
                 averageScoreBoardPercernt = player.AverageScoreBoardPercent,
                 maximumMatchesPerDay = player.MaximumMatchesPerDay,
-                averageMatchesPerDay = player.TotalMatches / (double)(LastMatchTime.ToUniversalTime ().Date.Subtract (player.FirstMatchPlayed.ToUniversalTime ().Date).TotalDays + 1),
+                averageMatchesPerDay = player.TotalMatches /
+                    (LastMatchTime.ToUniversalTime ().Date.Subtract
+                    (player.FirstMatchPlayed.ToUniversalTime ().Date).TotalDays + 1),
                 lastMatchPlayed = player.LastMatchPlayed.ToUniversalTime (),
                 killToDeathRatio = player.TotalKills / (double)player.TotalDeaths
             });
