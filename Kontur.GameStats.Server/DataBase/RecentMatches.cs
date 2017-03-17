@@ -57,19 +57,20 @@ namespace Kontur.GameStats.Server.DataBase {
         #region File
 
         private void LoadRecentMatches() {
+            recentMatches = new SynchronizedCollection<Match> (50);
             try {
                 using(var file = new FileStream ("recentMatches.dat", System.IO.FileMode.Open, FileAccess.Read)) {
                     recentMatches = (SynchronizedCollection<Match>)formatter.Deserialize (file);
                 }
             } catch(FileNotFoundException e) {
-                recentMatches = new SynchronizedCollection<Match> (50);
+
             }
         }
 
         private void SaveRecentMatches() {
             try {
                 using(var file = new FileStream ("recentMatches.dat", System.IO.FileMode.Create, FileAccess.Write)) {
-                    formatter.Serialize (file, recentMatches);
+                    formatter.Serialize (file, recentMatches.ToArray ());
                 }
             } catch(Exception e) {
                 logger.Error (e);

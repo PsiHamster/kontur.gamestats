@@ -70,7 +70,7 @@ namespace Kontur.GameStats.Server.DataBase {
         private void SaveBestPlayers() {
             try {
                 using(var file = new FileStream ("bestPlayers.dat", System.IO.FileMode.Create, FileAccess.Write)) {
-                    formatter.Serialize (file, bestPlayers);
+                    formatter.Serialize (file, bestPlayers.ToArray());
                 }
             } catch(Exception e) {
                 logger.Error (e);

@@ -51,16 +51,9 @@ namespace Kontur.GameStats.Server.DataBase {
             statsDBConn = "Filename=" + Directory.GetCurrentDirectory () + "\\" + name +
                 ";Journal=false;Timeout=0:10:00;Cache Size=500000";
             logger.Info (string.Format("Initializing statsDB"));
-            if(deletePrev && File.Exists (name)) {
-                File.Delete (name);
-            }
-            if(deletePrev && File.Exists ("bestPlayers.dat")) {
-                File.Delete ("bestPlayers.dat");
-            }
-            if(deletePrev && File.Exists ("recentMatches.dat")) {
-                File.Delete ("recentMatches.dat");
-            }
-            if (!deletePrev && File.Exists (name)) {
+            if(deletePrev)
+                DeleteFiles (name);
+            if (!deletePrev && File.Exists ("recentMatches.dat")) {
                 LoadLastMatchTime ();
             }
             bestPlayers = new BestPlayers ();
@@ -75,5 +68,23 @@ namespace Kontur.GameStats.Server.DataBase {
         public DataBase() : this (statsFileName, false) { }
         #endregion
 
+        #region deleter
+
+        private void DeleteFiles(string name) {
+            if (File.Exists (name)) {
+                File.Delete (name);
+            }
+            if (File.Exists ("bestPlayers.dat")) {
+                File.Delete ("bestPlayers.dat");
+            }
+            if (File.Exists ("recentMatches.dat")) {
+                File.Delete ("recentMatches.dat");
+            }
+            if (Directory.Exists("servers")) {
+                Directory.Delete ("servers", true);
+            }
+        }
+
+        #endregion
     }
 }
