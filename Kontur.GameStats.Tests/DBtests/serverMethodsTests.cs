@@ -15,7 +15,7 @@ namespace Kontur.GameStats.Tests.DBtests {
     public class serverMethodsTests {
         [TestMethod]
         public void PutServerInfo() {
-            var db = new DataBase ();
+            var db = new DataBase (true);
             var inputData = new ServerInfo {
                 name = "MyServer001",
                 gameModes = new string[] { "DM" } };
@@ -26,7 +26,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void PutAndUpdateServerInfo() {
-            var db = new DataBase ();
+            var db = new DataBase (true);
             var inputData = new ServerInfo {
                 name = "MyServer001",
                 gameModes = new string[] { "DM" }
@@ -46,7 +46,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void GetServersInfo() {
-            var db = new DataBase ();
+            var db = new DataBase (true);
             var inputData = new ServerInfo {
                 name = "MyServer001",
                 gameModes = new string[] { "DM" }
