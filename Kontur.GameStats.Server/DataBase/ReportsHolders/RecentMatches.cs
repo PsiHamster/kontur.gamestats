@@ -12,6 +12,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.DataBase {
+
     /// <summary>
     /// Класс реализующий хранение последних 50 матчей
     /// При вызове конструктора создает поток, проверяющий матчи

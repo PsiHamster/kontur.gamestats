@@ -22,22 +22,17 @@ namespace Kontur.GameStats.Server.DataBase {
             if(server == null) {
                 throw new RequestException ("Server not found");
             }
-            return JsonConvert.SerializeObject (new { name = server.Name, gameModes = server.GameModes });
+            return server.GetJSONserverInfo();
         }
 
         public string GetServersInfo() {
             string s;
             using(var db = new LiteDatabase (dbConn)) {
                 var col = db.GetCollection<Server> ("servers");
-
                 s = JsonConvert.SerializeObject (col.FindAll ()
-                    .Select (server => new ServerInfoEndpoint {
-                        endpoint = server.EndPoint,
-                        info = new ServerInfo {
-                            name = server.Name,
-                            gameModes = server.GameModes
-                        }
-                    }));
+                    .Select (
+                        server => server.GetServerInfoEndpoint()
+                    ));
             }
             return s;
         }
@@ -51,18 +46,7 @@ namespace Kontur.GameStats.Server.DataBase {
             if(server == null) {
                 throw new RequestException ("Server not found");
             }
-            var s = JsonConvert.SerializeObject (new {
-                totalMatchesPlayed = server.TotalMatches,
-                maximumMatchesPerDay = server.MaxPlaysPerDay,
-                averageMatchesPerDay = server.TotalMatches / (double)(LastMatchTime.ToUniversalTime ()
-                    .Date.Subtract (server.FirstMatchPlayed.ToUniversalTime ().Date).TotalDays + 1),
-                maximumPopulation = server.MaxPopulation,
-                averagePopulation = server.TotalPopulation / (double)server.TotalMatches,
-                top5GameModes = server.GameModesPlays.OrderByDescending (x => x.Value).Take (5).Select (x => x.Key),
-                top5Maps = server.MapsPlays.OrderByDescending (x => x.Value).Take (5).Select (x => x.Key)
-            });
-
-            return s;
+            return server.GetJSONserverStatistics(LastMatchTime.Date);
         }
 
         public string GetPopularServers(int count) {
@@ -110,22 +94,8 @@ namespace Kontur.GameStats.Server.DataBase {
             if(player == null) {
                 throw new RequestException ("Player not found");
             }
-            var s = JsonConvert.SerializeObject (new {
-                totalMatchesPlayed = player.TotalMatches,
-                totalMatchesWon = player.TotalMatchesWon,
-                favouriteServer = player.ServerPlays.Aggregate ((a, b) => a.Value > b.Value ? a : b).Key,
-                uniqueServers = player.ServerPlays.Count,
-                favouriteGameMode = player.GameModes.Aggregate ((a, b) => a.Value > b.Value ? a : b).Key,
-                averageScoreBoardPercernt = player.AverageScoreBoardPercent,
-                maximumMatchesPerDay = player.MaximumMatchesPerDay,
-                averageMatchesPerDay = player.TotalMatches / 
-                    (LastMatchTime.ToUniversalTime ().Date.Subtract (
-                        player.FirstMatchPlayed.ToUniversalTime ().Date).TotalDays + 1),
-                lastMatchPlayed = player.LastMatchPlayed.ToUniversalTime (),
-                killToDeathRatio = player.TotalKills / (double)player.TotalDeaths
-            });
 
-            return s;
+            return player.GetJSONplayerStats (LastMatchTime.Date);
         }
 
         public string GetBestPlayers(int count) {

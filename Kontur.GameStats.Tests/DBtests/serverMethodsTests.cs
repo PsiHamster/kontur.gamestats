@@ -12,13 +12,13 @@ using System.Diagnostics;
 
 namespace Kontur.GameStats.Tests.DBtests {
     [TestClass]
-    public class serverMethodsTests {
+    public class ServerMethodsTests {
         [TestMethod]
         public void PutServerInfo() {
             var db = new DataBase (true);
             var inputData = new ServerInfo {
-                name = "MyServer001",
-                gameModes = new string[] { "DM" } };
+                Name = "MyServer001",
+                GameModes = new string[] { "DM" } };
             
             db.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
             Assert.AreEqual (JsonConvert.SerializeObject (inputData), db.GetServerInfo ("server1"));
@@ -28,16 +28,16 @@ namespace Kontur.GameStats.Tests.DBtests {
         public void PutAndUpdateServerInfo() {
             var db = new DataBase (true);
             var inputData = new ServerInfo {
-                name = "MyServer001",
-                gameModes = new string[] { "DM" }
+                Name = "MyServer001",
+                GameModes = new string[] { "DM" }
             };
 
             db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));
             Assert.AreEqual (JsonConvert.SerializeObject (inputData), db.GetServerInfo ("server1"));
 
             var inputData2 = new ServerInfo {
-                name = "MyServer002",
-                gameModes = new string[] { "DM" }
+                Name = "MyServer002",
+                GameModes = new string[] { "DM" }
             };
 
             db.PutInfo ("server1", JsonConvert.SerializeObject (inputData2));
@@ -48,8 +48,8 @@ namespace Kontur.GameStats.Tests.DBtests {
         public void GetServerStats() {
             var db = new DataBase (true);
             var inputData = new ServerInfo {
-                name = "MyServer001",
-                gameModes = new string[] { "DM" }
+                Name = "MyServer001",
+                GameModes = new string[] { "DM" }
             };
             db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));
 
@@ -86,16 +86,16 @@ namespace Kontur.GameStats.Tests.DBtests {
         public void GetServersInfo() {
             var db = new DataBase (true);
             var inputData = new ServerInfo {
-                name = "MyServer001",
-                gameModes = new string[] { "DM" }
+                Name = "MyServer001",
+                GameModes = new string[] { "DM" }
             };
             var inputData2 = new ServerInfo {
-                name = "MyServer002",
-                gameModes = new string[] { "DM" }
+                Name = "MyServer002",
+                GameModes = new string[] { "DM" }
             };
             var inputData3 = new ServerInfo {
-                name = "MyServer003",
-                gameModes = new string[] { "DM", "HSDM" }
+                Name = "MyServer003",
+                GameModes = new string[] { "DM", "HSDM" }
             };
 
             db.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
@@ -107,9 +107,9 @@ namespace Kontur.GameStats.Tests.DBtests {
             Assert.AreEqual (
                 JsonConvert.SerializeObject(
                     new ServerInfoEndpoint[] {
-                        new ServerInfoEndpoint { endpoint = "server1", info = inputData },
-                        new ServerInfoEndpoint { endpoint = "server2", info = inputData2 },
-                        new ServerInfoEndpoint { endpoint = "server3", info = inputData3 },
+                        new ServerInfoEndpoint { EndPoint = "server1", Info = inputData },
+                        new ServerInfoEndpoint { EndPoint = "server2", Info = inputData2 },
+                        new ServerInfoEndpoint { EndPoint = "server3", Info = inputData3 },
                 }),
                 serversInfo
             );

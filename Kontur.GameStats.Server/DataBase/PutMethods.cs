@@ -41,16 +41,16 @@ namespace Kontur.GameStats.Server.DataBase {
                 Server server;
 
                 if((server = col.FindOne (x => x.EndPoint == endPoint)) != null) {
-                    server.Name = info.name;
-                    server.GameModes = info.gameModes;
+                    server.Name = info.Name;
+                    server.GameModes = info.GameModes;
 
                     col.Update (server);
                 } else {
                     matches.AddServer (endPoint);
                     server = new Server {
                         EndPoint = endPoint,
-                        Name = info.name,
-                        GameModes = info.gameModes,
+                        Name = info.Name,
+                        GameModes = info.GameModes,
                     };
 
                     col.Insert (server);

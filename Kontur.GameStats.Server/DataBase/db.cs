@@ -14,11 +14,14 @@ namespace Kontur.GameStats.Server.DataBase {
 
     /// <summary>
     /// Класс для обращения с базой данных.
-    /// На вход принимает данные в json, возвращает тоже json
+    /// На вход принимает данные в json, возвращает json
     /// Кидает RequestException при не правильных входных данных
     /// Ошибки базы данных также вызывают свои исключения.
     /// </summary>
     public partial class DataBase {
+
+        #region Fields
+
         public DateTime LastMatchTime = new DateTime (0).Date;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
 
@@ -27,9 +30,12 @@ namespace Kontur.GameStats.Server.DataBase {
 
         private PlayersBase players;
         private MatchesBase matches;
+
         private string dbConn = "Filename=database.db;Journal=false;Timeout=0:10:00;Cache Size=500000";
 
-        #region Initializer
+        #endregion
+
+        #region Constructor
 
         #region LoadDefaults
 
