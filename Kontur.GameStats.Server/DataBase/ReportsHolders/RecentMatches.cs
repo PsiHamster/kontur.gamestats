@@ -48,16 +48,14 @@ namespace Kontur.GameStats.Server.DataBase {
         private void CleanMatches() {
             while(isCleaning) {
                 try {
-                    using(var db = new LiteRepository (dbConn)) {
-                        if(db.Query<MatchInfo> ().Count() > 0) {
-                            var firstMatch = db.Query<MatchInfo> ()
-                                .Where (
+                    using(var db = new LiteDatabase (dbConn)) {
+                        var matchesCol = db.GetCollection<MatchInfo> ();
+                        if(matchesCol.Count() > 0) {
+                            var firstMatch = matchesCol.Find(
                                         Query.All ("Timestamp",
-                                        Query.Descending)
-                                ).Limit (50)
-                                .ToEnumerable ()
+                                        Query.Descending), limit:50)
                                 .Last ();
-                            db.Delete<MatchInfo> (
+                            matchesCol.Delete(
                                 Query.LT ("Timestamp", firstMatch.Timestamp)
                             );
                         }
@@ -82,10 +80,10 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public DateTime GetLastMatchTime() {
             DateTime last;
-            using(var db = new LiteRepository (dbConn)) {
-                if(db.Query<MatchInfo> ().Count () > 0)
-                    last = db.Query<MatchInfo> ()
-                        .Where (
+            using(var db = new LiteDatabase (dbConn)) {
+                var matchesCol = db.GetCollection<MatchInfo> ();
+                if(matchesCol.Count () > 0)
+                    last = matchesCol.Find(
                                 Query.All ("Timestamp",
                                 Query.Descending)
                         ).First ().Timestamp.ToUniversalTime ();
@@ -109,13 +107,11 @@ namespace Kontur.GameStats.Server.DataBase {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);
             MatchInfo[] results;
-            using(var db = new LiteRepository (dbConn)) {
-                results = db.Query<MatchInfo>()
-                    .Where(
+            using(var db = new LiteDatabase (dbConn)) {
+                var matchesCol = db.GetCollection<MatchInfo> ();
+                results = matchesCol.Find(
                         Query.All("Timestamp",
-                        Query.Descending)
-                    ).Limit(count)
-                    .ToEnumerable()
+                        Query.Descending), limit:count)
                     .Select(match => { // Необходимое преобразование, т.к. БД переводит в локальное время
                         match.Timestamp = match.Timestamp.ToUniversalTime (); 
                         return match;

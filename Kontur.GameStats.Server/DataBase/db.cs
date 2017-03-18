@@ -53,23 +53,20 @@ namespace Kontur.GameStats.Server.DataBase {
                 DeleteFiles ();
 
             dbConn = string.Format(
-                "Filename={0}database.db;Journal=true;Timeout=0:10:00;Cache Size=15000",
+                "Filename={0}database.db;Journal=false;Timeout=0:00:10;Cache Size=15000",
                 path+@"\");
-            
-            using(var db = new LiteDatabase (dbConn)) {
-                var serversCol = db.GetCollection<Server> ("servers");
-                serversCol.LongCount ();
-                var matchesCol = db.GetCollection<MatchInfo> ();
-                matchesCol.LongCount ();
-                var playersCol = db.GetCollection<BestPlayer> ();
-                playersCol.LongCount ();
-            }
+            var dbConnPlayers = string.Format (
+                "Filename={0}bestplayers.db;Journal=false;Timeout=0:00:10;Cache Size=15000",
+                path + @"\");
+            var dbConnMatches = string.Format (
+                "Filename={0}recentmatches.db;Journal=false;Timeout=0:00:10;Cache Size=15000",
+                path + @"\");
 
             matches = new MatchesBase (workDirectory, deletePrev);
             players = new PlayersBase (workDirectory, deletePrev);
 
-            bestPlayers = new BestPlayers (dbConn);
-            recentMatches = new RecentMatches (dbConn);
+            bestPlayers = new BestPlayers (dbConnPlayers);
+            recentMatches = new RecentMatches (dbConnMatches);
 
             bestPlayers.StartCleanThread ();
             recentMatches.StartCleanThread ();
@@ -98,6 +95,12 @@ namespace Kontur.GameStats.Server.DataBase {
         private void DeleteFiles() {
             if (File.Exists (workDirectory+"\\database.db")) {
                 File.Delete (workDirectory+"\\database.db");
+            }
+            if(File.Exists (workDirectory + "\\bestplayers.db")) {
+                File.Delete (workDirectory + "\\bestplayers.db");
+            }
+            if(File.Exists (workDirectory + "\\recentmatches.db")) {
+                File.Delete (workDirectory + "\\recentmatches.db");
             }
         }
 

@@ -48,17 +48,15 @@ namespace Kontur.GameStats.Server.DataBase {
         private void CleanPlayers() {
             while(isCleaning) {
                 try {
-                    using(var db = new LiteRepository (dbConn)) {
-                        if(db.Query<BestPlayer> ().Count () > 0) {
-                            var kd = db.Query<BestPlayer> ()
-                                .Where (
+                    using(var db = new LiteDatabase (dbConn)) {
+                        var bestPlayersCol = db.GetCollection<BestPlayer> ();
+                        if(bestPlayersCol.Count () > 0) {
+                            var kd = bestPlayersCol.Find (
                                         Query.All ("KillToDeathRatio",
-                                        Query.Descending)
-                                ).Limit (50)
-                                .ToEnumerable ()
-                                .Last ().KillToDeathRatio;
+                                        Query.Descending), limit:50
+                                ).Last ().KillToDeathRatio;
                             minKD = kd;
-                            db.Delete<BestPlayer> (
+                            bestPlayersCol.Delete (
                                 Query.LT ("KillToDeathRatio", kd)
                             );
                         }
@@ -97,12 +95,11 @@ namespace Kontur.GameStats.Server.DataBase {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);
             BestPlayer[] results;
-            using(var db = new LiteRepository (dbConn)) {
-                results = db.Query<BestPlayer> ()
-                    .Where (
+            using(var db = new LiteDatabase (dbConn)) {
+                var playersCol = db.GetCollection<BestPlayer> ();
+                results = playersCol.Find(
                         Query.All ("KillToDeathRatio",
-                        Query.Descending)
-                    ).Limit (count)
+                        Query.Descending), limit:count)
                     .ToArray ();
             }
             s = JsonConvert.SerializeObject (results);

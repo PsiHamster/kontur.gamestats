@@ -6,8 +6,7 @@ using System.Net;
 using System.Threading;
 
 namespace Kontur.GameStats.Server {
-    internal class StatServer : IDisposable
-    {
+    internal class StatServer : IDisposable {
         private Router router;
         private DataBase.DataBase database;
         private string prefix;
@@ -19,76 +18,64 @@ namespace Kontur.GameStats.Server {
 
             listener = new HttpListener ();
         }
-        
-        public void Start(string prefix)
-        {
-            lock (listener)
-            {
-                if (!isRunning) {
-                    this.prefix = prefix;
-                    listener.Prefixes.Clear();
-                    listener.Prefixes.Add(prefix);
-                    listener.Start();
 
-                    listenerThread = new Thread(Listen)
-                    {
+        public void Start(string prefix) {
+            Console.WriteLine ("Started");
+            lock(listener) {
+                if(!isRunning) {
+                    this.prefix = prefix;
+                    listener.Prefixes.Clear ();
+                    listener.Prefixes.Add (prefix);
+                    listener.Start ();
+
+                    listenerThread = new Thread (Listen) {
                         IsBackground = true,
                         Priority = ThreadPriority.Highest
                     };
-                    listenerThread.Start();
-                    
+                    listenerThread.Start ();
+
                     isRunning = true;
                 }
             }
         }
 
-        public void Stop()
-        {
-            lock (listener)
-            {
-                if (!isRunning)
+        public void Stop() {
+            lock(listener) {
+                if(!isRunning)
                     return;
 
-                listener.Stop();
+                listener.Stop ();
 
-                listenerThread.Abort();
-                listenerThread.Join();
-                
+                listenerThread.Abort ();
+                listenerThread.Join ();
+
                 isRunning = false;
             }
         }
 
-        public void Dispose()
-        {
-            if (disposed)
+        public void Dispose() {
+            if(disposed)
                 return;
 
             disposed = true;
 
-            Stop();
+            Stop ();
 
-            listener.Close();
+            listener.Close ();
         }
-        
-        private void Listen()
-        {
-            while (true)
-            {
-                try
-                {
-                    if (listener.IsListening)
-                    {
-                        ThreadPool.QueueUserWorkItem (Process, listener.GetContext());
+
+        private void Listen() {
+            while(true) {
+                try {
+                    if(listener.IsListening) {
+                        ThreadPool.QueueUserWorkItem (Process, listener.GetContext ());
                         //var context = listener.GetContext ();
                         //Task.Run(() => Process(context));
-                    }
-                    else Thread.Sleep(0);
-                }
-                catch (ThreadAbortException e) {
+                    } else Thread.Sleep (0);
+                } catch(ThreadAbortException e) {
                     logger.Error (e);
                     return;
-                }
-                catch (Exception e) {
+                } catch(Exception e) {
                     logger.Error (e);
                 }
             }
@@ -101,7 +88,7 @@ namespace Kontur.GameStats.Server {
 
             try {
                 router.Route (uri, request, response);
-            } catch (Exception e) {
+            } catch(Exception e) {
                 logger.Error (e);
             }
         }
