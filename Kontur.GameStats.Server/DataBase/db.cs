@@ -66,8 +66,8 @@ namespace Kontur.GameStats.Server.DataBase {
             bestPlayers = new BestPlayers (dbConnPlayers);
             recentMatches = new RecentMatches (dbConnMatches);
 
-            //bestPlayers.StartCleanThread ();
-            //recentMatches.StartCleanThread ();
+            bestPlayers.StartCleanThread ();
+            recentMatches.StartCleanThread ();
 
             if (!deletePrev) {
                 LastMatchTime = recentMatches.GetLastMatchTime ();

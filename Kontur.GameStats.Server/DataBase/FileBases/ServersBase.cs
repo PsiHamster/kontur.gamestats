@@ -24,6 +24,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <param name="directory">Путь к папке базы данных</param>
         /// <param name="deletePrev">Удалять ли старые данные</param>
         public ServersBase(string directory, bool deletePrev = false) {
+            servers = new Dictionary<string, Server> ();
             workDirectory = directory + "\\servers";
             if(deletePrev && Directory.Exists (workDirectory)) {
                 Directory.Delete (workDirectory, true);
@@ -32,7 +33,6 @@ namespace Kontur.GameStats.Server.DataBase {
             if(!deletePrev) {
                 LoadServers ();
             }
-            servers = new Dictionary<string, Server> ();
         }
 
         #endregion
@@ -129,7 +129,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// </summary>
         private void LoadServers() {
             foreach(var file in Directory.EnumerateFiles (workDirectory)) {
-                LoadServer (workDirectory + "\\" + file);
+                LoadServer (file);
             }
         }
 
