@@ -45,6 +45,44 @@ namespace Kontur.GameStats.Tests.DBtests {
         }
 
         [TestMethod]
+        public void GetServerStats() {
+            var db = new DataBase (true);
+            var inputData = new ServerInfo {
+                name = "MyServer001",
+                gameModes = new string[] { "DM" }
+            };
+            db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));
+
+
+            string matchData = JsonConvert.SerializeObject (
+                new {
+                    map = "DM-HelloWorld",
+                    gameMode = "DM",
+                    fragLimit = 20,
+                    timeLimit = 20,
+                    timeElapsed = 12.345678,
+                    scoreboard = new object[] {
+                        new { name = "Player1", frags = 20, kills = 20, deaths = 4 },
+                        new { name = "Player2", frags = 2, kills = 2, deaths = 21 }
+                    }
+                }
+                );
+            db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
+
+            var expected = JsonConvert.SerializeObject (new {
+                totalMatchesPlayed = 1,
+                maximumMatchesPerDay = 1,
+                averageMatchesPerDay = 1.0,
+                maximumPopulation = 2,
+                averagePopulation = 2.0,
+                top5GameModes = new object[] { "DM" },
+                top5Maps = new object[] { "DM-HelloWorld" }
+            });
+
+            Assert.AreEqual (expected, db.GetServerStatistics ("server1"));
+        }
+
+        [TestMethod]
         public void GetServersInfo() {
             var db = new DataBase (true);
             var inputData = new ServerInfo {

@@ -131,7 +131,42 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void GetBestPlayers() {
+            var db = new DataBase (true);
+            var inputData = new ServerInfo { name = "MyServer001", gameModes = new string[] { "DM" } };
 
+            db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));
+
+            string matchData = JsonConvert.SerializeObject (
+                new {
+                    map = "DM-HelloWorld",
+                    gameMode = "DM",
+                    fragLimit = 20,
+                    timeLimit = 20,
+                    timeElapsed = 12.345678,
+                    scoreboard = new object[] {
+                        new { name = "Player1", frags = 20, kills = 20, deaths = 4 },
+                        new { name = "Player2", frags = 2, kills = 2, deaths = 2 }
+                    }
+                }
+                );
+            db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
+
+            var expected = JsonConvert.SerializeObject (
+                new object[] {
+                    new { name = "Player1", killToDeathRatio = 5.0 },
+                    new { name = "Player2", killToDeathRatio = 1.0 }
+                });
+            Assert.AreEqual (
+                "[]",
+                db.GetBestPlayers (-1)
+            );
+            Assert.AreEqual (
+                expected,
+                db.GetBestPlayers (2)
+            );
+            Assert.AreEqual (
+                expected,
+                db.GetBestPlayers (5));
         }
     }
 }
