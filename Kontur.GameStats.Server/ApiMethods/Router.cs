@@ -100,6 +100,8 @@ namespace Kontur.GameStats.Server.ApiMethods {
             }
         }
 
+        #region ServerMethods
+
         private void ServersMethods (string[] uri, HttpListenerRequest request, HttpListenerResponse response) {
             if(uri.Length < 2) {
                 throw new MethodNotFoundException ();
@@ -145,6 +147,10 @@ namespace Kontur.GameStats.Server.ApiMethods {
             }
         }
 
+        #endregion
+
+        #region PlayerMethods
+
         private void PlayersMethods(string[] uri, HttpListenerRequest request, HttpListenerResponse response) {
             if(uri.Length != 3) {
                 throw new MethodNotFoundException ();
@@ -162,6 +168,10 @@ namespace Kontur.GameStats.Server.ApiMethods {
                 WriteResponse (response, text);
             }
         }
+
+        #endregion
+
+        #region ReportsMethods
 
         private void ReportsMethods(string[] uri, HttpListenerRequest request, HttpListenerResponse response) {
             int count;
@@ -193,6 +203,8 @@ namespace Kontur.GameStats.Server.ApiMethods {
                 WriteResponse (response, text);
             }
         }
+
+        #endregion
 
         #endregion
     }

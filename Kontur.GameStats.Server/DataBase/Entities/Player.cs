@@ -88,8 +88,7 @@ namespace Kontur.GameStats.Server.DataBase {
             TotalDeaths += score.Deaths;
             TotalMatches += 1;
             LastMatchPlayed = time;
-            if(TotalDeaths != 0)
-                KD = TotalKills / (double)TotalDeaths;
+            KD = TotalKills / (double)TotalDeaths;
 
             Days.IncDict (time.Date);
             GameModes.IncDict (gameMode);

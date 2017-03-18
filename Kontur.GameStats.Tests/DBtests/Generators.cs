@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Kontur.GameStats.Server.DataBase;
 using Newtonsoft.Json;
+using System;
 
 namespace Kontur.GameStats.Tests.DBtests {
     static class MatchGenerator {
@@ -35,6 +32,23 @@ namespace Kontur.GameStats.Tests.DBtests {
                 timeElapsed = 12.345678,
                 scoreboard = players
             });
+        }
+    }
+
+    static class ServerGenerator {
+        static Random randomize = new Random ();
+        static int serverID = 0;
+
+        public static ServerInfoEndpoint GetRandomServer() {
+            var serverData = new ServerInfoEndpoint {
+                EndPoint = string.Format ("server{0}", serverID++),
+                Info = new ServerInfo {
+                    Name = string.Format("MyServer{0}", randomize.Next()),
+                    GameModes = new string[] { "DM" }
+                }
+            };
+
+            return serverData;
         }
     }
 }

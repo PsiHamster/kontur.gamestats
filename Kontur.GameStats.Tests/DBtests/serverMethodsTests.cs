@@ -13,12 +13,15 @@ using System.Diagnostics;
 namespace Kontur.GameStats.Tests.DBtests {
     [TestClass]
     public class ServerMethodsTests {
+
+        #region servers/{endpoint}/info
+
         [TestMethod]
         public void PutServerInfo() {
             var db = new DataBase (true);
-            var inputData = new ServerInfo {
-                Name = "MyServer001",
-                GameModes = new string[] { "DM" } };
+            var inputData = new {
+                name = "MyServer001",
+                gameModes = new string[] { "DM" } };
             
             db.PutServerInfo ("server1", JsonConvert.SerializeObject(inputData));
             Assert.AreEqual (JsonConvert.SerializeObject (inputData), db.GetServerInfo ("server1"));
@@ -27,22 +30,99 @@ namespace Kontur.GameStats.Tests.DBtests {
         [TestMethod]
         public void PutAndUpdateServerInfo() {
             var db = new DataBase (true);
-            var inputData = new ServerInfo {
-                Name = "MyServer001",
-                GameModes = new string[] { "DM" }
+            var inputData = new {
+                name = "MyServer001",
+                gameModes = new string[] { "DM" }
             };
 
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
             Assert.AreEqual (JsonConvert.SerializeObject (inputData), db.GetServerInfo ("server1"));
 
-            var inputData2 = new ServerInfo {
-                Name = "MyServer002",
-                GameModes = new string[] { "DM" }
+            var inputData2 = new {
+                name = "MyServer002",
+                gameModes = new string[] { "DM" }
             };
 
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData2));
             Assert.AreEqual (JsonConvert.SerializeObject (inputData2), db.GetServerInfo ("server1"));
         }
+
+        [TestMethod]
+        public void PutWrongServerInfo() {
+            var db = new DataBase (true);
+            string data = JsonConvert.SerializeObject (new {
+                lol = "AHAHAHAH"
+            });
+
+            try {
+                db.PutServerInfo ("server1", data);
+            } catch (RequestException e) {
+                return;
+            } catch (Exception e) {
+                Assert.Fail ();
+            }
+            Assert.Fail ();
+        }
+
+        [TestMethod]
+        public void PutExtraServerInfo() {
+            var db = new DataBase (true);
+            string data = JsonConvert.SerializeObject (new {
+                name = "server1",
+                gameModes = new string[] { "DM" },
+                lol = "AHAHAHAH"
+            });
+
+            try {
+                db.PutServerInfo ("server1", data);
+            } catch(RequestException e) {
+                return;
+            } catch(Exception e) {
+                Assert.Fail ();
+            }
+            Assert.Fail ();
+        }
+
+        #endregion
+
+        #region servers/info
+
+        [TestMethod]
+        public void GetServersInfo() {
+            var db = new DataBase (true);
+            var inputData = new ServerInfo {
+                Name = "MyServer001",
+                GameModes = new string[] { "DM" }
+            };
+            var inputData2 = new ServerInfo {
+                Name = "MyServer002",
+                GameModes = new string[] { "DM" }
+            };
+            var inputData3 = new ServerInfo {
+                Name = "MyServer003",
+                GameModes = new string[] { "DM", "HSDM" }
+            };
+
+            db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
+            db.PutServerInfo ("server2", JsonConvert.SerializeObject (inputData2));
+            db.PutServerInfo ("server3", JsonConvert.SerializeObject (inputData3));
+
+            var serversInfo = db.GetServersInfo ();
+
+            Assert.AreEqual (
+                JsonConvert.SerializeObject (
+                    new ServerInfoEndpoint[] {
+                        new ServerInfoEndpoint { EndPoint = "server1", Info = inputData },
+                        new ServerInfoEndpoint { EndPoint = "server2", Info = inputData2 },
+                        new ServerInfoEndpoint { EndPoint = "server3", Info = inputData3 },
+                }),
+                serversInfo
+            );
+        }
+
+        #endregion
+
+        #region servers/{endpoint}/stats
 
         [TestMethod]
         public void GetServerStats() {
@@ -52,7 +132,6 @@ namespace Kontur.GameStats.Tests.DBtests {
                 GameModes = new string[] { "DM" }
             };
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
-
 
             string matchData = JsonConvert.SerializeObject (
                 new {
@@ -82,37 +161,7 @@ namespace Kontur.GameStats.Tests.DBtests {
             Assert.AreEqual (expected, db.GetServerStatistics ("server1"));
         }
 
-        [TestMethod]
-        public void GetServersInfo() {
-            var db = new DataBase (true);
-            var inputData = new ServerInfo {
-                Name = "MyServer001",
-                GameModes = new string[] { "DM" }
-            };
-            var inputData2 = new ServerInfo {
-                Name = "MyServer002",
-                GameModes = new string[] { "DM" }
-            };
-            var inputData3 = new ServerInfo {
-                Name = "MyServer003",
-                GameModes = new string[] { "DM", "HSDM" }
-            };
+        #endregion
 
-            db.PutServerInfo ("server1", JsonConvert.SerializeObject(inputData));
-            db.PutServerInfo ("server2", JsonConvert.SerializeObject(inputData2));
-            db.PutServerInfo ("server3", JsonConvert.SerializeObject(inputData3));
-
-            var serversInfo = db.GetServersInfo ();
-            
-            Assert.AreEqual (
-                JsonConvert.SerializeObject(
-                    new ServerInfoEndpoint[] {
-                        new ServerInfoEndpoint { EndPoint = "server1", Info = inputData },
-                        new ServerInfoEndpoint { EndPoint = "server2", Info = inputData2 },
-                        new ServerInfoEndpoint { EndPoint = "server3", Info = inputData3 },
-                }),
-                serversInfo
-            );
-        }
     }
 }

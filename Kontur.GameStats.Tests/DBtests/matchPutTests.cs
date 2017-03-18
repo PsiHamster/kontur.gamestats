@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Kontur.GameStats.Server.DataBase;
-using Newtonsoft.Json;
+﻿using Kontur.GameStats.Server.DataBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using System;
 using System.Threading;
 
 namespace Kontur.GameStats.Tests.DBtests {
     [TestClass]
     public class MatchPutTests {
+
+        #region /servers/{endpoint}/matches/{timestamp}
+
         [TestMethod]
         public void PutSingleMatch() {
             var db = new DataBase (true);
@@ -35,64 +33,87 @@ namespace Kontur.GameStats.Tests.DBtests {
             db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
 
             Assert.AreEqual (matchData, db.GetMatchInfo ("server1", "2017-01-22T15:17:00Z"));
-            Assert.AreEqual (
-                JsonConvert.SerializeObject (new {
-                    totalMatchesPlayed = 1,
-                    totalMatchesWon = 1,
-                    favouriteServer = "server1",
-                    uniqueServers = 1,
-                    favouriteGameMode = "DM",
-                    averageScoreBoardPercernt = 100.0,
-                    maximumMatchesPerDay = 1,
-                    averageMatchesPerDay = 1.0,
-                    lastMatchPlayed = "2017-01-22T15:17:00Z",
-                    killToDeathRatio = 5.0
-                }),
-                db.GetPlayerStats("player1")
-            );
         }
 
         [TestMethod]
-        public void GetRecentMatches() {
-            var db = new DataBase ("temp2",true);
+        public void PutLessMatchData() {
+            var db = new DataBase (true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
+
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
 
-            string matchData1 = MatchGenerator.GetMatch ();
-            string matchData2 = MatchGenerator.GetMatch ();
-            string matchData3 = MatchGenerator.GetMatch ();
-            db.PutMatch ("server1", "2017-01-23T15:14:00Z", matchData3);
-            db.PutMatch ("server1", "2017-01-23T15:17:00Z", matchData1);
-            db.PutMatch ("server1", "2017-01-23T15:16:00Z", matchData2);
-            
-            var recentMatches = db.GetRecentMatches (5);
-
-            var mas = new object[3];
-
-            mas[0] = new {
-                server = "server1",
-                timestamp = "2017-01-23T15:17:00Z",
-                matchResult = JsonConvert.DeserializeObject(matchData1)
-            };
-            mas[1] = new {
-                server = "server1",
-                timestamp = "2017-01-23T15:16:00Z",
-                matchResult = JsonConvert.DeserializeObject (matchData2)
-            };
-            mas[2] = new {
-                server = "server1",
-                timestamp = "2017-01-23T15:14:00Z",
-                matchResult = JsonConvert.DeserializeObject (matchData3)
-            };
-
-            var excepted = JsonConvert.SerializeObject (mas);
-
-            Assert.AreEqual (
-                excepted,
-                recentMatches
+            string matchData = JsonConvert.SerializeObject (
+                new {
+                    map = "DM-HelloWorld",
+                    gameMode = "DM",
+                }
                 );
+            try {
+                db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
+            } catch (RequestException e) {
+                return;
+            } catch (Exception e) {
+                Assert.Fail ();
+            }
+            Assert.Fail ();
         }
 
+        [TestMethod]
+        public void PutWrongMatchData() {
+            var db = new DataBase (true);
+            var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
+
+            db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
+
+            string matchData = JsonConvert.SerializeObject (
+                new {
+                    waifu = "Mio :3"
+                }
+                );
+            try {
+                db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
+            } catch(RequestException e) {
+                return;
+            } catch(Exception e) {
+                Assert.Fail ();
+            }
+            Assert.Fail ();
+        }
+
+        [TestMethod]
+        public void PutExtraMatchData() {
+            var db = new DataBase (true);
+            var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
+
+            db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
+
+            string matchData = JsonConvert.SerializeObject (
+                new {
+                    map = "DM-HelloWorld",
+                    gameMode = "DM",
+                    fragLimit = 20,
+                    timeLimit = 20,
+                    timeElapsed = 12.345678,
+                    scoreboard = new object[] {
+                        new { name = "Player1", frags = 20, kills = 20, deaths = 4 },
+                        new { name = "Player2", frags = 2, kills = 2, deaths = 21 }
+                    },
+                    lol = "lollololololol"
+                }
+                );
+            try {
+                db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
+            } catch(RequestException e) {
+                return;
+            } catch(Exception e) {
+                Assert.Fail ();
+            }
+            Assert.Fail ();
+        }
+
+        #endregion
+
+        
         [TestMethod]
         public void GetPopularServers() {
             var db = new DataBase (true);
