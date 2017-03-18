@@ -49,21 +49,24 @@ namespace Kontur.GameStats.Server.DataBase {
             while(isCleaning) {
                 try {
                     using(var db = new LiteRepository (dbConn)) {
-                        var kd = db.Query<BestPlayer> ()
-                            .Where (
-                                    Query.All ("KillToDeathRatio",
-                                    Query.Descending)
-                            ).Limit (50)
-                            .ToEnumerable ()
-                            .Last ().KillToDeathRatio;
-                        minKD = kd;
-                        db.Delete<BestPlayer> (
-                            Query.LT ("KillToDeathRatio", kd)
-                        );
+                        if(db.Query<BestPlayer> ().Count () > 0) {
+                            var kd = db.Query<BestPlayer> ()
+                                .Where (
+                                        Query.All ("KillToDeathRatio",
+                                        Query.Descending)
+                                ).Limit (50)
+                                .ToEnumerable ()
+                                .Last ().KillToDeathRatio;
+                            minKD = kd;
+                            db.Delete<BestPlayer> (
+                                Query.LT ("KillToDeathRatio", kd)
+                            );
+                        }
                     }
-                    Thread.Sleep (60 * 1000); // Sleep 60 seconds
                 } catch(Exception e) {
                     logger.Error (e);
+                } finally {
+                    Thread.Sleep (60 * 1000); // Sleep 60 seconds
                 }
             }
         }

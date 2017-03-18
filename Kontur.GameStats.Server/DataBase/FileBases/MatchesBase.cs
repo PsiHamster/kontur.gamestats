@@ -21,7 +21,7 @@ namespace Kontur.GameStats.Server.DataBase {
             if (deletePrev && Directory.Exists (workDirectory)) {
                  Directory.Delete (workDirectory, true);
             }
-            Directory.CreateDirectory ("matches");
+            Directory.CreateDirectory (workDirectory);
         }
 
         #region FileWriteGet
@@ -88,7 +88,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Добавляет серверу хранилище матчей.
         /// </summary>
         public void AddServer(string endPoint) {
-            Directory.CreateDirectory (string.Format (workDirectory+"\\matches\\{0}", endPoint));
+            Directory.CreateDirectory (string.Format (workDirectory+"\\{0}", endPoint));
         }
     }
 }

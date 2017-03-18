@@ -49,20 +49,23 @@ namespace Kontur.GameStats.Server.DataBase {
             while(isCleaning) {
                 try {
                     using(var db = new LiteRepository (dbConn)) {
-                        var firstMatch = db.Query<MatchInfo> ()
-                            .Where (
-                                    Query.All ("Timestamp",
-                                    Query.Descending)
-                            ).Limit(50)
-                            .ToEnumerable()
-                            .Last();
-                        db.Delete<MatchInfo> (
-                            Query.LT("Timestamp", firstMatch.Timestamp)
-                        );
+                        if(db.Query<MatchInfo> ().Count() > 0) {
+                            var firstMatch = db.Query<MatchInfo> ()
+                                .Where (
+                                        Query.All ("Timestamp",
+                                        Query.Descending)
+                                ).Limit (50)
+                                .ToEnumerable ()
+                                .Last ();
+                            db.Delete<MatchInfo> (
+                                Query.LT ("Timestamp", firstMatch.Timestamp)
+                            );
+                        }
                     }
-                    Thread.Sleep (30 * 1000); // Sleep 30 seconds
                 } catch(Exception e) {
                     logger.Error (e);
+                } finally {
+                    Thread.Sleep (30 * 1000); // Sleep 30 seconds
                 }
             }
         }
@@ -80,17 +83,16 @@ namespace Kontur.GameStats.Server.DataBase {
         public DateTime GetLastMatchTime() {
             DateTime last;
             using(var db = new LiteRepository (dbConn)) {
-                last = db.Query<MatchInfo> ()
-                    .Where (
-                            Query.All ("Timestamp",
-                            Query.Descending)
-                    ).First ().Timestamp;
+                if(db.Query<MatchInfo> ().Count () > 0)
+                    last = db.Query<MatchInfo> ()
+                        .Where (
+                                Query.All ("Timestamp",
+                                Query.Descending)
+                        ).First ().Timestamp.ToUniversalTime ();
+                else
+                    last = new DateTime (0).Date;
             }
-            if(last != null) {
-                return last;
-            } else {
-                return new DateTime (0).Date;
-            }
+            return last;
         }
 
         #endregion
