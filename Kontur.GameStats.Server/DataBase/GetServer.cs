@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Newtonsoft.Json;
 using LiteDB;
-using System.IO;
+using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.DataBase {
     public partial class DataBase {
-        
-        #region ServerMethods
+
+        #region ServerInfo
 
         public string GetServerInfo(string endPoint) {
             Server server;
@@ -22,8 +21,12 @@ namespace Kontur.GameStats.Server.DataBase {
             if(server == null) {
                 throw new RequestException ("Server not found");
             }
-            return server.GetJSONserverInfo();
+            return server.GetJSONserverInfo ();
         }
+
+        #endregion
+
+        #region ServersInfo
 
         public string GetServersInfo() {
             string s;
@@ -31,11 +34,15 @@ namespace Kontur.GameStats.Server.DataBase {
                 var col = db.GetCollection<Server> ("servers");
                 s = JsonConvert.SerializeObject (col.FindAll ()
                     .Select (
-                        server => server.GetServerInfoEndpoint()
+                        server => server.GetServerInfoEndpoint ()
                     ));
             }
             return s;
         }
+
+        #endregion
+
+        #region ServerStatistics
 
         public string GetServerStatistics(string endpoint) {
             Server server;
@@ -46,8 +53,12 @@ namespace Kontur.GameStats.Server.DataBase {
             if(server == null) {
                 throw new RequestException ("Server not found");
             }
-            return server.GetJSONserverStatistics(LastMatchTime.Date);
+            return server.GetJSONserverStatistics (LastMatchTime.Date);
         }
+
+        #endregion
+
+        #region PopularServers
 
         public string GetPopularServers(int count) {
             string s;
@@ -60,7 +71,7 @@ namespace Kontur.GameStats.Server.DataBase {
                              endpoint = server.EndPoint,
                              name = server.Name,
                              averageMatchesPerDay = server.TotalMatches /
-                             ((LastMatchTime.Date.Subtract(server.FirstMatchPlayed.Date)).TotalDays + 1)
+                             ((LastMatchTime.Date.Subtract (server.FirstMatchPlayed.Date)).TotalDays + 1)
                          })
                     .OrderByDescending (
                         x => x.averageMatchesPerDay)
@@ -72,35 +83,5 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #endregion
 
-        #region MathesMethods
-
-        public string GetMatchInfo(string endPoint, string timeStamp) {
-            return matches.GetMatchJSON (endPoint, timeStamp);
-        }
-
-        public string GetRecentMatches(int count) {
-            return recentMatches.Take (count);
-        }
-
-        #endregion
-
-        #region PlayersMethods
-
-        public string GetPlayerStats(string playerName) {
-            string name = playerName.ToLower ();
-            var player = players.GetPlayer (name);
-
-            if(player == null) {
-                throw new RequestException ("Player not found");
-            }
-
-            return player.GetJSONplayerStats (LastMatchTime.Date);
-        }
-
-        public string GetBestPlayers(int count) {
-            return bestPlayers.Take (count);
-        }
-
-        #endregion
     }
 }

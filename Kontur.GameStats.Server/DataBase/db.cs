@@ -31,7 +31,8 @@ namespace Kontur.GameStats.Server.DataBase {
         private PlayersBase players;
         private MatchesBase matches;
 
-        private string dbConn = "Filename=database.db;Journal=false;Timeout=0:10:00;Cache Size=500000";
+        private string workDirectory;
+        private string dbConn;
 
         #endregion
 
@@ -52,9 +53,17 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Конструктор, возвращающий базу данных работающих с бд.
         /// </summary>
         /// <param name="deletePrev">Удалить ли старый файл, или открыть его</param>
-        /// <param name="name">Имя файла базы данных</param>
-        public DataBase(bool deletePrev) {
+        /// <param name="path">Директория в которой будет находится база данных</param>
+        public DataBase(string path, bool deletePrev) {
             logger.Info (string.Format("Initializing statsDB"));
+
+            workDirectory = path;
+            Directory.CreateDirectory (workDirectory);
+
+            dbConn = string.Format(
+                "Filename={0}database.db;Journal=false;Timeout=0:10:00;Cache Size=500000",
+                path+@"\");
+
             if(deletePrev)
                 DeleteFiles ();
 
@@ -63,8 +72,8 @@ namespace Kontur.GameStats.Server.DataBase {
                 serversCol.LongCount ();
             }
 
-            matches = new MatchesBase (deletePrev);
-            players = new PlayersBase (deletePrev);
+            matches = new MatchesBase (workDirectory, deletePrev);
+            players = new PlayersBase (workDirectory, deletePrev);
 
             bestPlayers = new BestPlayers ();
             recentMatches = new RecentMatches ();
@@ -80,22 +89,28 @@ namespace Kontur.GameStats.Server.DataBase {
         }
 
         /// <summary>
-        /// Метод открывающий базу данных без удаления
+        /// Метод открывающий базу данных без удаления в текущей директории
         /// </summary>
-        public DataBase() : this (false) { }
+        public DataBase() : this ("database", false) { }
+
+        /// <summary>
+        /// Метод открывающий базу данных в текущей директории
+        /// </summary>
+        public DataBase(bool deletePrev) : this ("database", deletePrev) { }
+
         #endregion
 
         #region deleter
 
         private void DeleteFiles() {
-            if (File.Exists ("database.db")) {
-                File.Delete ("database.db");
+            if (File.Exists (workDirectory+"\\database.db")) {
+                File.Delete (workDirectory+"\\database.db");
             }
-            if (File.Exists ("bestPlayers.dat")) {
-                File.Delete ("bestPlayers.dat");
+            if (File.Exists (workDirectory+"\\bestPlayers.dat")) {
+                File.Delete (workDirectory+"\\bestPlayers.dat");
             }
-            if (File.Exists ("recentMatches.dat")) {
-                File.Delete ("recentMatches.dat");
+            if (File.Exists (workDirectory+"\\recentMatches.dat")) {
+                File.Delete (workDirectory+"\\recentMatches.dat");
             }
         }
 

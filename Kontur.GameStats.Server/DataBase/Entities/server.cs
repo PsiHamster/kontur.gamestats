@@ -120,6 +120,7 @@ namespace Kontur.GameStats.Server.DataBase {
         }
 
         #endregion
+
     }
 
     public class ServerInfo {

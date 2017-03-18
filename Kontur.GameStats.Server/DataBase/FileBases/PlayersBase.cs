@@ -17,19 +17,22 @@ namespace Kontur.GameStats.Server.DataBase {
     /// от имени игрока
     /// </summary>
     class PlayersBase {
-        
+
+        public string workDirectory { get; private set; }
+
         #region Constructor
 
-        public PlayersBase(bool deletePrev = false) {
-            if (deletePrev && Directory.Exists ("players")) {
-                Directory.Delete ("players", true);
+        public PlayersBase(string directory, bool deletePrev = false) {
+            workDirectory = directory+ "\\players";
+            if (deletePrev && Directory.Exists (workDirectory)) {
+                Directory.Delete (workDirectory, true);
             }
-            Directory.CreateDirectory ("players");
+            Directory.CreateDirectory (workDirectory);
             foreach(var first in symbols) {
                 foreach(var second in symbols) {
                     foreach(var third in symbols) {
                         Directory.CreateDirectory (
-                            string.Format ("players\\{0}\\{1}\\{2}", first, second, third)
+                            string.Format (workDirectory + "\\{0}\\{1}\\{2}", first, second, third)
                             );
                     }
                 }
@@ -49,7 +52,7 @@ namespace Kontur.GameStats.Server.DataBase {
             string name = HttpUtility.UrlEncode(player.Name);
             string md5 = ComputeMD5Checksum (name);
 
-            string directoryPath = string.Format("players\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
+            string directoryPath = string.Format(workDirectory + "\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
             //Directory.CreateDirectory (directoryPath);
             string filePath = string.Format ("{0}\\{1}.dat", directoryPath, name);
 
@@ -66,7 +69,7 @@ namespace Kontur.GameStats.Server.DataBase {
             string md5 = ComputeMD5Checksum (name);
             Player player;
 
-            string directoryPath = string.Format ("players\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
+            string directoryPath = string.Format (workDirectory + "\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
             //Directory.CreateDirectory (directoryPath);
             string filePath = string.Format ("{0}\\{1}.dat", directoryPath, name);
 

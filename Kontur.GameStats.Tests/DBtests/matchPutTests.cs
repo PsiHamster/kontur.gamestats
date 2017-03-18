@@ -17,7 +17,7 @@ namespace Kontur.GameStats.Tests.DBtests {
             var db = new DataBase (true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
             
-            db.PutInfo ("server1", JsonConvert.SerializeObject(inputData));
+            db.PutServerInfo ("server1", JsonConvert.SerializeObject(inputData));
 
             string matchData = JsonConvert.SerializeObject (
                 new {
@@ -54,9 +54,9 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void GetRecentMatches() {
-            var db = new DataBase (true);
+            var db = new DataBase ("temp2",true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
-            db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));
+            db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
 
             string matchData1 = MatchGenerator.GetMatch ();
             string matchData2 = MatchGenerator.GetMatch ();
@@ -65,7 +65,7 @@ namespace Kontur.GameStats.Tests.DBtests {
             db.PutMatch ("server1", "2017-01-23T15:17:00Z", matchData1);
             db.PutMatch ("server1", "2017-01-23T15:16:00Z", matchData2);
 
-            Thread.Sleep (6000); // Последние матчи обновляются каждые 5 секунд
+            Thread.Sleep (10000); // Последние матчи обновляются каждые 5 секунд
 
             var recentMatches = db.GetRecentMatches (5);
 
@@ -100,8 +100,8 @@ namespace Kontur.GameStats.Tests.DBtests {
             var db = new DataBase (true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
             var inputData2 = new ServerInfo { Name = "MyServer002", GameModes = new string[] { "DM" } };
-            db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));
-            db.PutInfo ("server2", JsonConvert.SerializeObject (inputData2));
+            db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
+            db.PutServerInfo ("server2", JsonConvert.SerializeObject (inputData2));
 
             string matchData1 = MatchGenerator.GetMatch ();
             string matchData2 = MatchGenerator.GetMatch ();
@@ -134,7 +134,7 @@ namespace Kontur.GameStats.Tests.DBtests {
             var db = new DataBase (true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
 
-            db.PutInfo ("server1", JsonConvert.SerializeObject (inputData));
+            db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
 
             string matchData = JsonConvert.SerializeObject (
                 new {

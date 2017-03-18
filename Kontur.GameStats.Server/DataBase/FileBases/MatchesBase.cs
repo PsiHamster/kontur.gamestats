@@ -15,12 +15,15 @@ namespace Kontur.GameStats.Server.DataBase {
     /// </summary>
     class MatchesBase {
 
+        private string workDirectory;
+
         /// <summary>
         /// Инициализирует базу матчей в папке matches
         /// </summary>
-        public MatchesBase(bool deletePrev = false) {
-            if (deletePrev && Directory.Exists ("matches")) {
-                 Directory.Delete ("matches", true);
+        public MatchesBase(string directory, bool deletePrev = false) {
+            workDirectory = directory + "\\matches";
+            if (deletePrev && Directory.Exists (workDirectory)) {
+                 Directory.Delete (workDirectory, true);
             }
             Directory.CreateDirectory ("matches");
         }
@@ -36,7 +39,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public void PutMatch (string endPoint, string timeStamp, string matchInfo) {
             try {
                 using(var file = new StreamWriter (
-                    string.Format ("matches/{0}/{1}.json",
+                    string.Format (workDirectory+"\\{0}\\{1}.json",
                         endPoint, timeStamp.Replace (":", "D")), false)) {
                     file.Write (matchInfo);
                 }
@@ -64,7 +67,7 @@ namespace Kontur.GameStats.Server.DataBase {
             string matchInfo;
             try {
                 using(var file = new StreamReader (
-                        string.Format ("matches/{0}/{1}.json",
+                        string.Format (workDirectory+"\\{0}\\{1}.json",
                             endPoint, timeStamp.Replace (":", "D")))) {
                     matchInfo = file.ReadToEnd ();
                 }
@@ -89,7 +92,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Добавляет серверу хранилище матчей.
         /// </summary>
         public void AddServer(string endPoint) {
-            Directory.CreateDirectory (string.Format ("matches/{0}", endPoint));
+            Directory.CreateDirectory (string.Format (workDirectory+"\\{0}", endPoint));
         }
     }
 }
