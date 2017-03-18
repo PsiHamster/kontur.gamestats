@@ -57,11 +57,14 @@ namespace Kontur.GameStats.Server.DataBase {
                 serversCol.LongCount ();
             }
 
-            matches = new MatchesBase ();
-            players = new PlayersBase ();
+            matches = new MatchesBase (deletePrev);
+            players = new PlayersBase (deletePrev);
 
             bestPlayers = new BestPlayers ();
             recentMatches = new RecentMatches ();
+
+            bestPlayers.StartListen ();
+            recentMatches.StartListen ();
 
             if (!deletePrev && File.Exists ("recentMatches.dat")) {
                 LoadLastMatchTime ();
@@ -87,12 +90,6 @@ namespace Kontur.GameStats.Server.DataBase {
             }
             if (File.Exists ("recentMatches.dat")) {
                 File.Delete ("recentMatches.dat");
-            }
-            if (Directory.Exists("matches")) {
-                Directory.Delete ("matches", true);
-            }
-            if(Directory.Exists ("players")) {
-                Directory.Delete ("players", true);
             }
         }
 

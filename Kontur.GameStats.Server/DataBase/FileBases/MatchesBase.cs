@@ -14,7 +14,14 @@ namespace Kontur.GameStats.Server.DataBase {
     /// передавать в AddServer()
     /// </summary>
     class MatchesBase {
-        public MatchesBase() {
+
+        /// <summary>
+        /// Инициализирует базу матчей в папке matches
+        /// </summary>
+        public MatchesBase(bool deletePrev = false) {
+            if (deletePrev && Directory.Exists ("matches")) {
+                 Directory.Delete ("matches", true);
+            }
             Directory.CreateDirectory ("matches");
         }
 

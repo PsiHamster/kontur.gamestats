@@ -151,11 +151,14 @@ namespace Kontur.GameStats.Tests.DBtests {
                 );
             db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
 
+            Thread.Sleep (22 * 1000);
+
             var expected = JsonConvert.SerializeObject (
                 new object[] {
                     new { name = "Player1", killToDeathRatio = 5.0 },
                     new { name = "Player2", killToDeathRatio = 1.0 }
                 });
+
             Assert.AreEqual (
                 "[]",
                 db.GetBestPlayers (-1)

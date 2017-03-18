@@ -26,14 +26,13 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public RecentMatches() {
             LoadRecentMatches ();
-            StartListen ();
         }
 
         #region Thread
 
         private Thread listenerThread;
 
-        private void StartListen() {
+        public void StartListen() {
             listenerThread = new Thread (ListenMatches) {
                 IsBackground = true,
                 Priority = ThreadPriority.Normal

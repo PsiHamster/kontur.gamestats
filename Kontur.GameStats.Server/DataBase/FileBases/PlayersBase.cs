@@ -17,9 +17,13 @@ namespace Kontur.GameStats.Server.DataBase {
     /// от имени игрока
     /// </summary>
     class PlayersBase {
-        private BinaryFormatter formatter = new BinaryFormatter ();
         
-        public PlayersBase() {
+        #region Constructor
+
+        public PlayersBase(bool deletePrev = false) {
+            if (deletePrev && Directory.Exists ("players")) {
+                Directory.Delete ("players", true);
+            }
             Directory.CreateDirectory ("players");
             foreach(var first in symbols) {
                 foreach(var second in symbols) {
@@ -32,7 +36,11 @@ namespace Kontur.GameStats.Server.DataBase {
             }
         }
 
+        #endregion
+
         #region FileWriteGet
+
+        private BinaryFormatter formatter = new BinaryFormatter ();
 
         /// <summary>
         /// Добавляет игрока в базу данных.
@@ -92,5 +100,6 @@ namespace Kontur.GameStats.Server.DataBase {
         }
 
         #endregion
+
     }
 }

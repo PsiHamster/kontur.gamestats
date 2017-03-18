@@ -22,14 +22,13 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public BestPlayers() {
             LoadBestPlayers ();
-            StartListenUpdatedPlayers ();
         }
 
         #region Thread
 
         private Thread listenerThread;
 
-        private void StartListenUpdatedPlayers() {
+        public void StartListen() {
             listenerThread = new Thread (ListenUpdatedPlayers) {
                 IsBackground = true,
                 Priority = ThreadPriority.Normal
@@ -106,17 +105,15 @@ namespace Kontur.GameStats.Server.DataBase {
                     newList.Add (elem);
                 }
                 count+=1;
-                if (count == 50) {
-                    minKD = elem.killToDeathRatio;
-                }
             }
             if(count < 50) {
                 newList.Add (player);
-                minKD = player.killToDeathRatio;
                 inserted = true;
             }
+            if(count == 50) {
+                minKD = newList.Last().killToDeathRatio;
+            }
             if(inserted) {
-                minKD = newList.Last ().killToDeathRatio;
                 bestPlayers = newList;
             }
         }
