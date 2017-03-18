@@ -55,8 +55,10 @@
   </Choose>
   <ItemGroup>
     <Compile Include="DBtests\Generators.cs" />
-    <Compile Include="DBtests\matchPutTests.cs" />
-    <Compile Include="DBtests\serverMethodsTests.cs" />
+    <Compile Include="DBtests\MatchPutTests.cs" />
+    <Compile Include="DBtests\PlayerStatsTests.cs" />
+    <Compile Include="DBtests\ReportsTests.cs" />
+    <Compile Include="DBtests\ServerMethodsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

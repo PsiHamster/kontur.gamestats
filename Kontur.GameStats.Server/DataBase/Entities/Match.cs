@@ -14,12 +14,12 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region fields
         
-        [JsonProperty ("server")]
+        [JsonProperty ("server"), JsonRequired()]
         public string Server { get; set; }
         [BsonIndex]
-        [JsonProperty ("timestamp")]
+        [JsonProperty ("timestamp"), JsonRequired ()]
         public DateTime Timestamp { get; set; }
-        [JsonProperty ("matchResult")]
+        [JsonProperty ("matchResult"), JsonRequired ()]
         public MatchResult MatchResult { get; set; }
 
         #endregion
@@ -41,17 +41,17 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region fields
 
-        [JsonProperty ("map")]
+        [JsonProperty ("map"), JsonRequired ()]
         public string Map { get; set; }
-        [JsonProperty ("gameMode")]
+        [JsonProperty ("gameMode"), JsonRequired ()]
         public string GameMode { get; set; }
-        [JsonProperty ("fragLimit")]
+        [JsonProperty ("fragLimit"), JsonRequired ()]
         public int FragLimit { get; set; }
-        [JsonProperty ("timeLimit")]
+        [JsonProperty ("timeLimit"), JsonRequired ()]
         public int TimeLimit { get; set; }
-        [JsonProperty ("timeElapsed")]
+        [JsonProperty ("timeElapsed"), JsonRequired ()]
         public double TimeElapsed { get; set; }
-        [JsonProperty ("scoreboard")]
+        [JsonProperty ("scoreboard"), JsonRequired ()]
         public ScoreBoard[] ScoreBoard { get; set; }
 
         #endregion
@@ -70,13 +70,13 @@ namespace Kontur.GameStats.Server.DataBase {
 
     [Serializable]
     public class ScoreBoard {
-        [JsonProperty ("name")]
+        [JsonProperty ("name"), JsonRequired ()]
         public string Name { get; set; }
-        [JsonProperty ("frags")]
+        [JsonProperty ("frags"), JsonRequired ()]
         public int Frags { get; set; }
-        [JsonProperty ("kills")]
+        [JsonProperty ("kills"), JsonRequired ()]
         public int Kills { get; set; }
-        [JsonProperty ("deaths")]
+        [JsonProperty ("deaths"), JsonRequired ()]
         public int Deaths { get; set; }
     }
 }

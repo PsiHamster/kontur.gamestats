@@ -1,15 +1,11 @@
-﻿using System;
+﻿using Kontur.GameStats.Server.ApiMethods;
+using NLog;
+using System;
 using System.Linq;
-using System.IO;
 using System.Net;
 using System.Threading;
-using System.Threading.Tasks;
 
-using Kontur.GameStats.Server.ApiMethods;
-using NLog;
-
-namespace Kontur.GameStats.Server
-{
+namespace Kontur.GameStats.Server {
     internal class StatServer : IDisposable
     {
         private Router router;

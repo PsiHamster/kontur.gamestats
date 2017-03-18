@@ -13,9 +13,10 @@ namespace Kontur.GameStats.Server.DataBase {
                 return JsonConvert.DeserializeObject<MatchResult> (
                                     matchInfo,
                                     new JsonSerializerSettings {
+                                        MissingMemberHandling = MissingMemberHandling.Error,
                                         CheckAdditionalContent = true
                                     });
-            } catch {
+            } catch (Exception e) {
                 throw new RequestException ("Invalid match data");
             }
         }

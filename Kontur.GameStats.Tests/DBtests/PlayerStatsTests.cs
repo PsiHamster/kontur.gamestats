@@ -1,11 +1,6 @@
 ﻿using Kontur.GameStats.Server.DataBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Tests.DBtests {
     [TestClass]
@@ -112,7 +107,7 @@ namespace Kontur.GameStats.Tests.DBtests {
                     maximumMatchesPerDay = 1,
                     averageMatchesPerDay = 1.0,
                     lastMatchPlayed = "2017-01-22T15:17:00Z",
-                    killToDeathRatio = 0
+                    killToDeathRatio = 0.0
                 }),
                 db.GetPlayerStats ("player2")
             );

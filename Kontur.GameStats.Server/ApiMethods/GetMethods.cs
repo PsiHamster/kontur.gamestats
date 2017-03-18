@@ -1,16 +1,4 @@
-﻿using System;
-using System.Net;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using NLog;
-using Kontur.GameStats.Server.DataBase;
-using System.Web;
-
-namespace Kontur.GameStats.Server.ApiMethods {
+﻿namespace Kontur.GameStats.Server.ApiMethods {
     public partial class Router {
 
         private string GetServersInfo() {

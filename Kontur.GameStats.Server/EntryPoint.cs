@@ -1,13 +1,8 @@
-﻿using System;
-using System.Web;
-using Fclp;
-
-using Kontur.GameStats.Server.DataBase;
-using System.Diagnostics;
+﻿using Fclp;
 using NLog;
+using System;
 
-namespace Kontur.GameStats.Server
-{
+namespace Kontur.GameStats.Server {
     public class EntryPoint {
         private static Logger logger = LogManager.GetCurrentClassLogger ();
 

@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.IO;
-
-using System.Collections.Concurrent;
-using NLog;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using LiteDB;
 using Newtonsoft.Json;
-using LiteDB;
+using NLog;
+using System;
+using System.Linq;
+using System.Threading;
 
 namespace Kontur.GameStats.Server.DataBase {
 
@@ -26,6 +19,7 @@ namespace Kontur.GameStats.Server.DataBase {
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
         private string dbConn;
         private Thread cleanerThread;
+        private bool isCleaning;
 
         #endregion
 
@@ -39,6 +33,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Запускает поток очищающий лишние матчи
         /// </summary>
         public void StartCleanThread() {
+            isCleaning = true;
             cleanerThread = new Thread (ListenUpdatedPlayers) {
                 IsBackground = true,
                 Priority = ThreadPriority.Normal
@@ -46,8 +41,12 @@ namespace Kontur.GameStats.Server.DataBase {
             cleanerThread.Start ();
         }
 
+        public void StopCleanThread() {
+            isCleaning = false;
+        }
+
         private void ListenUpdatedPlayers() {
-            while(true) {
+            while(isCleaning) {
                 try {
                     using(var db = new LiteRepository (dbConn)) {
                         var firstMatch = db.Query<MatchInfo> ()
@@ -75,6 +74,22 @@ namespace Kontur.GameStats.Server.DataBase {
         public void Add(MatchInfo match) {
             using (var db = new LiteRepository(dbConn)) {
                 db.Insert (match);
+            }
+        }
+
+        public DateTime GetLastMatchTime() {
+            DateTime last;
+            using(var db = new LiteRepository (dbConn)) {
+                last = db.Query<MatchInfo> ()
+                    .Where (
+                            Query.All ("Timestamp",
+                            Query.Descending)
+                    ).First ().Timestamp;
+            }
+            if(last != null) {
+                return last;
+            } else {
+                return new DateTime (0).Date;
             }
         }
 

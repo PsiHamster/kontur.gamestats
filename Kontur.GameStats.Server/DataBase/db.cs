@@ -38,17 +38,6 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region Constructor
 
-        #region LoadDefaults
-
-        private void LoadLastMatchTime() {
-            MatchInfo[] a;
-            if((a = JsonConvert.DeserializeObject<MatchInfo[]> (recentMatches.Take (1))).Length > 0){
-                LastMatchTime =  a[0].Timestamp;
-            };
-        }
-
-        #endregion
-
         /// <summary>
         /// Конструктор, возвращающий базу данных работающих с бд.
         /// </summary>
@@ -60,13 +49,13 @@ namespace Kontur.GameStats.Server.DataBase {
             workDirectory = path;
             Directory.CreateDirectory (workDirectory);
 
-            dbConn = string.Format(
-                "Filename={0}database.db;Journal=false;Timeout=0:10:00;Cache Size=500000",
-                path+@"\");
-
             if(deletePrev)
                 DeleteFiles ();
 
+            dbConn = string.Format(
+                "Filename={0}database.db;Journal=false;Timeout=0:10:00;Cache Size=500000",
+                path+@"\");
+            
             using(var db = new LiteDatabase (dbConn)) {
                 var serversCol = db.GetCollection<Server> ("servers");
                 serversCol.LongCount ();
@@ -81,8 +70,8 @@ namespace Kontur.GameStats.Server.DataBase {
             bestPlayers.StartListen ();
             recentMatches.StartCleanThread ();
 
-            if (!deletePrev && File.Exists ("recentMatches.dat")) {
-                LoadLastMatchTime ();
+            if (!deletePrev) {
+                LastMatchTime = recentMatches.GetLastMatchTime ();
             }
 
             logger.Info (string.Format ("Success"));
