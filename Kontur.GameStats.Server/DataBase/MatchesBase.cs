@@ -7,11 +7,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Server.DataBase {
+
+    /// <summary>
+    /// Класс реализующий хранение матчей в папке matches
+    /// Делит матчи по endpoint серверов, которые нужно
+    /// передавать в AddServer()
+    /// </summary>
     class MatchesBase {
         public MatchesBase() {
             Directory.CreateDirectory ("matches");
-
         }
+
+        #region FileWriteGet
 
         /// <summary>
         /// Сохраняет матч в папку servers/{endPoint}/{timeStamp}.json,
@@ -19,12 +26,10 @@ namespace Kontur.GameStats.Server.DataBase {
         /// </summary>
         public void PutMatch (string endPoint, string timeStamp, string matchInfo) {
             try {
-                using(var file = new FileStream (
+                using(var file = new StreamWriter (
                     string.Format ("matches/{0}/{1}.json",
-                        endPoint, timeStamp.Replace (":", "D")),
-                    System.IO.FileMode.CreateNew, FileAccess.Write)) {
-                    var bytes = Encoding.Unicode.GetBytes (matchInfo);
-                    file.Write (bytes, 0, bytes.Length);
+                        endPoint, timeStamp.Replace (":", "D")), false)) {
+                    file.Write (matchInfo);
                 }
             } catch (IOException e) {
                 throw (new RequestException ("Match already added"));
@@ -37,13 +42,10 @@ namespace Kontur.GameStats.Server.DataBase {
         public string GetMatch (string endPoint, string timeStamp) {
             string matchInfo;
             try {
-                using(var file = new FileStream (
+                using(var file = new StreamReader (
                         string.Format ("matches/{0}/{1}.json",
-                            endPoint, timeStamp.Replace (":", "D")),
-                        System.IO.FileMode.Open, FileAccess.Read)) {
-                    byte[] bytes = new byte[(int)file.Length];
-                    file.Read (bytes, 0, (int)file.Length);
-                    matchInfo = Encoding.Unicode.GetString (bytes);
+                            endPoint, timeStamp.Replace (":", "D")))) {
+                    matchInfo = file.ReadToEnd ();
                 }
             } catch(FileNotFoundException e) {
                 throw (new RequestException ("Match wasn't found"));
@@ -51,6 +53,11 @@ namespace Kontur.GameStats.Server.DataBase {
             return matchInfo;
         }
 
+        #endregion
+
+        /// <summary>
+        /// Добавляет серверу хранилище матчей.
+        /// </summary>
         public void AddServer(string endPoint) {
             Directory.CreateDirectory (string.Format ("matches/{0}", endPoint));
         }
