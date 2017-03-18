@@ -90,7 +90,7 @@ namespace Kontur.GameStats.Server.DataBase {
             }
 
             matches.PutMatch (endPoint, timeStamp, matchResult);
-            recentMatches.newMatches.Enqueue (matchInfo);
+            recentMatches.Add(matchInfo);
 
             foreach(var player in UpdatePlayers (matchInfo)) {
                 players.AddPlayer (player);

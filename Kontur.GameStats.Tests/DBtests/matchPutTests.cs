@@ -64,9 +64,7 @@ namespace Kontur.GameStats.Tests.DBtests {
             db.PutMatch ("server1", "2017-01-23T15:14:00Z", matchData3);
             db.PutMatch ("server1", "2017-01-23T15:17:00Z", matchData1);
             db.PutMatch ("server1", "2017-01-23T15:16:00Z", matchData2);
-
-            Thread.Sleep (10000); // Последние матчи обновляются каждые 5 секунд
-
+            
             var recentMatches = db.GetRecentMatches (5);
 
             var mas = new object[3];

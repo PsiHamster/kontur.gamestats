@@ -13,9 +13,10 @@ namespace Kontur.GameStats.Server.DataBase {
     public class MatchInfo {
 
         #region fields
-
+        
         [JsonProperty ("server")]
         public string Server { get; set; }
+        [BsonIndex]
         [JsonProperty ("timestamp")]
         public DateTime Timestamp { get; set; }
         [JsonProperty ("matchResult")]

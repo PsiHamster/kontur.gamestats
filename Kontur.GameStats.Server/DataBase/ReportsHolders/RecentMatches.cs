@@ -10,48 +10,58 @@ using System.Collections.Concurrent;
 using NLog;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
+using LiteDB;
 
 namespace Kontur.GameStats.Server.DataBase {
 
     /// <summary>
     /// Класс реализующий хранение последних 50 матчей
-    /// При вызове конструктора создает поток, проверяющий матчи
-    /// Все новые матчи складывать в newMatches
+    /// При добавлении матча, добавляет его в базу данных,
+    /// При запуске потока чистки будет очищать бд каждые 30 секунд
     /// </summary>
     class RecentMatches {
-        private SynchronizedCollection<MatchInfo> recentMatches;
-        public ConcurrentQueue<MatchInfo> newMatches= new ConcurrentQueue<MatchInfo> ();
+
+        #region Fields
 
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
-        private BinaryFormatter formatter = new BinaryFormatter ();
+        private string dbConn;
+        private Thread cleanerThread;
 
-        public RecentMatches() {
-            LoadRecentMatches ();
+        #endregion
+
+        public RecentMatches(string dbConnectionString) {
+            dbConn = dbConnectionString;
         }
 
         #region Thread
-
-        private Thread listenerThread;
-
-        public void StartListen() {
-            listenerThread = new Thread (ListenMatches) {
+        
+        /// <summary>
+        /// Запускает поток очищающий лишние матчи
+        /// </summary>
+        public void StartCleanThread() {
+            cleanerThread = new Thread (ListenUpdatedPlayers) {
                 IsBackground = true,
                 Priority = ThreadPriority.Normal
             };
-            listenerThread.Start ();
+            cleanerThread.Start ();
         }
 
-        private void ListenMatches() {
+        private void ListenUpdatedPlayers() {
             while(true) {
                 try {
-                    while(!newMatches.IsEmpty) {
-                        MatchInfo match;
-                        if(newMatches.TryDequeue (out match)) {
-                            Add (match);
-                        }
+                    using(var db = new LiteRepository (dbConn)) {
+                        var firstMatch = db.Query<MatchInfo> ()
+                            .Where (
+                                    Query.All ("Timestamp",
+                                    Query.Descending)
+                            ).Limit(50)
+                            .ToEnumerable()
+                            .Last();
+                        db.Delete<MatchInfo> (
+                            Query.LT("Timestamp", firstMatch.Timestamp)
+                        );
                     }
-                    SaveRecentMatches ();
-                    Thread.Sleep (5 * 1000); // Sleep 5 seconds
+                    Thread.Sleep (30 * 1000); // Sleep 30 seconds
                 } catch(Exception e) {
                     logger.Error (e);
                 }
@@ -60,52 +70,11 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #endregion
 
-        #region File
-
-        private void LoadRecentMatches() {
-            recentMatches = new SynchronizedCollection<MatchInfo> (50);
-            try {
-                using(var file = new FileStream ("recentMatches.dat", System.IO.FileMode.Open, FileAccess.Read)) {
-                    var array = (MatchInfo[])formatter.Deserialize (file);
-                    foreach (var e in array) {
-                        recentMatches.Add (e);
-                    }
-                }
-            } catch(FileNotFoundException e) {
-
-            } catch(Exception e) {
-                logger.Error (e);
-            }
-        }
-
-        private void SaveRecentMatches() {
-            try {
-                if(recentMatches.Count == 0)
-                    return;
-                using(var file = new FileStream ("recentMatches.dat", System.IO.FileMode.Create, FileAccess.Write)) {
-                    formatter.Serialize (file, recentMatches.ToArray ());
-                }
-            } catch(Exception e) {
-                logger.Error (e);
-            }
-        }
-
-        #endregion
-
         #region Add
 
-        private void Add(MatchInfo match) {
-            if(recentMatches.Count > 50) {
-                recentMatches.RemoveAt (50);
-            }
-            for (int i = 0; i < recentMatches.Count; i++) {
-                if(match.Timestamp > recentMatches[i].Timestamp) {
-                    recentMatches.Insert (i, match);
-                    return;
-                }
-            }
-            if(recentMatches.Count < 50) {
-                recentMatches.Add(match);
+        public void Add(MatchInfo match) {
+            using (var db = new LiteRepository(dbConn)) {
+                db.Insert (match);
             }
         }
 
@@ -113,10 +82,28 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region Take
 
+        /// <summary>
+        /// Возвращает в json массив из count последних
+        /// матчей
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public string Take(int count) {
             string s;
-            count = Math.Min (Math.Max (count, 0), Math.Min(50, recentMatches.Count));
-            var results = recentMatches.Take (count);
+            count = Math.Min (Math.Max (count, 0), 50);
+            MatchInfo[] results;
+            using(var db = new LiteRepository (dbConn)) {
+                results = db.Query<MatchInfo>()
+                    .Where(
+                        Query.All("Timestamp",
+                        Query.Descending)
+                    ).Limit(count)
+                    .ToEnumerable()
+                    .Select(match => { // Необходимое преобразование, т.к. БД переводит в локальное время
+                        match.Timestamp = match.Timestamp.ToUniversalTime (); 
+                        return match;
+                    }).ToArray();
+            }
             s = JsonConvert.SerializeObject (results);
             return s;
         }

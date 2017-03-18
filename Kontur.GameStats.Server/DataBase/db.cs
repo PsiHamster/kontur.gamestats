@@ -76,10 +76,10 @@ namespace Kontur.GameStats.Server.DataBase {
             players = new PlayersBase (workDirectory, deletePrev);
 
             bestPlayers = new BestPlayers ();
-            recentMatches = new RecentMatches ();
+            recentMatches = new RecentMatches (dbConn);
 
             bestPlayers.StartListen ();
-            recentMatches.StartListen ();
+            recentMatches.StartCleanThread ();
 
             if (!deletePrev && File.Exists ("recentMatches.dat")) {
                 LoadLastMatchTime ();
