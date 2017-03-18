@@ -83,7 +83,7 @@
     <Compile Include="ApiMethods\PutMethods.cs" />
     <Compile Include="DataBase\DataBaseException.cs" />
     <Compile Include="DataBase\db.cs" />
-    <Compile Include="DataBase\Entities\entities.cs" />
+    <Compile Include="DataBase\Entities\Match.cs" />
     <Compile Include="DataBase\Entities\Player.cs" />
     <Compile Include="DataBase\Entities\Server.cs" />
     <Compile Include="DataBase\GetMethods.cs" />
@@ -92,13 +92,13 @@
     <Compile Include="DataBase\PutMethods.cs" />
     <Compile Include="DataBase\ReportsHolders\BestPlayers.cs" />
     <Compile Include="DataBase\ReportsHolders\RecentMatches.cs" />
+    <Compile Include="DataBase\Utils\IncDictionaryExtension.cs" />
     <Compile Include="StatServer.cs" />
     <Compile Include="EntryPoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="ClassDiagram1.cd" />
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

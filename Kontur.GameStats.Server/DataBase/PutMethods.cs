@@ -60,9 +60,9 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region MatchInfo
 
-        private Match DeserializeMatchInfo(string matchInfo) {
+        private MatchResult DeserializeMatchInfo(string matchInfo) {
             try {
-                return JsonConvert.DeserializeObject<Match> (
+                return JsonConvert.DeserializeObject<MatchResult> (
                                     matchInfo,
                                     new JsonSerializerSettings {
                                         CheckAdditionalContent = true
@@ -75,102 +75,35 @@ namespace Kontur.GameStats.Server.DataBase {
         #endregion
 
         #region Updaters
-
-        /// <summary>
-        /// Увеличить значение в словаре по ключу
-        /// на 1/создать с значением 1, если не существует
-        /// </summary>
-        private void IncDictionary<T>(Dictionary<T, int> dict, T key) {
-            if(dict.ContainsKey (key)) {
-                dict[key] += 1;
-            } else {
-                dict[key] = 1;
-            }
-        }
-
-        /// <summary>
-        /// Обновить статистику игрока и добавить его в очередь на добавление к лучшим.
-        /// </summary>
-        private void UpdatePlayer( Player player, string endPoint, Match match, DateTime time,
-                ScoreBoard score, int place, int totalPlayers) {
-            // playersBelowCurrent / (totalPlayers - 1) * 100%​.
-            double currentPer;
-            if(totalPlayers > 1)
-                currentPer = (totalPlayers - place) / (double)(totalPlayers - 1) * 100;
-            else
-                currentPer = 100.0;
-            player.AverageScoreBoardPercent = (
-                player.AverageScoreBoardPercent * player.TotalMatches + currentPer) /
-                (player.TotalMatches + 1);
-            player.TotalKills += score.Kills;
-            player.TotalDeaths += score.Deaths;
-            player.TotalMatches += 1;
-            player.LastMatchPlayed = time;
-            if(player.TotalDeaths != 0)
-                player.KD = player.TotalKills / (double)player.TotalDeaths;
-
-            IncDictionary (player.Days, time.ToUniversalTime ().Date);
-            IncDictionary (player.GameModes, match.GameMode);
-            IncDictionary (player.ServerPlays, endPoint);
-
-            player.MaximumMatchesPerDay = Math.Max (
-                player.MaximumMatchesPerDay,
-                player.Days[time.ToUniversalTime ().Date]
-                );
-
-            if(place == 1) {
-                player.TotalMatchesWon += 1;
-            }
-
-            if (player.KD > bestPlayers.minKD && player.TotalMatches >= 10 && player.TotalDeaths > 0)
-                bestPlayers.toUpdatePlayers.Enqueue (
-                    new BestPlayer () {
-                        RawName = player.RawName,
-                        Name = player.Name,
-                        killToDeathRatio = player.KD
-                    });
-        }
-
+        
         /// <summary>
         /// Вернуть обновленную информацию о всех игроках.
         /// </summary>
         private IEnumerable<Player> UpdatePlayers(MatchInfo match) {
             for(int i = 0; i < match.MatchResult.ScoreBoard.Length; i++) {
-                var score = match.MatchResult.ScoreBoard[i];
+                var endpoint = match.Server;
+                var timeStamp = match.Timestamp;
+                var matchResult = match.MatchResult;
+                var score = matchResult.ScoreBoard[i];
                 var player = players.GetPlayer(score.Name.ToLower ());
+
                 if(player == null) {
                     player = new Player {
                         Name = score.Name.ToLower (),
                         RawName = score.Name,
-                        FirstMatchPlayed = match.Timestamp
+                        FirstMatchPlayed = timeStamp
                     };
                 }
-                UpdatePlayer (player, match.Server, match.MatchResult, match.Timestamp,
-                    score, i + 1, match.MatchResult.ScoreBoard.Length);
+
+                player.Update (
+                    endpoint, timeStamp, matchResult.GameMode, score, i + 1,
+                    matchResult.ScoreBoard.Length);
+
+                if (player.KD > bestPlayers.minKD && player.TotalMatches >= 10 && player.TotalDeaths > 0)
+                    bestPlayers.toUpdatePlayers.Enqueue (player.FormatAsBestPlayer());
+
                 yield return player;
             }
-        }
-
-        /// <summary>
-        /// Обновить информацию о сервере без добавления в бд
-        /// </summary>
-        private void UpdateServer(Server server, MatchInfo match) {
-            if(server.TotalMatches == 0 || server.FirstMatchPlayed > match.Timestamp) {
-                server.FirstMatchPlayed = match.Timestamp;
-            }
-            IncDictionary (server.GameModesPlays, match.MatchResult.GameMode);
-            IncDictionary (server.MapsPlays, match.MatchResult.Map);
-            IncDictionary (server.DaysPlays, match.Timestamp.Date);
-
-            server.MaxPlaysPerDay = Math.Max (
-                server.MaxPlaysPerDay,
-                server.DaysPlays[match.Timestamp.Date]
-                );
-            server.MaxPopulation = Math.Max (
-                server.MaxPopulation,
-                match.MatchResult.ScoreBoard.Length);
-            server.TotalPopulation += match.MatchResult.ScoreBoard.Length;
-            server.TotalMatches += 1;
         }
 
         #endregion
@@ -198,7 +131,7 @@ namespace Kontur.GameStats.Server.DataBase {
                 if(server == null) {
                     throw new RequestException ("Server not found");
                 }
-                UpdateServer (server, matchInfo);
+                server.Update (matchInfo);
                 serversCol.Update (server);
             }
 

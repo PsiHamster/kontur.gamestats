@@ -98,6 +98,28 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #endregion
 
+        #region Updater
+
+        public void Update(MatchInfo match) {
+            if(TotalMatches == 0 || FirstMatchPlayed > match.Timestamp) {
+                FirstMatchPlayed = match.Timestamp;
+            }
+            GameModesPlays.IncDict (match.MatchResult.GameMode);
+            MapsPlays.IncDict (match.MatchResult.Map);
+            DaysPlays.IncDict (match.Timestamp.Date);
+
+            MaxPlaysPerDay = Math.Max (
+                MaxPlaysPerDay,
+                DaysPlays[match.Timestamp.Date]
+            );
+            MaxPopulation = Math.Max (
+                MaxPopulation,
+                match.MatchResult.ScoreBoard.Length);
+            TotalPopulation += match.MatchResult.ScoreBoard.Length;
+            TotalMatches += 1;
+        }
+
+        #endregion
     }
 
     public class ServerInfo {

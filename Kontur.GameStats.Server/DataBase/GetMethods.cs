@@ -60,8 +60,7 @@ namespace Kontur.GameStats.Server.DataBase {
                              endpoint = server.EndPoint,
                              name = server.Name,
                              averageMatchesPerDay = server.TotalMatches /
-                             ((LastMatchTime.ToUniversalTime ().Date.Subtract
-                             (server.FirstMatchPlayed.ToUniversalTime ().Date)).TotalDays + 1)
+                             ((LastMatchTime.Date.Subtract(server.FirstMatchPlayed.Date)).TotalDays + 1)
                          })
                     .OrderByDescending (
                         x => x.averageMatchesPerDay)
@@ -76,7 +75,7 @@ namespace Kontur.GameStats.Server.DataBase {
         #region MathesMethods
 
         public string GetMatchInfo(string endPoint, string timeStamp) {
-            return matches.GetMatch (endPoint, timeStamp);
+            return matches.GetMatchJSON (endPoint, timeStamp);
         }
 
         public string GetRecentMatches(int count) {

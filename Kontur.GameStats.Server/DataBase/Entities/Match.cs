@@ -8,9 +8,38 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.DataBase {
-    
+
     [Serializable]
-    public class Match {
+    public class MatchInfo {
+
+        #region fields
+
+        [JsonProperty ("server")]
+        public string Server { get; set; }
+        [JsonProperty ("timestamp")]
+        public DateTime Timestamp { get; set; }
+        [JsonProperty ("matchResult")]
+        public MatchResult MatchResult { get; set; }
+
+        #endregion
+
+        #region methods
+
+        /// <summary>
+        /// Возвращает информацию о матче в JSON
+        /// </summary>
+        public string GetJSON() {
+            return JsonConvert.SerializeObject (this);
+        }
+
+        #endregion
+    }
+
+    [Serializable]
+    public class MatchResult {
+
+        #region fields
+
         [JsonProperty ("map")]
         public string Map { get; set; }
         [JsonProperty ("gameMode")]
@@ -23,16 +52,19 @@ namespace Kontur.GameStats.Server.DataBase {
         public double TimeElapsed { get; set; }
         [JsonProperty ("scoreboard")]
         public ScoreBoard[] ScoreBoard { get; set; }
-    }
 
-    [Serializable]
-    public class MatchInfo {
-        [JsonProperty ("server")]
-        public string Server { get; set; }
-        [JsonProperty ("timestamp")]
-        public DateTime Timestamp { get; set; }
-        [JsonProperty ("matchResult")]
-        public Match MatchResult { get; set; }
+        #endregion
+
+        #region methods
+
+        /// <summary>
+        /// Возвращает результаты матча в JSON
+        /// </summary>
+        public string GetJSON() {
+            return JsonConvert.SerializeObject (this);
+        }
+
+        #endregion
     }
 
     [Serializable]

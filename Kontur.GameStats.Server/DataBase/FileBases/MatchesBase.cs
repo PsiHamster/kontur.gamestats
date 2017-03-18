@@ -27,6 +27,8 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region FileWriteGet
 
+        #region Put
+
         /// <summary>
         /// Сохраняет матч в папку servers/{endPoint}/{timeStamp}.json,
         /// заменяя в таймштампе : на D
@@ -44,9 +46,21 @@ namespace Kontur.GameStats.Server.DataBase {
         }
 
         /// <summary>
-        /// Получить матч из базы данных по endPoint и timeStamp
+        /// Сохраняет матч в папку servers/{endPoint}/{timeStamp}.json,
+        /// заменяя в таймштампе : на D
         /// </summary>
-        public string GetMatch (string endPoint, string timeStamp) {
+        public void PutMatch (string endPoint, string timeStamp, MatchInfo match) {
+            PutMatch (endPoint, timeStamp, match.GetJSON ());
+        }
+
+        #endregion
+
+        #region Get
+
+        /// <summary>
+        /// Получить json результаты матча из базы данных по endPoint и timeStamp
+        /// </summary>
+        public string GetMatchJSON (string endPoint, string timeStamp) {
             string matchInfo;
             try {
                 using(var file = new StreamReader (
@@ -59,6 +73,15 @@ namespace Kontur.GameStats.Server.DataBase {
             }
             return matchInfo;
         }
+
+        /// <summary>
+        /// Получить матч из базы данных по endPoint и timeStamp
+        /// </summary>
+        public MatchInfo GetMatchInfo (string endPoint, string timeStamp) {
+            return JsonConvert.DeserializeObject<MatchInfo>(GetMatchJSON (endPoint, timeStamp));
+        }
+
+        #endregion
 
         #endregion
 

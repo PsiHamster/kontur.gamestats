@@ -71,6 +71,42 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #endregion
 
+        #region Updater
+
+        public void Update(string endPoint, DateTime time, string gameMode,
+                ScoreBoard score, int place, int totalPlayers) {
+            // playersBelowCurrent / (totalPlayers - 1) * 100%​.
+            double currentPer;
+            if(totalPlayers > 1)
+                currentPer = (totalPlayers - place) / (double)(totalPlayers - 1) * 100;
+            else
+                currentPer = 100.0;
+            AverageScoreBoardPercent = (
+                AverageScoreBoardPercent * TotalMatches + currentPer) /
+                (TotalMatches + 1);
+            TotalKills += score.Kills;
+            TotalDeaths += score.Deaths;
+            TotalMatches += 1;
+            LastMatchPlayed = time;
+            if(TotalDeaths != 0)
+                KD = TotalKills / (double)TotalDeaths;
+
+            Days.IncDict (time.Date);
+            GameModes.IncDict (gameMode);
+            ServerPlays.IncDict (endPoint);
+
+            MaximumMatchesPerDay = Math.Max (
+                MaximumMatchesPerDay,
+                Days[time.Date]
+                );
+
+            if(place == 1) {
+                TotalMatchesWon += 1;
+            }
+        }
+
+        #endregion
+
     }
 
     [Serializable]
