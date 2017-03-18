@@ -50,7 +50,6 @@ namespace Kontur.GameStats.Server.DataBase {
             string md5 = ComputeMD5Checksum (name);
 
             string directoryPath = string.Format(workDirectory + "\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
-            //Directory.CreateDirectory (directoryPath);
             string filePath = string.Format ("{0}\\{1}.dat", directoryPath, name);
 
             using(var file = new FileStream (filePath, System.IO.FileMode.Create, FileAccess.Write)) {
@@ -67,7 +66,6 @@ namespace Kontur.GameStats.Server.DataBase {
             Player player;
 
             string directoryPath = string.Format (workDirectory + "\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
-            //Directory.CreateDirectory (directoryPath);
             string filePath = string.Format ("{0}\\{1}.dat", directoryPath, name);
 
             try {

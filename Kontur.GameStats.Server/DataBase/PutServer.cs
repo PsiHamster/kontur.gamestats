@@ -28,27 +28,21 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <param name="stringInfo">Информация о сервере в JSON</param>
         public void PutServerInfo(string endPoint, string stringInfo) {
             var info = DeserializeServerInfo (stringInfo);
+            Server server;
 
-            using(var db = new LiteDatabase (dbConn)) {
-                var col = db.GetCollection<Server> ("servers");
-                Server server;
-
-                if((server = col.FindOne (x => x.EndPoint == endPoint)) != null) {
-                    server.Name = info.Name;
-                    server.GameModes = info.GameModes;
-
-                    col.Update (server);
-                } else {
-                    matches.AddServer (endPoint);
-                    server = new Server {
-                        EndPoint = endPoint,
-                        Name = info.Name,
-                        GameModes = info.GameModes,
-                    };
-
-                    col.Insert (server);
-                }
+            if((server = servers.GetServer (endPoint)) != null) {
+                server.Name = info.Name;
+                server.GameModes = info.GameModes;
+            } else {
+                matches.AddServer (endPoint);
+                server = new Server {
+                    EndPoint = endPoint,
+                    Name = info.Name,
+                    GameModes = info.GameModes,
+                };
             }
+
+            servers.UpsertServer (server);
         }
     }
     }

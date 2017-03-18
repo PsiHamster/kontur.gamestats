@@ -82,6 +82,7 @@
     <Compile Include="ApiMethods\GetMethods.cs" />
     <Compile Include="ApiMethods\Router.cs" />
     <Compile Include="ApiMethods\PutMethods.cs" />
+    <Compile Include="DataBase\FileBases\ServersBase.cs" />
     <Compile Include="DataBase\GetMatches.cs" />
     <Compile Include="DataBase\GetServer.cs" />
     <Compile Include="DataBase\PutServer.cs" />

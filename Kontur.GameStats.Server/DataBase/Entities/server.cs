@@ -9,12 +9,11 @@ namespace Kontur.GameStats.Server.DataBase {
     /// Базовый класс сервера, хранящий всю информацию и статистику
     /// одного сервера.
     /// </summary>
+    [Serializable]
     public class Server {
 
         #region Fields
 
-        public ObjectId ServerID { get; set; }
-        [BsonIndex (true)]
         public string EndPoint { get; set; }
         public string Name { get; set; }
         public string[] GameModes { get; set; }

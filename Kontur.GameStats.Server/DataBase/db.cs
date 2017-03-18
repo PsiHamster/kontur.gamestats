@@ -30,9 +30,9 @@ namespace Kontur.GameStats.Server.DataBase {
 
         private PlayersBase players;
         private MatchesBase matches;
+        private ServersBase servers;
 
         private string workDirectory;
-        private string dbConn;
 
         #endregion
 
@@ -52,9 +52,6 @@ namespace Kontur.GameStats.Server.DataBase {
             if(deletePrev)
                 DeleteFiles ();
 
-            dbConn = string.Format(
-                "Filename={0}database.db;Journal=false;Timeout=0:00:10;Cache Size=15000",
-                path+@"\");
             var dbConnPlayers = string.Format (
                 "Filename={0}bestplayers.db;Journal=false;Timeout=0:00:10;Cache Size=15000",
                 path + @"\");
@@ -64,12 +61,13 @@ namespace Kontur.GameStats.Server.DataBase {
 
             matches = new MatchesBase (workDirectory, deletePrev);
             players = new PlayersBase (workDirectory, deletePrev);
+            servers = new ServersBase (workDirectory, deletePrev);
 
             bestPlayers = new BestPlayers (dbConnPlayers);
             recentMatches = new RecentMatches (dbConnMatches);
 
-            bestPlayers.StartCleanThread ();
-            recentMatches.StartCleanThread ();
+            //bestPlayers.StartCleanThread ();
+            //recentMatches.StartCleanThread ();
 
             if (!deletePrev) {
                 LastMatchTime = recentMatches.GetLastMatchTime ();
@@ -93,9 +91,6 @@ namespace Kontur.GameStats.Server.DataBase {
         #region deleter
 
         private void DeleteFiles() {
-            if (File.Exists (workDirectory+"\\database.db")) {
-                File.Delete (workDirectory+"\\database.db");
-            }
             if(File.Exists (workDirectory + "\\bestplayers.db")) {
                 File.Delete (workDirectory + "\\bestplayers.db");
             }

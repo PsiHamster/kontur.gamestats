@@ -72,16 +72,13 @@ namespace Kontur.GameStats.Server.DataBase {
                 MatchResult = DeserializeMatchInfo (matchResult)
             };
 
-            using(var db = new LiteDatabase (dbConn)) {
-                var serversCol = db.GetCollection<Server> ("servers");
 
-                var server = serversCol.FindOne (x => x.EndPoint == endPoint);
-                if(server == null) {
-                    throw new RequestException ("Server not found");
-                }
-                server.Update (matchInfo);
-                serversCol.Update (server);
+            var server = servers.GetServer (endPoint);
+            if(server == null) {
+                throw new RequestException ("Server not found");
             }
+            server.Update (matchInfo);
+            servers.UpsertServer (server);
 
             matches.PutMatch (endPoint, timeStamp, matchResult);
             recentMatches.Add(matchInfo);
