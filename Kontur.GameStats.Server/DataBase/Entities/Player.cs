@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LiteDB;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,7 @@ namespace Kontur.GameStats.Server.DataBase {
             return new BestPlayer () {
                 RawName = RawName,
                 Name = Name,
-                killToDeathRatio = KD
+                KillToDeathRatio = KD
             };
         }
         
@@ -110,10 +111,15 @@ namespace Kontur.GameStats.Server.DataBase {
 
     [Serializable]
     public class BestPlayer {
-        [JsonProperty (PropertyName = "name")]
-        public string RawName;
         [JsonIgnore]
-        public string Name;
-        public double killToDeathRatio;
+        public ObjectId _id { get; set; }
+        [BsonIndex (true)]
+        [JsonProperty (PropertyName = "name")]
+        public string RawName { get; set; }
+        [JsonIgnore]
+        public string Name { get; set; }
+        [BsonIndex]
+        [JsonProperty (PropertyName = "killToDeathRatio")]
+        public double KillToDeathRatio { get; set; }
     }
 }

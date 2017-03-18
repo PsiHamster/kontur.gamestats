@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using LiteDB;
+using Newtonsoft.Json;
 using NLog;
 using System;
 using System.Collections.Concurrent;
@@ -10,39 +11,57 @@ using System.Threading;
 
 namespace Kontur.GameStats.Server.DataBase {
     public class BestPlayers {
-        private SynchronizedCollection<BestPlayer> bestPlayers;
-        public ConcurrentQueue<BestPlayer> toUpdatePlayers = new ConcurrentQueue<BestPlayer> ();
-        public double minKD = -1;
+
+        #region Fields
 
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
-        private BinaryFormatter formatter = new BinaryFormatter();
+        private string dbConn;
+        private Thread cleanerThread;
+        private bool isCleaning;
 
-        public BestPlayers() {
-            LoadBestPlayers ();
+        private double minKD = -1.0;
+
+        #endregion
+
+        public BestPlayers(string dbConnectionString) {
+            dbConn = dbConnectionString;
         }
 
         #region Thread
 
-        private Thread listenerThread;
-
-        public void StartListen() {
-            listenerThread = new Thread (ListenUpdatedPlayers) {
+        /// <summary>
+        /// Запускает поток очищающий лишние матчи
+        /// </summary>
+        public void StartCleanThread() {
+            isCleaning = true;
+            cleanerThread = new Thread (CleanPlayers) {
                 IsBackground = true,
                 Priority = ThreadPriority.Normal
             };
-            listenerThread.Start ();
+            cleanerThread.Start ();
         }
 
-        private void ListenUpdatedPlayers() {
-            while(true) {
+        public void StopCleanThread() {
+            isCleaning = false;
+        }
+
+        private void CleanPlayers() {
+            while(isCleaning) {
                 try {
-                    while (!toUpdatePlayers.IsEmpty) {
-                        BestPlayer p;
-                        if (toUpdatePlayers.TryDequeue(out p))
-                            UpdateBestPlayers (p);
+                    using(var db = new LiteRepository (dbConn)) {
+                        var kd = db.Query<BestPlayer> ()
+                            .Where (
+                                    Query.All ("KillToDeathRatio",
+                                    Query.Descending)
+                            ).Limit (50)
+                            .ToEnumerable ()
+                            .Last ().KillToDeathRatio;
+                        minKD = kd;
+                        db.Delete<BestPlayer> (
+                            Query.LT ("KillToDeathRatio", kd)
+                        );
                     }
-                    SaveBestPlayers ();
-                    Thread.Sleep (20 * 1000); // Sleep 20 seconds
+                    Thread.Sleep (60 * 1000); // Sleep 60 seconds
                 } catch(Exception e) {
                     logger.Error (e);
                 }
@@ -51,67 +70,13 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #endregion
 
-        #region FileLogic
+        #region Add
 
-        private void LoadBestPlayers() {
-            bestPlayers = new SynchronizedCollection<BestPlayer> (50);
-            try {
-                if(bestPlayers.Count == 0)
-                    return;
-                using(var file = new FileStream ("bestPlayers.dat", System.IO.FileMode.Open, FileAccess.Read)) {
-                    var array = (BestPlayer[])formatter.Deserialize (file);
-                    foreach(var e in array) {
-                        bestPlayers.Add (e);
-                    }
-                }
-            } catch (FileNotFoundException e) {
-            } catch (Exception e) {
-                logger.Error (e);
-            }
-        }
-
-        private void SaveBestPlayers() {
-            try {
-                if(bestPlayers.Count == 0)
-                    return;
-                using(var file = new FileStream ("bestPlayers.dat", System.IO.FileMode.Create, FileAccess.Write)) {
-                    formatter.Serialize (file, bestPlayers.ToArray());
-                }
-            } catch(Exception e) {
-                logger.Error (e);
-            }
-        }
-
-        #endregion
-
-        #region Updater
-
-        private void UpdateBestPlayers(BestPlayer player) {
-            var newList = new SynchronizedCollection<BestPlayer> ();
-            var count = 0;
-            var inserted = false;
-            foreach(var elem in bestPlayers) {
-                if(count >= 50)
-                    return;
-                if(elem.Name == player.Name)
-                    continue;
-                if(player.killToDeathRatio > elem.killToDeathRatio && !inserted) {
-                    newList.Add (player);
-                    inserted = true;
-                } else {
-                    newList.Add (elem);
-                }
-                count+=1;
-            }
-            if(count < 50) {
-                newList.Add (player);
-                inserted = true;
-            }
-            if(count == 50) {
-                minKD = newList.Last().killToDeathRatio;
-            }
-            if(inserted) {
-                bestPlayers = newList;
+        public void Add(Player player) {
+            if(player.KD < minKD || player.TotalMatches < 10 || player.TotalDeaths == 0)
+                return;
+            using(var db = new LiteRepository (dbConn)) {
+                db.Upsert (player.FormatAsBestPlayer());
             }
         }
 
@@ -119,10 +84,24 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region Take
 
+        /// <summary>
+        /// Возвращает в json массив из count последних
+        /// матчей
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
         public string Take(int count) {
             string s;
-            count = Math.Min (Math.Min (Math.Max (count, 0), bestPlayers.Count), 50);
-            var results = bestPlayers.Take (count);
+            count = Math.Min (Math.Max (count, 0), 50);
+            BestPlayer[] results;
+            using(var db = new LiteRepository (dbConn)) {
+                results = db.Query<BestPlayer> ()
+                    .Where (
+                        Query.All ("KillToDeathRatio",
+                        Query.Descending)
+                    ).Limit (count)
+                    .ToArray ();
+            }
             s = JsonConvert.SerializeObject (results);
             return s;
         }

@@ -12,7 +12,7 @@ namespace Kontur.GameStats.Server.DataBase {
     /// При добавлении матча, добавляет его в базу данных,
     /// При запуске потока чистки будет очищать бд каждые 30 секунд
     /// </summary>
-    class RecentMatches {
+    public class RecentMatches {
 
         #region Fields
 
@@ -34,7 +34,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// </summary>
         public void StartCleanThread() {
             isCleaning = true;
-            cleanerThread = new Thread (ListenUpdatedPlayers) {
+            cleanerThread = new Thread (CleanMatches) {
                 IsBackground = true,
                 Priority = ThreadPriority.Normal
             };
@@ -45,7 +45,7 @@ namespace Kontur.GameStats.Server.DataBase {
             isCleaning = false;
         }
 
-        private void ListenUpdatedPlayers() {
+        private void CleanMatches() {
             while(isCleaning) {
                 try {
                     using(var db = new LiteRepository (dbConn)) {

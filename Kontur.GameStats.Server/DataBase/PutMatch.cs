@@ -48,8 +48,7 @@ namespace Kontur.GameStats.Server.DataBase {
                     endpoint, timeStamp, matchResult.GameMode, score, i + 1,
                     matchResult.ScoreBoard.Length);
 
-                if (player.KD > bestPlayers.minKD && player.TotalMatches >= 10 && player.TotalDeaths > 0)
-                    bestPlayers.toUpdatePlayers.Enqueue (player.FormatAsBestPlayer());
+                bestPlayers.Add (player);
 
                 yield return player;
             }

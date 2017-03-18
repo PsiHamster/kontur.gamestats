@@ -18,7 +18,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void PutServerInfo() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PutServerInfo", true);
             var inputData = new {
                 name = "MyServer001",
                 gameModes = new string[] { "DM" } };
@@ -29,7 +29,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void PutAndUpdateServerInfo() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PutAndUpdateServerInfo", true);
             var inputData = new {
                 name = "MyServer001",
                 gameModes = new string[] { "DM" }
@@ -49,7 +49,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void PutWrongServerInfo() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PutWrongServerInfo", true);
             string data = JsonConvert.SerializeObject (new {
                 lol = "AHAHAHAH"
             });
@@ -66,7 +66,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void PutExtraServerInfo() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PutExtraServerInfo", true);
             string data = JsonConvert.SerializeObject (new {
                 name = "server1",
                 gameModes = new string[] { "DM" },
@@ -89,7 +89,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void GetServersInfo() {
-            var db = new DataBase (true);
+            var db = new DataBase ("GetServersInfo", true);
             var inputData = new ServerInfo {
                 Name = "MyServer001",
                 GameModes = new string[] { "DM" }
@@ -126,7 +126,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void GetServerStats() {
-            var db = new DataBase (true);
+            var db = new DataBase ("GetServerStats", true);
             var inputData = new ServerInfo {
                 Name = "MyServer001",
                 GameModes = new string[] { "DM" }

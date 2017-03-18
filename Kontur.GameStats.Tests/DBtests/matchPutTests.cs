@@ -10,7 +10,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void PutSingleMatch() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PutSingleMatch", true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
             
             db.PutServerInfo ("server1", JsonConvert.SerializeObject(inputData));
@@ -35,7 +35,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void PutLessMatchData() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PutLessMatchData", true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
 
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
@@ -58,7 +58,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void PutWrongMatchData() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PutWrongMatchData", true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
 
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
@@ -80,7 +80,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void PutExtraMatchData() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PutExtraMatchData", true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
 
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));

@@ -53,7 +53,7 @@ namespace Kontur.GameStats.Server.DataBase {
                 DeleteFiles ();
 
             dbConn = string.Format(
-                "Filename={0}database.db;Journal=false;Timeout=0:10:00;Cache Size=500000",
+                "Filename={0}database.db;Journal=true;Timeout=0:10:00;Cache Size=500000",
                 path+@"\");
             
             using(var db = new LiteDatabase (dbConn)) {
@@ -64,10 +64,10 @@ namespace Kontur.GameStats.Server.DataBase {
             matches = new MatchesBase (workDirectory, deletePrev);
             players = new PlayersBase (workDirectory, deletePrev);
 
-            bestPlayers = new BestPlayers ();
+            bestPlayers = new BestPlayers (dbConn);
             recentMatches = new RecentMatches (dbConn);
 
-            bestPlayers.StartListen ();
+            bestPlayers.StartCleanThread ();
             recentMatches.StartCleanThread ();
 
             if (!deletePrev) {

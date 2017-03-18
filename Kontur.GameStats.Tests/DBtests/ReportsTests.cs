@@ -8,7 +8,7 @@ namespace Kontur.GameStats.Tests.DBtests {
     public class ReportsTests {
         [TestMethod]
         public void GetRecentMatches() {
-            var db = new DataBase (true);
+            var db = new DataBase ("GetRecentMatches", true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
 
@@ -49,7 +49,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void GetPopularServers() {
-            var db = new DataBase (true);
+            var db = new DataBase ("GetPopularServers", true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
             var inputData2 = new ServerInfo { Name = "MyServer002", GameModes = new string[] { "DM" } };
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
@@ -83,7 +83,7 @@ namespace Kontur.GameStats.Tests.DBtests {
 
         [TestMethod]
         public void GetBestPlayers() {
-            var db = new DataBase (true);
+            var db = new DataBase ("GetBestPlayers", true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
 
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));

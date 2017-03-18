@@ -7,7 +7,7 @@ namespace Kontur.GameStats.Tests.DBtests {
     public class PlayerStatsTests {
         [TestMethod]
         public void PlayerStats() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PlayerStats", true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
 
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
@@ -61,7 +61,7 @@ namespace Kontur.GameStats.Tests.DBtests {
     
         [TestMethod]
         public void PlayerStatsWithZeroDeathsAndZeroKills() {
-            var db = new DataBase (true);
+            var db = new DataBase ("PlayerStatsWZK", true);
             var inputData = new ServerInfo { Name = "MyServer001", GameModes = new string[] { "DM" } };
 
             db.PutServerInfo ("server1", JsonConvert.SerializeObject (inputData));
