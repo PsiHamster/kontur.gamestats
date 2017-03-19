@@ -97,6 +97,7 @@
     <Compile Include="DataBase\PutMatch.cs" />
     <Compile Include="DataBase\ReportsHolders\BestPlayers.cs" />
     <Compile Include="DataBase\ReportsHolders\RecentMatches.cs" />
+    <Compile Include="DataBase\Utils\HardLinks.cs" />
     <Compile Include="DataBase\Utils\IncDictionaryExtension.cs" />
     <Compile Include="StatServer.cs" />
     <Compile Include="EntryPoint.cs" />

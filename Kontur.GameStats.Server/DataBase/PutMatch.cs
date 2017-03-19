@@ -16,7 +16,7 @@ namespace Kontur.GameStats.Server.DataBase {
                                         MissingMemberHandling = MissingMemberHandling.Error,
                                         CheckAdditionalContent = true
                                     });
-            } catch (Exception e) {
+            } catch (Exception) {
                 throw new RequestException ("Invalid match data");
             }
         }
@@ -80,9 +80,8 @@ namespace Kontur.GameStats.Server.DataBase {
             server.Update (matchInfo);
             servers.UpsertServer (server);
 
-            matches.PutMatch (endPoint, timeStamp, matchResult);
-            recentMatches.Add(matchInfo);
-
+            matches.PutMatch (endPoint, timeStamp, matchInfo);
+            
             foreach(var player in UpdatePlayers (matchInfo)) {
                 players.AddPlayer (player);
             }

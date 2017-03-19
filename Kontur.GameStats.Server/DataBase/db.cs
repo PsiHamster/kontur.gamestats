@@ -26,8 +26,7 @@ namespace Kontur.GameStats.Server.DataBase {
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
 
         private BestPlayers bestPlayers;
-        private RecentMatches recentMatches;
-
+        
         private PlayersBase players;
         private MatchesBase matches;
         private ServersBase servers;
@@ -49,28 +48,14 @@ namespace Kontur.GameStats.Server.DataBase {
             workDirectory = path;
             Directory.CreateDirectory (workDirectory);
 
-            if(deletePrev)
-                DeleteFiles ();
-
-            var dbConnPlayers = string.Format (
-                "Filename={0}bestplayers.db;Journal=false;Timeout=0:00:10;Cache Size=15000",
-                path + @"\");
-            var dbConnMatches = string.Format (
-                "Filename={0}recentmatches.db;Journal=false;Timeout=0:00:10;Cache Size=15000",
-                path + @"\");
-
             matches = new MatchesBase (workDirectory, deletePrev);
             players = new PlayersBase (workDirectory, deletePrev);
             servers = new ServersBase (workDirectory, deletePrev);
 
-            bestPlayers = new BestPlayers (dbConnPlayers);
-            recentMatches = new RecentMatches (dbConnMatches);
-
             bestPlayers.StartCleanThread ();
-            recentMatches.StartCleanThread ();
 
             if (!deletePrev) {
-                LastMatchTime = recentMatches.GetLastMatchTime ();
+                LastMatchTime = matches.RecentMatches.GetLastMatchTime ();
             }
 
             logger.Info (string.Format ("Success"));
@@ -85,19 +70,6 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Метод открывающий базу данных в текущей директории
         /// </summary>
         public DataBase(bool deletePrev) : this ("database", deletePrev) { }
-
-        #endregion
-
-        #region deleter
-
-        private void DeleteFiles() {
-            if(File.Exists (workDirectory + "\\bestplayers.db")) {
-                File.Delete (workDirectory + "\\bestplayers.db");
-            }
-            if(File.Exists (workDirectory + "\\recentmatches.db")) {
-                File.Delete (workDirectory + "\\recentmatches.db");
-            }
-        }
 
         #endregion
     }

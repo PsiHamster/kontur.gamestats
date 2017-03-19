@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace Kontur.GameStats.Server.DataBase {
 
@@ -13,17 +15,22 @@ namespace Kontur.GameStats.Server.DataBase {
 
         private string workDirectory;
 
+        public RecentMatches RecentMatches { get; private set; }
+
         /// <summary>
         /// Инициализирует базу матчей в папке matches
         /// </summary>
         public MatchesBase(string directory, bool deletePrev = false) {
             workDirectory = directory + "\\matches";
+            RecentMatches = new RecentMatches (directory, deletePrev);
+
             if (deletePrev && Directory.Exists (workDirectory)) {
                  Directory.Delete (workDirectory, true);
             }
             Directory.CreateDirectory (workDirectory);
         }
 
+        
         #region FileWriteGet
 
         #region Put
@@ -32,16 +39,17 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Сохраняет матч в папку servers/{endPoint}/{timeStamp}.json,
         /// заменяя в таймштампе : на D
         /// </summary>
-        public void PutMatch (string endPoint, string timeStamp, string matchInfo) {
+        private string PutMatch (string endPoint, string timeStamp, string matchInfo) {
+            var matchAdress = string.Format (workDirectory + "\\{0}\\{1}.json",
+                        endPoint, timeStamp.Replace (":", "D"));
             try {
-                using(var file = new StreamWriter (
-                    string.Format (workDirectory+"\\{0}\\{1}.json",
-                        endPoint, timeStamp.Replace (":", "D")), false)) {
+                using(var file = new StreamWriter (matchAdress, false)) {
                     file.Write (matchInfo);
                 }
-            } catch (IOException e) {
+            } catch (IOException) {
                 throw (new RequestException ("Match already added"));
             }
+            return matchAdress;
         }
 
         /// <summary>
@@ -49,27 +57,34 @@ namespace Kontur.GameStats.Server.DataBase {
         /// заменяя в таймштампе : на D
         /// </summary>
         public void PutMatch (string endPoint, string timeStamp, MatchInfo match) {
-            PutMatch (endPoint, timeStamp, match.GetJSON ());
+            string adress = PutMatch (endPoint, timeStamp, match.GetJSON ());
+            RecentMatches.Add (match, adress);
         }
 
         #endregion
 
         #region Get
 
+        private string LoadMatchFromFile (string adress) {
+            string matchInfo;
+            try {
+                using(var file = new StreamReader (adress)) {
+                    matchInfo = file.ReadToEnd ();
+                }
+            } catch(FileNotFoundException) {
+                throw (new RequestException ("Match wasn't found"));
+            }
+            return matchInfo;
+        }
+
         /// <summary>
         /// Получить json результаты матча из базы данных по endPoint и timeStamp
         /// </summary>
-        public string GetMatchJSON (string endPoint, string timeStamp) {
+        public string GetMatchInfoJSON (string endPoint, string timeStamp) {
             string matchInfo;
-            try {
-                using(var file = new StreamReader (
-                        string.Format (workDirectory+"\\{0}\\{1}.json",
-                            endPoint, timeStamp.Replace (":", "D")))) {
-                    matchInfo = file.ReadToEnd ();
-                }
-            } catch(FileNotFoundException e) {
-                throw (new RequestException ("Match wasn't found"));
-            }
+            matchInfo = LoadMatchFromFile(
+                string.Format (workDirectory + "\\{0}\\{1}.json",
+                            endPoint, timeStamp.Replace (":", "D")));
             return matchInfo;
         }
 
@@ -77,7 +92,14 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Получить матч из базы данных по endPoint и timeStamp
         /// </summary>
         public MatchInfo GetMatchInfo (string endPoint, string timeStamp) {
-            return JsonConvert.DeserializeObject<MatchInfo>(GetMatchJSON (endPoint, timeStamp));
+            return JsonConvert.DeserializeObject<MatchInfo>(GetMatchInfoJSON (endPoint, timeStamp));
+        }
+
+        /// <summary>
+        /// Получить результаты матча в том формате, в котором они пришли на сервер
+        /// </summary>
+        public string GetMatchResultsJSON(string endPoint, string timeStamp) {
+            return JsonConvert.SerializeObject (GetMatchInfo (endPoint, timeStamp).MatchResult);
         }
 
         #endregion

@@ -4,7 +4,7 @@
         #region MatchInfo
 
         public string GetMatchInfo(string endPoint, string timeStamp) {
-            return matches.GetMatchJSON (endPoint, timeStamp);
+            return matches.GetMatchResultsJSON (endPoint, timeStamp);
         }
 
         #endregion
@@ -12,7 +12,7 @@
         #region RecentMatches
 
         public string GetRecentMatches(int count) {
-            return recentMatches.Take (count);
+            return matches.RecentMatches.Take (count);
         }
 
         #endregion

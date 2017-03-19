@@ -48,9 +48,9 @@ namespace Kontur.GameStats.Tests.DBtests {
                 );
             try {
                 db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
-            } catch (RequestException e) {
+            } catch (RequestException) {
                 return;
-            } catch (Exception e) {
+            } catch (Exception) {
                 Assert.Fail ();
             }
             Assert.Fail ();
@@ -70,9 +70,9 @@ namespace Kontur.GameStats.Tests.DBtests {
                 );
             try {
                 db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
-            } catch(RequestException e) {
+            } catch(RequestException) {
                 return;
-            } catch(Exception e) {
+            } catch(Exception) {
                 Assert.Fail ();
             }
             Assert.Fail ();
@@ -101,9 +101,9 @@ namespace Kontur.GameStats.Tests.DBtests {
                 );
             try {
                 db.PutMatch ("server1", "2017-01-22T15:17:00Z", matchData);
-            } catch(RequestException e) {
+            } catch(RequestException) {
                 return;
-            } catch(Exception e) {
+            } catch(Exception) {
                 Assert.Fail ();
             }
             Assert.Fail ();
