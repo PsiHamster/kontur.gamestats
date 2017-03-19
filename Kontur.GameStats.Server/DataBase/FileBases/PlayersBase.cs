@@ -30,9 +30,12 @@ namespace Kontur.GameStats.Server.DataBase {
             foreach(var first in symbols) {
                 foreach(var second in symbols) {
                     foreach(var third in symbols) {
-                        Directory.CreateDirectory (
-                            string.Format (workDirectory + "\\{0}\\{1}\\{2}", first, second, third)
-                            );
+                        foreach(var fourth in symbols) {
+                            Directory.CreateDirectory (
+                                string.Format (workDirectory + "\\{0}{1}\\{2}{3}",
+                                        first, second, third, fourth)
+                                );
+                        }
                     }
                 }
             }
@@ -51,7 +54,8 @@ namespace Kontur.GameStats.Server.DataBase {
             string name = HttpUtility.UrlEncode(player.Name);
             string md5 = ComputeMD5Checksum (name);
 
-            string directoryPath = string.Format(workDirectory + "\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
+            string directoryPath = string.Format (workDirectory + "\\{0}{1}\\{2}{3}",
+                                                md5[0], md5[1], md5[2], md5[3]);
             string filePath = string.Format ("{0}\\{1}.dat", directoryPath, name);
 
             using(var file = new FileStream (filePath, System.IO.FileMode.Create, FileAccess.Write)) {
@@ -68,7 +72,8 @@ namespace Kontur.GameStats.Server.DataBase {
             string md5 = ComputeMD5Checksum (name);
             Player player;
 
-            string directoryPath = string.Format (workDirectory + "\\{0}\\{1}\\{2}", md5[0], md5[1], md5[2]);
+            string directoryPath = string.Format (workDirectory + "\\{0}{1}\\{2}{3}",
+                                                md5[0], md5[1], md5[2], md5[3]);
             string filePath = string.Format ("{0}\\{1}.dat", directoryPath, name);
 
             try {
