@@ -70,6 +70,7 @@ namespace Kontur.GameStats.Server.DataBase {
                 if(recentMatches.Count > 200) {
                     for(int i = 50; i < recentMatches.Count; i++)
                         DeleteMatchFromRecent (recentMatches[i]);
+                    recentMatches = recentMatches.Take (50).ToList();
                 }
                 var newAdress = string.Format (workDirectory + "\\{0}{1}.json",
                         matchInfo.Timestamp.ToString ("yyyy'-'MM'-'dd'T'HH'D'mm'D'ss'.'fffZ"), matchInfo.Server);
