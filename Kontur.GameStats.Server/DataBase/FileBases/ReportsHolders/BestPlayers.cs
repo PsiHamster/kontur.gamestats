@@ -22,6 +22,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         private List<BestPlayer> bestPlayers;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
+        private readonly object Locker = new object ();
 
         private double minKD = -1.0;
 
@@ -57,7 +58,7 @@ namespace Kontur.GameStats.Server.DataBase {
         }
 
         private void LoadBestPlayers() {
-            lock(bestPlayers) {
+            lock(Locker) {
                 foreach(var file in Directory.GetFiles (workDirectory)) {
                     bestPlayers.Add (
                         JsonConvert.DeserializeObject<BestPlayer> (LoadPlayerFromFile (file))
@@ -94,7 +95,7 @@ namespace Kontur.GameStats.Server.DataBase {
             if(player.KD < minKD || player.TotalMatches < 10 || player.TotalDeaths == 0)
                 return;
             var bestPlayer = player.FormatAsBestPlayer ();
-            lock(bestPlayers) {
+            lock(Locker) {
                 bestPlayers.RemoveAll (x => x.Name == bestPlayer.Name);
                 bestPlayers.Add (bestPlayer);
                 bestPlayers = bestPlayers
@@ -118,7 +119,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public string Take(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);
-            lock(bestPlayers) {
+            lock(Locker) {
                 s = JsonConvert.SerializeObject (bestPlayers.Take (count));
             }
             return s;

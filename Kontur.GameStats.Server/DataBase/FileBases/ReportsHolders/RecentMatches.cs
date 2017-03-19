@@ -21,11 +21,12 @@ namespace Kontur.GameStats.Server.DataBase {
 
         private List<MatchInfo> recentMatches;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
+        private readonly object Locker = new object ();
 
         #endregion
 
         #region Constructor
-        
+
         public RecentMatches(string directory, bool deletePrev = false) {
             recentMatches = new List<MatchInfo> ();
             workDirectory = directory + "\\recent-matches";
@@ -47,7 +48,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <param name="matchInfo"></param>
         private void DeleteMatchFromRecent(MatchInfo matchInfo) {
             var oldAdress = string.Format (workDirectory + "\\{0}{1}.json",
-                        matchInfo.Timestamp.ToString ().Replace (":", "D"), matchInfo.Server);
+                        matchInfo.Timestamp.ToString ("yyyy'-'MM'-'dd'T'HH'D'mm'D'ss'.'fffZ"), matchInfo.Server);
             File.Delete (oldAdress);
         }
 
@@ -61,18 +62,18 @@ namespace Kontur.GameStats.Server.DataBase {
         /// <param name="matchAdress">Адрес к матчу в папке</param>
         /// <param name="matchInfo">Информация о матче</param>
         public void Add(MatchInfo matchInfo, string matchAdress) {
-            lock(recentMatches) {
+            lock(Locker) {
                 recentMatches.Add (matchInfo);
                 recentMatches = recentMatches
                     .OrderByDescending (x => x.Timestamp)
                     .ToList ();
                 for (int i = 50; i < recentMatches.Count; i++)
                     DeleteMatchFromRecent (recentMatches[i]);
-                recentMatches = recentMatches.Take (50).ToList ();
+                recentMatches = recentMatches.ToList ();
+                var newAdress = string.Format (workDirectory + "\\{0}{1}.json",
+                        matchInfo.Timestamp.ToString ("yyyy'-'MM'-'dd'T'HH'D'mm'D'ss'.'fffZ"), matchInfo.Server);
+                HardLinks.CreateHardLink (newAdress, matchAdress, IntPtr.Zero);
             }
-            var newAdress = string.Format (workDirectory + "\\{0}{1}.json",
-                        matchInfo.Timestamp.ToString ().Replace (":", "D"), matchInfo.Server);
-            HardLinks.CreateHardLink (newAdress, matchAdress, IntPtr.Zero);
         }
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// </summary>
         public DateTime GetLastMatchTime() {
             DateTime last;
-            lock(recentMatches) {
+            lock(Locker) {
                 if (recentMatches.Count() > 0) {
                     last = recentMatches[0].Timestamp;
                 } else {
@@ -110,7 +111,7 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Загрузить последние матчи из папки с последними матчами
         /// </summary>
         private void LoadRecentMatches() {
-            lock(recentMatches) {
+            lock(Locker) {
                 foreach(var file in Directory.GetFiles (workDirectory)) {
                     recentMatches.Add (
                         JsonConvert.DeserializeObject<MatchInfo> (LoadMatchFromFile (file))
@@ -133,7 +134,7 @@ namespace Kontur.GameStats.Server.DataBase {
         public string Take(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);
-            lock(recentMatches) {
+            lock(Locker) {
                 s = JsonConvert.SerializeObject (recentMatches.Take(count));
             }
             return s;

@@ -1,11 +1,15 @@
-﻿using NLog;
-using System;
+﻿using System;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Web;
 
+using NLog;
+
 namespace Kontur.GameStats.Server.ApiMethods {
+    /// <summary>
+    /// Класс обеспечивающий выполнение методов по разным URI
+    /// </summary>
     public partial class Router {
         private Logger logger = LogManager.GetCurrentClassLogger ();
         private DataBase.DataBase dataBase;
