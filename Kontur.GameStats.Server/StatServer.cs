@@ -7,10 +7,20 @@ using System.Threading;
 
 namespace Kontur.GameStats.Server {
     internal class StatServer : IDisposable {
+        #region Fields
+
+        private readonly HttpListener listener;
+
+        private Thread listenerThread;
+        private bool disposed;
+        private volatile bool isRunning;
+
         private Router router;
         private DataBase.DataBase database;
         private string prefix;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
+
+        #endregion
 
         public StatServer() {
             database = new DataBase.DataBase ();
@@ -18,6 +28,8 @@ namespace Kontur.GameStats.Server {
 
             listener = new HttpListener ();
         }
+
+        #region Commands
 
         public void Start(string prefix) {
             Console.WriteLine ("Started");
@@ -64,6 +76,10 @@ namespace Kontur.GameStats.Server {
             listener.Close ();
         }
 
+        #endregion
+
+        #region Listener
+
         private void Listen() {
             while(true) {
                 try {
@@ -93,10 +109,7 @@ namespace Kontur.GameStats.Server {
             }
         }
 
-        private readonly HttpListener listener;
-
-        private Thread listenerThread;
-        private bool disposed;
-        private volatile bool isRunning;
+        #endregion
+        
     }
 }

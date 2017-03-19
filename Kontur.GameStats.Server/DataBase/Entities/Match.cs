@@ -1,5 +1,4 @@
-﻿using LiteDB;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,11 @@ using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.DataBase {
 
+    /// <summary>
+    /// Информация о матче в формате для recent-matches,
+    /// содержащая всю информацию, включая адрес сервера и
+    /// таймштамп
+    /// </summary>
     [Serializable]
     public class MatchInfo {
 
@@ -16,7 +20,6 @@ namespace Kontur.GameStats.Server.DataBase {
         
         [JsonProperty ("server"), JsonRequired()]
         public string Server { get; set; }
-        [BsonIndex]
         [JsonProperty ("timestamp"), JsonRequired ()]
         public DateTime Timestamp { get; set; }
         [JsonProperty ("matchResult"), JsonRequired ()]
@@ -36,6 +39,11 @@ namespace Kontur.GameStats.Server.DataBase {
         #endregion
     }
 
+    /// <summary>
+    /// Класс хранящий результаты матча в том формате,
+    /// который приходит на
+    /// servers/{endpoint}/matches/{timestamp}
+    /// </summary>
     [Serializable]
     public class MatchResult {
 
@@ -67,7 +75,7 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #endregion
     }
-
+    
     [Serializable]
     public class ScoreBoard {
         [JsonProperty ("name"), JsonRequired ()]

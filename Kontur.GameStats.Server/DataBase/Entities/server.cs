@@ -1,8 +1,8 @@
-﻿using LiteDB;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.DataBase {
     /// <summary>
@@ -96,6 +96,9 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region Updater
 
+        /// <summary>
+        /// Обновить статистику объекта сервера результатами матча
+        /// </summary>
         public void Update(MatchInfo match) {
             if(TotalMatches == 0 || FirstMatchPlayed > match.Timestamp) {
                 FirstMatchPlayed = match.Timestamp;

@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using LiteDB;
 using Newtonsoft.Json;
 using NLog;
 using System.Diagnostics;

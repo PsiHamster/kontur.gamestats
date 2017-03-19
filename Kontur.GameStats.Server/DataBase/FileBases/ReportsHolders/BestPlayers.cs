@@ -1,13 +1,13 @@
-﻿using LiteDB;
-using Newtonsoft.Json;
-using NLog;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+
+using Newtonsoft.Json;
+using NLog;
 
 namespace Kontur.GameStats.Server.DataBase {
     /// <summary>
@@ -80,13 +80,16 @@ namespace Kontur.GameStats.Server.DataBase {
                 );
             }
         }
-
+        
         private void DeleteFromRecent(BestPlayer player) {
             var oldAdress = string.Format (workDirectory + "\\{0}.json",
                         player.Name);
             File.Delete (oldAdress);
         }
 
+        /// <summary>
+        /// Попытаться добавить игрока в последние матчи
+        /// </summary>
         public void Add(Player player) {
             if(player.KD < minKD || player.TotalMatches < 10 || player.TotalDeaths == 0)
                 return;
@@ -112,8 +115,6 @@ namespace Kontur.GameStats.Server.DataBase {
         /// Возвращает в json массив из count последних
         /// матчей
         /// </summary>
-        /// <param name="count"></param>
-        /// <returns></returns>
         public string Take(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);

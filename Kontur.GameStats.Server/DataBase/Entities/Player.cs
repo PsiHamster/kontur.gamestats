@@ -1,10 +1,8 @@
-﻿using LiteDB;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Newtonsoft.Json;
 
 namespace Kontur.GameStats.Server.DataBase {
     [Serializable]
@@ -111,14 +109,16 @@ namespace Kontur.GameStats.Server.DataBase {
 
     [Serializable]
     public class BestPlayer {
-        [JsonIgnore]
-        public ObjectId _id { get; set; }
-        [BsonIndex (true)]
+        /// <summary>
+        /// Имя игрока в том виде, в котором оно пришло последний раз
+        /// </summary>
         [JsonProperty (PropertyName = "name")]
         public string RawName { get; set; }
+        /// <summary>
+        /// Имя игрока с символами в нижнем регистре
+        /// </summary>
         [JsonIgnore]
         public string Name { get; set; }
-        [BsonIndex]
         [JsonProperty (PropertyName = "killToDeathRatio")]
         public double KillToDeathRatio { get; set; }
     }

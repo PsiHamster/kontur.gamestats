@@ -75,6 +75,9 @@ namespace Kontur.GameStats.Server.DataBase {
             HardLinks.CreateHardLink (newAdress, matchAdress, IntPtr.Zero);
         }
 
+        /// <summary>
+        /// Возвращает время последнего сыгранного матча
+        /// </summary>
         public DateTime GetLastMatchTime() {
             DateTime last;
             lock(recentMatches) {

@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Kontur.GameStats.Server.DataBase {
     public static class HardLinks {
+        /// <summary>
+        /// Создает HardLink на файл.
+        /// </summary>
         [DllImport ("Kernel32.dll", CharSet = CharSet.Unicode)]
         public static extern bool CreateHardLink(
           string lpFileName,
