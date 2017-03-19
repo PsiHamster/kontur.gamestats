@@ -56,9 +56,9 @@ namespace Kontur.GameStats.Tests.DBtests {
 
             try {
                 db.PutServerInfo ("server1", data);
-            } catch (RequestException e) {
+            } catch (RequestException) {
                 return;
-            } catch (Exception e) {
+            } catch (Exception) {
                 Assert.Fail ();
             }
             Assert.Fail ();
@@ -75,9 +75,9 @@ namespace Kontur.GameStats.Tests.DBtests {
 
             try {
                 db.PutServerInfo ("server1", data);
-            } catch(RequestException e) {
+            } catch(RequestException) {
                 return;
-            } catch(Exception e) {
+            } catch(Exception) {
                 Assert.Fail ();
             }
             Assert.Fail ();

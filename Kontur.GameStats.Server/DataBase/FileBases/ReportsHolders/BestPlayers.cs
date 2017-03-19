@@ -10,62 +10,60 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 
 namespace Kontur.GameStats.Server.DataBase {
+    /// <summary>
+    /// Класс реализует хранение 50 лучших игроков
+    /// Работает с классом BestPlayer
+    /// </summary>
     public class BestPlayers {
 
         #region Fields
 
+        private string workDirectory;
+
+        private List<BestPlayer> bestPlayers;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
-        private string dbConn;
-        private Thread cleanerThread;
-        private bool isCleaning;
 
         private double minKD = -1.0;
 
         #endregion
 
-        public BestPlayers(string dbConnectionString) {
-            dbConn = dbConnectionString;
+        #region Constructor
+
+        public BestPlayers(string directory, bool deletePrev = false) {
+            bestPlayers = new List<BestPlayer> ();
+            workDirectory = directory + "\\best-players";
+            if(deletePrev && Directory.Exists (workDirectory)) {
+                Directory.Delete (workDirectory, true);
+            } else if(!deletePrev && Directory.Exists (workDirectory)) {
+                LoadBestPlayers ();
+            }
+            Directory.CreateDirectory (workDirectory);
         }
 
-        #region Thread
+        #endregion
 
-        /// <summary>
-        /// Запускает поток очищающий лишние матчи
-        /// </summary>
-        public void StartCleanThread() {
-            isCleaning = true;
-            cleanerThread = new Thread (CleanPlayers) {
-                IsBackground = true,
-                Priority = ThreadPriority.Normal
-            };
-            cleanerThread.Start ();
-        }
+        #region Load
 
-        public void StopCleanThread() {
-            isCleaning = false;
-        }
-
-        private void CleanPlayers() {
-            while(isCleaning) {
-                try {
-                    using(var db = new LiteDatabase (dbConn)) {
-                        var bestPlayersCol = db.GetCollection<BestPlayer> ();
-                        if(bestPlayersCol.Count () > 0) {
-                            var kd = bestPlayersCol.Find (
-                                        Query.All ("KillToDeathRatio",
-                                        Query.Descending), limit:50
-                                ).Last ().KillToDeathRatio;
-                            minKD = kd;
-                            bestPlayersCol.Delete (
-                                Query.LT ("KillToDeathRatio", kd)
-                            );
-                        }
-                    }
-                } catch(Exception e) {
-                    logger.Error (e);
-                } finally {
-                    Thread.Sleep (60 * 1000); // Sleep 60 seconds
+        private string LoadPlayerFromFile(string adress) {
+            string playerInfo;
+            try {
+                using(var file = new StreamReader (adress)) {
+                    playerInfo = file.ReadToEnd ();
                 }
+            } catch(FileNotFoundException) {
+                throw (new RequestException ("Match wasn't found"));
+            }
+            return playerInfo;
+        }
+
+        private void LoadBestPlayers() {
+            lock(bestPlayers) {
+                foreach(var file in Directory.GetFiles (workDirectory)) {
+                    bestPlayers.Add (
+                        JsonConvert.DeserializeObject<BestPlayer> (LoadPlayerFromFile (file))
+                    );
+                }
+                bestPlayers = bestPlayers.OrderByDescending (x => x.KillToDeathRatio).ToList ();
             }
         }
 
@@ -73,12 +71,37 @@ namespace Kontur.GameStats.Server.DataBase {
 
         #region Add
 
+        private void WriteInFile(BestPlayer player) {
+            var adress = string.Format (workDirectory + "\\{0}.json",
+                        player.Name);
+            using(var file = new StreamWriter (adress, false)) {
+                file.Write (
+                    JsonConvert.SerializeObject (player)
+                );
+            }
+        }
+
+        private void DeleteFromRecent(BestPlayer player) {
+            var oldAdress = string.Format (workDirectory + "\\{0}.json",
+                        player.Name);
+            File.Delete (oldAdress);
+        }
+
         public void Add(Player player) {
             if(player.KD < minKD || player.TotalMatches < 10 || player.TotalDeaths == 0)
                 return;
-            using(var db = new LiteRepository (dbConn)) {
-                db.Upsert (player.FormatAsBestPlayer());
+            var bestPlayer = player.FormatAsBestPlayer ();
+            lock(bestPlayers) {
+                bestPlayers.RemoveAll (x => x.Name == bestPlayer.Name);
+                bestPlayers.Add (bestPlayer);
+                bestPlayers = bestPlayers
+                    .OrderByDescending (x => x.KillToDeathRatio)
+                    .ToList ();
+                for(int i = 50; i < bestPlayers.Count; i++)
+                    DeleteFromRecent (bestPlayers[i]);
+                bestPlayers = bestPlayers.Take (50).ToList ();
             }
+            WriteInFile (bestPlayer);
         }
 
         #endregion
@@ -94,15 +117,9 @@ namespace Kontur.GameStats.Server.DataBase {
         public string Take(int count) {
             string s;
             count = Math.Min (Math.Max (count, 0), 50);
-            BestPlayer[] results;
-            using(var db = new LiteDatabase (dbConn)) {
-                var playersCol = db.GetCollection<BestPlayer> ();
-                results = playersCol.Find(
-                        Query.All ("KillToDeathRatio",
-                        Query.Descending), limit:count)
-                    .ToArray ();
+            lock(bestPlayers) {
+                s = JsonConvert.SerializeObject (bestPlayers.Take (count));
             }
-            s = JsonConvert.SerializeObject (results);
             return s;
         }
 

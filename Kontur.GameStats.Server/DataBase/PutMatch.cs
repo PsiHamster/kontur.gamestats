@@ -48,8 +48,6 @@ namespace Kontur.GameStats.Server.DataBase {
                     endpoint, timeStamp, matchResult.GameMode, score, i + 1,
                     matchResult.ScoreBoard.Length);
 
-                bestPlayers.Add (player);
-
                 yield return player;
             }
         }

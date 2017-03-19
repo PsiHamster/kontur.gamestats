@@ -16,11 +16,13 @@ namespace Kontur.GameStats.Server.DataBase {
     class PlayersBase {
 
         public string workDirectory { get; private set; }
+        public BestPlayers BestPlayers { get; private set; }
 
         #region Constructor
 
         public PlayersBase(string directory, bool deletePrev = false) {
             workDirectory = directory+ "\\players";
+            BestPlayers = new BestPlayers (directory, deletePrev);
             if (deletePrev && Directory.Exists (workDirectory)) {
                 Directory.Delete (workDirectory, true);
             }
@@ -55,6 +57,7 @@ namespace Kontur.GameStats.Server.DataBase {
             using(var file = new FileStream (filePath, System.IO.FileMode.Create, FileAccess.Write)) {
                 formatter.Serialize (file, player);
             }
+            BestPlayers.Add (player);
         }
 
         /// <summary>
@@ -72,7 +75,7 @@ namespace Kontur.GameStats.Server.DataBase {
                 using(var file = new FileStream (filePath, System.IO.FileMode.Open, FileAccess.Read)) {
                     player = (Player)formatter.Deserialize (file);
                 }
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException) {
                 return null;
             }
             return player;

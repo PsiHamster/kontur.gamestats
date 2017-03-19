@@ -24,8 +24,6 @@ namespace Kontur.GameStats.Server.DataBase {
 
         public DateTime LastMatchTime = new DateTime (0).Date;
         private NLog.Logger logger = LogManager.GetCurrentClassLogger ();
-
-        private BestPlayers bestPlayers;
         
         private PlayersBase players;
         private MatchesBase matches;
@@ -51,9 +49,7 @@ namespace Kontur.GameStats.Server.DataBase {
             matches = new MatchesBase (workDirectory, deletePrev);
             players = new PlayersBase (workDirectory, deletePrev);
             servers = new ServersBase (workDirectory, deletePrev);
-
-            bestPlayers.StartCleanThread ();
-
+            
             if (!deletePrev) {
                 LastMatchTime = matches.RecentMatches.GetLastMatchTime ();
             }

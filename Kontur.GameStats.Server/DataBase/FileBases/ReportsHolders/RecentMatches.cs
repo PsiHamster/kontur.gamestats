@@ -10,6 +10,8 @@ namespace Kontur.GameStats.Server.DataBase {
 
     /// <summary>
     /// Класс реализующий хранение последних 50 матчей
+    /// Матчи связаны hard link'ом с оригиналами,
+    /// без добавления матча в бд, матч к последним не добавить
     /// </summary>
     public class RecentMatches {
 
@@ -23,7 +25,6 @@ namespace Kontur.GameStats.Server.DataBase {
         #endregion
 
         #region Constructor
-
         
         public RecentMatches(string directory, bool deletePrev = false) {
             recentMatches = new List<MatchInfo> ();
@@ -65,10 +66,9 @@ namespace Kontur.GameStats.Server.DataBase {
                 recentMatches = recentMatches
                     .OrderByDescending (x => x.Timestamp)
                     .ToList ();
-                if(recentMatches.Count > 50) {
-                    DeleteMatchFromRecent (recentMatches[51]);
-                    recentMatches = recentMatches.Take (50).ToList ();
-                }
+                for (int i = 50; i < recentMatches.Count; i++)
+                    DeleteMatchFromRecent (recentMatches[i]);
+                recentMatches = recentMatches.Take (50).ToList ();
             }
             var newAdress = string.Format (workDirectory + "\\{0}{1}.json",
                         matchInfo.Timestamp.ToString ().Replace (":", "D"), matchInfo.Server);

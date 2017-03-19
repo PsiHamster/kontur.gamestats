@@ -19,7 +19,7 @@
         #region BestPlayers
 
         public string GetBestPlayers(int count) {
-            return bestPlayers.Take (count);
+            return players.BestPlayers.Take (count);
         }
 
         #endregion
